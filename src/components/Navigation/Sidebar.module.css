@@ -1,0 +1,122 @@
+.sidebar {
+    padding: var(--space-6);
+}
+
+.logo {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-8);
+    color: var(--text-primary);
+}
+
+.section {
+    margin-bottom: var(--space-6);
+}
+
+.section-title {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--space-3);
+    padding: 0 var(--space-3);
+}
+
+.lesson-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.lesson-item {
+    margin-bottom: var(--space-1);
+}
+
+.lesson-link {
+    display: flex;
+    align-items: center;
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    font-size: var(--font-size-sm);
+    gap: var(--space-4);
+}
+
+.lesson-link:hover {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.lesson-link.active {
+    background-color: var(--color-primary-100);
+    color: var(--color-primary-700);
+    font-weight: var(--font-weight-medium);
+}
+
+@media (prefers-color-scheme: dark) {
+    .lesson-link.active {
+        background-color: var(--color-primary-900);
+        color: var(--color-primary-200);
+    }
+}
+
+.lesson-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: var(--radius-sm);
+    background-color: var(--bg-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    flex-shrink: 0;
+}
+
+.lesson-link.active .lesson-number {
+    background-color: var(--color-primary-600);
+    color: white;
+}
+
+.lesson-title {
+    flex: 1;
+}
+
+/* Progress indicator */
+.progress {
+    margin-top: var(--space-8);
+    padding: var(--space-4);
+    background-color: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+}
+
+.progress-title {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--space-2);
+    color: var(--text-primary);
+}
+
+.progress-bar {
+    height: 8px;
+    background-color: var(--bg-secondary);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-primary-500), var(--color-accent-500));
+    border-radius: var(--radius-full);
+    transition: width var(--transition-slow);
+}
+
+.progress-text {
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+    margin-top: var(--space-2);
+}
