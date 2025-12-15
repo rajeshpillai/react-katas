@@ -220,6 +220,45 @@ export default function KeyboardNavigation() {
   <TabsContent value="password">...</TabsContent>
 </Tabs>`}</code>
           </pre>
+
+          <h3 style={{ marginTop: 'var(--space-6)', marginBottom: 'var(--space-3)' }}>
+            ⚙️ How it Works:
+          </h3>
+          <p>The magic happens in two places:</p>
+
+          <h4 style={{ marginTop: 'var(--space-4)' }}>1. Keyboard Navigation (TabsList)</h4>
+          <pre style={{ background: 'transparent' }}>
+            <code>{`const handleKeyDown = (e) => {
+  const tabs = containerRef.current.querySelectorAll('[role="tab"]');
+  const index = Array.from(tabs).indexOf(document.activeElement);
+
+  // Calculate next tab index (wrapping around)
+  if (e.key === 'ArrowRight') {
+    nextIndex = (index + 1) % tabs.length;
+  } else if (e.key === 'ArrowLeft') {
+    nextIndex = (index - 1 + tabs.length) % tabs.length;
+  } else if (e.key === 'Home') nextIndex = 0;
+  else if (e.key === 'End') nextIndex = tabs.length - 1;
+
+  // Move focus which triggers roving tabindex
+  tabs[nextIndex].focus();
+};`}</code>
+          </pre>
+
+          <h4 style={{ marginTop: 'var(--space-4)' }}>2. Roving TabIndex (TabsTrigger)</h4>
+          <pre style={{ background: 'transparent' }}>
+            <code>{`<button
+  role="tab"
+  // Only the active tab is in the tab order (0)
+  // Inactive tabs are removed from order (-1)
+  tabIndex={isActive ? 0 : -1}
+  aria-selected={isActive}
+  onClick={() => setActive(value)}
+  onFocus={() => setActive(value)}
+>
+  {children}
+</button>`}</code>
+          </pre>
         </div>
       </section>
 
