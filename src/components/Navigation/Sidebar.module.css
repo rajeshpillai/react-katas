@@ -42,7 +42,7 @@
     text-decoration: none;
     transition: all var(--transition-fast);
     font-size: var(--font-size-sm);
-    gap: var(--space-4);
+    gap: var(--space-6);
 }
 
 .lesson-link:hover {
@@ -75,6 +75,7 @@
     font-size: var(--font-size-xs);
     font-weight: var(--font-weight-semibold);
     flex-shrink: 0;
+    margin-right: var(--space-4);
 }
 
 .lesson-link.active .lesson-number {
@@ -83,6 +84,7 @@
 }
 
 .lesson-title {
+    display: inline-flex;
     flex: 1;
 }
 

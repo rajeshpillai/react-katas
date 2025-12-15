@@ -17,17 +17,17 @@ export default function Sidebar() {
 
                 return (
                     <div key={section} className={styles.section}>
-                        <h2 className={styles.sectionTitle}>{section}</h2>
-                        <ul className={styles.lessonList}>
+                        <h2 className={styles['section-title']}>{section}</h2>
+                        <ul className={styles['lesson-list']}>
                             {sectionLessons.map((lesson) => (
-                                <li key={lesson.id} className={styles.lessonItem}>
+                                <li key={lesson.id} className={styles['lesson-item']}>
                                     <Link
                                         to={lesson.path}
-                                        className={styles.lessonLink}
+                                        className={styles['lesson-link']}
                                         activeClassName={styles.active}
                                     >
-                                        <span className={styles.lessonNumber}>{lesson.order}</span>
-                                        <span className={styles.lessonTitle}>{lesson.title}</span>
+                                        <span className={styles['lesson-number']}>{lesson.order}</span>
+                                        <span className={styles['lesson-title']}>{lesson.title}</span>
                                     </Link>
                                 </li>
                             ))}
@@ -38,11 +38,11 @@ export default function Sidebar() {
 
             {/* Progress indicator */}
             <div className={styles.progress}>
-                <div className={styles.progressTitle}>Your Progress</div>
-                <div className={styles.progressBar}>
-                    <div className={styles.progressFill} style={{ width: '0%' }} />
+                <div className={styles['progress-title']}>Your Progress</div>
+                <div className={styles['progress-bar']}>
+                    <div className={styles['progress-fill']} style={{ width: '0%' }} />
                 </div>
-                <div className={styles.progressText}>0 of {lessons.length} lessons completed</div>
+                <div className={styles['progress-text']}>0 of {lessons.length} lessons completed</div>
             </div>
         </nav>
     )
