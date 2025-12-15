@@ -66,6 +66,16 @@ export const lessons: LessonMetadata[] = [
         component: lazy(() => import('@lessons/07-machine-coding/DragAndDrop')),
         documentPath: '/lessons/07-machine-coding/04-drag-drop.md',
     },
+    {
+        id: 'infinite-scroll',
+        title: 'Infinite Scroll',
+        description: 'Intersection Observer API for pagination',
+        section: SECTIONS.MACHINE_CODING,
+        order: 35,
+        path: '/lessons/infinite-scroll',
+        component: lazy(() => import('@lessons/07-machine-coding/InfiniteScroll')),
+        documentPath: '/lessons/07-machine-coding/05-infinite-scroll.md',
+    },
 
     // Section 1: Fundamentals
     {
