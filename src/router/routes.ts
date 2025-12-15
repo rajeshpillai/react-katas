@@ -20,10 +20,23 @@ export const SECTIONS = {
     PATTERNS: 'Advanced Patterns',
     STATE: 'State Management',
     ACCESSIBILITY: 'Accessibility & Production',
+    MACHINE_CODING: 'Machine Coding Challenges',
 } as const
 
 // Route definitions with lazy-loaded components
 export const lessons: LessonMetadata[] = [
+    // Section 7: Machine Coding
+    {
+        id: 'file-explorer',
+        title: 'File Explorer (Recursive)',
+        description: 'Build a VS Code-like file tree with CRUD operations',
+        section: SECTIONS.MACHINE_CODING,
+        order: 31,
+        path: '/lessons/file-explorer',
+        component: lazy(() => import('@lessons/07-machine-coding/FileExplorer')),
+        documentPath: '/lessons/07-machine-coding/01-file-explorer.md',
+    },
+
     // Section 1: Fundamentals
     {
         id: 'jsx-basics',
