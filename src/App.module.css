@@ -3,6 +3,7 @@
     grid-template-columns: 280px 1fr;
     min-height: 100vh;
     background-color: var(--bg-primary);
+    padding: 4px;
 }
 
 .sidebar {
@@ -12,6 +13,7 @@
     position: sticky;
     top: 0;
     height: 100vh;
+    margin-right: 2em;
 }
 
 .main-content {
