@@ -109,7 +109,7 @@ const ExpensiveComponent = memo(function ExpensiveComponent({ data }) {
           }}
         >
           <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>❌ Breaks memo:</h3>
-          <pre>
+          <pre style={{ background: 'transparent' }}>
             <code style={{ color: 'white' }}>{`// New object/array every render
 <MemoComponent data={{ value: 1 }} />
 <MemoComponent items={[1, 2, 3]} />
@@ -129,7 +129,7 @@ const ExpensiveComponent = memo(function ExpensiveComponent({ data }) {
           }}
         >
           <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>✅ Works with memo:</h3>
-          <pre>
+          <pre style={{ background: 'transparent' }}>
             <code style={{ color: 'white' }}>{`// Stable references
 const data = useMemo(() => ({ value: 1 }), []);
 const items = useMemo(() => [1, 2, 3], []);

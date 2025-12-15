@@ -106,7 +106,7 @@ const UserListWithLoading = withLoading(UserList);
             }}
           >
             <h3 style={{ color: 'white' }}>HOC (Old Pattern)</h3>
-            <pre>
+            <pre style={{ background: 'transparent' }}>
               <code style={{ color: 'white' }}>{`const Enhanced = withAuth(
   withLoading(
     withData(Component)
@@ -127,7 +127,7 @@ const UserListWithLoading = withLoading(UserList);
             }}
           >
             <h3 style={{ color: 'white' }}>Hooks (Modern)</h3>
-            <pre>
+            <pre style={{ background: 'transparent' }}>
               <code style={{ color: 'white' }}>{`function Component() {
   const auth = useAuth();
   const loading = useLoading();
