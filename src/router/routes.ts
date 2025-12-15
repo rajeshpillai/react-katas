@@ -46,6 +46,16 @@ export const lessons: LessonMetadata[] = [
         component: lazy(() => import('@lessons/07-machine-coding/AutoComplete')),
         documentPath: '/lessons/07-machine-coding/02-auto-complete.md',
     },
+    {
+        id: 'toast-system',
+        title: 'Toast / Notification System',
+        description: 'Global notifications with Context and Portals',
+        section: SECTIONS.MACHINE_CODING,
+        order: 33,
+        path: '/lessons/toast-system',
+        component: lazy(() => import('@lessons/07-machine-coding/ToastSystem')),
+        documentPath: '/lessons/07-machine-coding/03-toast-system.md',
+    },
 
     // Section 1: Fundamentals
     {

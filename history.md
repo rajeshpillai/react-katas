@@ -53,6 +53,7 @@ A comprehensive React learning resource containing interactive lessons and katas
 ### 7. Machine Coding Challenges
 - [x] File Explorer (Recursive)
 - [x] Auto-complete (Typeahead)
+- [x] Toast / Notification System
 
 ## Change Log
 
@@ -82,12 +83,9 @@ A comprehensive React learning resource containing interactive lessons and katas
   - Embedded implementation details directly in the UI.
 
 - **Machine Coding Section**:
-  - **File Explorer**: Implemented recursive file tree with folder expansion state.
-  - **Auto-complete**: Implemented typeahead with:
-    - Custom `useDebounce` hook.
-    - Race condition handling (useEffect cleanup).
-    - Client-side caching (useRef).
-    - Keyboard navigation (Arrows + Enter).
+  - **File Explorer**: Implemented recursive file tree.
+  - **Auto-complete**: Implemented typeahead with debouncing and caching.
+  - **Toast System**: Implemented global notifications using Context and Portals.
 
 ### Previous Updates
 - **Fixed:** Render counting logic in `ReactMemo.tsx`, `ComponentComposition.tsx`, and `ProviderPattern.tsx`. Previously, `useState` lazy initialization was correctly preventing re-renders of the counter state but failed to reflect the actual render count in the UI for educational purposes. Replaced with `useRef` to accurately display render counts without triggering extra re-renders.
