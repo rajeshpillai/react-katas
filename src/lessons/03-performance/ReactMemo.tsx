@@ -1,4 +1,4 @@
-import { useState, memo } from 'react'
+import { useState, memo, useRef } from 'react'
 
 export default function ReactMemoLesson() {
   return (
@@ -230,12 +230,8 @@ function MemoComparison() {
 }
 
 function WithoutMemo({ value }: { value: number }) {
-  const [renderCount, setRenderCount] = useState(0)
-
-  useState(() => {
-    setRenderCount((c) => c + 1)
-    console.log('WithoutMemo rendered')
-  })
+  const renderCount = useRef(0)
+  renderCount.current += 1
 
   return (
     <div
@@ -247,18 +243,14 @@ function WithoutMemo({ value }: { value: number }) {
       }}
     >
       <p style={{ color: 'white' }}>Value: {value}</p>
-      <p style={{ color: 'white' }}>Renders: {renderCount}</p>
+      <p style={{ color: 'white' }}>Renders: {renderCount.current}</p>
     </div>
   )
 }
 
 const WithMemo = memo(function WithMemo({ value }: { value: number }) {
-  const [renderCount, setRenderCount] = useState(0)
-
-  useState(() => {
-    setRenderCount((c) => c + 1)
-    console.log('WithMemo rendered')
-  })
+  const renderCount = useRef(0)
+  renderCount.current += 1
 
   return (
     <div
@@ -270,7 +262,7 @@ const WithMemo = memo(function WithMemo({ value }: { value: number }) {
       }}
     >
       <p style={{ color: 'white' }}>Value: {value}</p>
-      <p style={{ color: 'white' }}>Renders: {renderCount}</p>
+      <p style={{ color: 'white' }}>Renders: {renderCount.current}</p>
     </div>
   )
 })

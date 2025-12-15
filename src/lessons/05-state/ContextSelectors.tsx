@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useRef, useCallback, useSyncExternalStore } from 'react'
+import { createContext, useContext, useState, useRef, useCallback, useSyncExternalStore, useEffect } from 'react'
 
 // Simple context selector implementation
 function createContextSelector<T>() {
@@ -14,6 +14,10 @@ function createContextSelector<T>() {
       subscribersRef.current.add(callback)
       return () => subscribersRef.current.delete(callback)
     }, [])
+
+    useEffect(() => {
+      subscribersRef.current.forEach((callback) => callback())
+    }, [value])
 
     const getSnapshot = useCallback(() => storeRef.current, [])
 
@@ -267,12 +271,9 @@ function AppDemo() {
 
 function CountDisplay() {
   const count = useSelector((state) => state.count)
-  const [renderCount, setRenderCount] = useState(0)
-
-  useState(() => {
-    setRenderCount((c) => c + 1)
-    console.log('CountDisplay rendered')
-  })
+  const renderCountRef = useRef(0)
+  renderCountRef.current += 1
+  console.log('CountDisplay rendered')
 
   return (
     <div
@@ -286,7 +287,7 @@ function CountDisplay() {
         <strong>Count:</strong> {count}
       </p>
       <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-tertiary)' }}>
-        Renders: {renderCount}
+        Renders: {renderCountRef.current}
       </p>
     </div>
   )
@@ -294,12 +295,9 @@ function CountDisplay() {
 
 function UserDisplay() {
   const user = useSelector((state) => state.user)
-  const [renderCount, setRenderCount] = useState(0)
-
-  useState(() => {
-    setRenderCount((c) => c + 1)
-    console.log('UserDisplay rendered')
-  })
+  const renderCountRef = useRef(0)
+  renderCountRef.current += 1
+  console.log('UserDisplay rendered')
 
   return (
     <div
@@ -313,7 +311,7 @@ function UserDisplay() {
         <strong>User:</strong> {user}
       </p>
       <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-tertiary)' }}>
-        Renders: {renderCount}
+        Renders: {renderCountRef.current}
       </p>
     </div>
   )
@@ -321,12 +319,9 @@ function UserDisplay() {
 
 function ThemeDisplay() {
   const theme = useSelector((state) => state.theme)
-  const [renderCount, setRenderCount] = useState(0)
-
-  useState(() => {
-    setRenderCount((c) => c + 1)
-    console.log('ThemeDisplay rendered')
-  })
+  const renderCountRef = useRef(0)
+  renderCountRef.current += 1
+  console.log('ThemeDisplay rendered')
 
   return (
     <div
@@ -340,7 +335,7 @@ function ThemeDisplay() {
       <p style={{ color: 'white' }}>
         <strong>Theme:</strong> {theme}
       </p>
-      <p style={{ fontSize: 'var(--font-size-sm)', color: 'white' }}>Renders: {renderCount}</p>
+      <p style={{ fontSize: 'var(--font-size-sm)', color: 'white' }}>Renders: {renderCountRef.current}</p>
     </div>
   )
 }

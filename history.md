@@ -19,6 +19,9 @@ A comprehensive React learning resource containing interactive lessons and katas
 ## Change Log
 
 ### 2025-12-15
+- **Patterns Section**: Verified all patterns. Refactored `Accordion` in `CompoundComponents.tsx` to use Context correctly. Fixed Sidebar styling.
+- **State Management Section**: Verified context patterns. Fixed `ContextSelectors.tsx` to correctly notify subscribers (useEffect added) and fixed render counting logic.
+- **Accessibility Section**: Verified ARIA fundamentals and Forms/Keyboard Navigation demos. Confirmed form validation and keyboard interaction work as expected.
 - **UI Improvements**: Fixed Sidebar spacing issues.
   - Added explicit `margin-right` to lesson numbers for better separation from titles.
   - Fixed CSS Modules class naming issue (switched from camelCase to bracket notation for kebab-case classes).
@@ -32,3 +35,9 @@ A comprehensive React learning resource containing interactive lessons and katas
 - **FIX REQUIRED**: Refactor `CompoundComponents.tsx` to properly pass and handle indices in the Compound Component pattern.
 - Continue implementing/refining lessons in "Hooks & Side Effects".
 - Verify content for remaining sections.
+
+### Performance & Patterns Verification
+- **Verified:** "Performance" and "Patterns" sections.
+- **Fixed:** Render counting logic in `ReactMemo.tsx`, `ComponentComposition.tsx`, and `ProviderPattern.tsx`. Previously, `useState` lazy initialization was correctly preventing re-renders of the counter state but failed to reflect the actual render count in the UI for educational purposes. Replaced with `useRef` to accurately display render counts without triggering extra re-renders.
+- **Verified:** Code splitting, component composition, and context providers function as expected.
+- **Verified:** Portal, Render Props, and Controlled/Uncontrolled components function correctly.

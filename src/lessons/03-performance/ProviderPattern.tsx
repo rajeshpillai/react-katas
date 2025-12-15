@@ -1,11 +1,11 @@
-import { createContext, useContext, useState, ReactNode } from 'react'
+import { createContext, useContext, useState, ReactNode, useRef, Dispatch, SetStateAction } from 'react'
 
 // Example of a poorly optimized provider
 const BadThemeContext = createContext<any>(null)
 
 // Example of an optimized provider
 const ThemeContext = createContext<{ theme: string } | null>(null)
-const ThemeUpdateContext = createContext<((theme: string) => void) | null>(null)
+const ThemeUpdateContext = createContext<Dispatch<SetStateAction<string>> | null>(null)
 
 export default function ProviderPattern() {
   return (
@@ -252,11 +252,8 @@ function OptimizedThemeProvider({ children }: { children: ReactNode }) {
 
 function ThemeDisplay() {
   const context = useContext(ThemeContext)
-  const [renderCount, setRenderCount] = useState(0)
-
-  useState(() => {
-    setRenderCount((c) => c + 1)
-  })
+  const renderCount = useRef(0)
+  renderCount.current += 1
 
   if (!context) return null
 
@@ -273,7 +270,7 @@ function ThemeDisplay() {
         <strong>Current Theme:</strong> {context.theme}
       </p>
       <p style={{ color: 'var(--text-tertiary)', fontSize: 'var(--font-size-sm)' }}>
-        Renders: {renderCount} (re-renders on theme change)
+        Renders: {renderCount.current} (re-renders on theme change)
       </p>
     </div>
   )
@@ -281,11 +278,8 @@ function ThemeDisplay() {
 
 function ThemeToggle() {
   const setTheme = useContext(ThemeUpdateContext)
-  const [renderCount, setRenderCount] = useState(0)
-
-  useState(() => {
-    setRenderCount((c) => c + 1)
-  })
+  const renderCount = useRef(0)
+  renderCount.current += 1
 
   if (!setTheme) return null
 
@@ -305,18 +299,15 @@ function ThemeToggle() {
         Toggle Theme
       </button>
       <p style={{ color: 'var(--text-tertiary)', fontSize: 'var(--font-size-sm)', marginTop: 'var(--space-2)' }}>
-        Renders: {renderCount} (never re-renders!)
+        Renders: {renderCount.current} (never re-renders!)
       </p>
     </div>
   )
 }
 
 function ExpensiveChild() {
-  const [renderCount, setRenderCount] = useState(0)
-
-  useState(() => {
-    setRenderCount((c) => c + 1)
-  })
+  const renderCount = useRef(0)
+  renderCount.current += 1
 
   return (
     <div
@@ -329,7 +320,7 @@ function ExpensiveChild() {
     >
       <p style={{ color: 'white', fontWeight: 'bold' }}>Expensive Component</p>
       <p style={{ color: 'white' }}>
-        Renders: {renderCount} (doesn't use context, never re-renders!)
+        Renders: {renderCount.current} (doesn't use context, never re-renders!)
       </p>
     </div>
   )

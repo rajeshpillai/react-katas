@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 
 export default function ComponentComposition() {
   return (
@@ -348,7 +348,8 @@ function ChildrenPropDemo() {
 
 function LayoutWithState({ children }: { children: React.ReactNode }) {
   const [count, setCount] = useState(0)
-  const [renderCount, setRenderCount] = useState(0)
+  const renderCount = useRef(0)
+  renderCount.current += 1
 
   return (
     <div
@@ -359,12 +360,11 @@ function LayoutWithState({ children }: { children: React.ReactNode }) {
       }}
     >
       <p>
-        <strong>Layout renders:</strong> {renderCount}
+        <strong>Layout renders:</strong> {renderCount.current}
       </p>
       <button
         onClick={() => {
           setCount(count + 1)
-          setRenderCount(renderCount + 1)
         }}
         style={{
           padding: 'var(--space-2) var(--space-4)',
@@ -384,12 +384,8 @@ function LayoutWithState({ children }: { children: React.ReactNode }) {
 }
 
 function ExpensiveComponent({ label }: { label: string }) {
-  const [renderCount, setRenderCount] = useState(0)
-
-  // Track renders
-  useState(() => {
-    setRenderCount((c) => c + 1)
-  })
+  const renderCount = useRef(0)
+  renderCount.current += 1
 
   return (
     <div
@@ -401,7 +397,7 @@ function ExpensiveComponent({ label }: { label: string }) {
       }}
     >
       <p style={{ color: 'white', fontWeight: 'bold' }}>{label}</p>
-      <p style={{ color: 'white' }}>Render count: {renderCount}</p>
+      <p style={{ color: 'white' }}>Render count: {renderCount.current}</p>
     </div>
   )
 }
@@ -459,37 +455,34 @@ function Dashboard({
 }
 
 function Header() {
-  const [renderCount] = useState(() => {
-    console.log('Header rendered')
-    return 1
-  })
+  const renderCount = useRef(0)
+  renderCount.current += 1
+  console.log('Header rendered')
   return (
     <div style={{ padding: 'var(--space-3)', background: 'var(--color-primary-100)', borderRadius: 'var(--radius-md)' }}>
-      Header (renders: {renderCount})
+      Header (renders: {renderCount.current})
     </div>
   )
 }
 
 function Sidebar() {
-  const [renderCount] = useState(() => {
-    console.log('Sidebar rendered')
-    return 1
-  })
+  const renderCount = useRef(0)
+  renderCount.current += 1
+  console.log('Sidebar rendered')
   return (
     <div style={{ padding: 'var(--space-3)', background: 'var(--color-accent-100)', borderRadius: 'var(--radius-md)' }}>
-      Sidebar (renders: {renderCount})
+      Sidebar (renders: {renderCount.current})
     </div>
   )
 }
 
 function Content() {
-  const [renderCount] = useState(() => {
-    console.log('Content rendered')
-    return 1
-  })
+  const renderCount = useRef(0)
+  renderCount.current += 1
+  console.log('Content rendered')
   return (
     <div style={{ padding: 'var(--space-3)', background: 'var(--color-success)', color: 'white', borderRadius: 'var(--radius-md)' }}>
-      <p style={{ color: 'white' }}>Content (renders: {renderCount})</p>
+      <p style={{ color: 'white' }}>Content (renders: {renderCount.current})</p>
     </div>
   )
 }
@@ -532,10 +525,9 @@ function FormWithState() {
 }
 
 function StaticComponent() {
-  const [renderCount] = useState(() => {
-    console.log('StaticComponent rendered')
-    return 1
-  })
+  const renderCount = useRef(0)
+  renderCount.current += 1
+  console.log('StaticComponent rendered')
 
   return (
     <div
@@ -546,7 +538,7 @@ function StaticComponent() {
         borderRadius: 'var(--radius-md)',
       }}
     >
-      <p style={{ color: 'white' }}>I never re-render! (renders: {renderCount})</p>
+      <p style={{ color: 'white' }}>I never re-render! (renders: {renderCount.current})</p>
     </div>
   )
 }
@@ -588,10 +580,9 @@ function CounterButton() {
 }
 
 function ExpensiveList() {
-  const [renderCount] = useState(() => {
-    console.log('ExpensiveList rendered')
-    return 1
-  })
+  const renderCount = useRef(0)
+  renderCount.current += 1
+  console.log('ExpensiveList rendered')
 
   return (
     <div
@@ -604,7 +595,7 @@ function ExpensiveList() {
     >
       <p style={{ color: 'white', fontWeight: 'bold' }}>Expensive List</p>
       <p style={{ color: 'white' }}>I don't re-render when counter changes!</p>
-      <p style={{ color: 'white' }}>Renders: {renderCount}</p>
+      <p style={{ color: 'white' }}>Renders: {renderCount.current}</p>
     </div>
   )
 }
