@@ -23,7 +23,7 @@ export default function CompoundComponents() {
           elements like <code>&lt;select&gt;</code> and <code>&lt;option&gt;</code>.
         </p>
 
-        <pre>
+        <pre style={{ background: 'transparent' }}>
           <code>{`// Compound component API
 <Accordion>
   <Accordion.Item>
@@ -101,7 +101,7 @@ export default function CompoundComponents() {
             </AccordionItem>
           </Accordion>
 
-          <pre style={{ marginTop: 'var(--space-4)' }}>
+          <pre style={{ marginTop: 'var(--space-4)', background: 'transparent' }}>
             <code>{`// Implementation
 const AccordionContext = createContext(null);
 

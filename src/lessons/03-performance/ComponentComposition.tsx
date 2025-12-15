@@ -27,7 +27,7 @@ export default function ComponentComposition() {
           }}
         >
           <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>❌ Bad Pattern:</h3>
-          <pre>
+          <pre style={{ background: 'transparent' }}>
             <code style={{ color: 'white' }}>{`function App() {
   const [count, setCount] = useState(0);
   
@@ -64,8 +64,8 @@ export default function ComponentComposition() {
             marginTop: 'var(--space-4)',
           }}
         >
-          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>✅ Good Pattern:</h3>
-          <pre>
+          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>✅ Solution:</h3>
+          <pre style={{ background: 'transparent' }}>
             <code style={{ color: 'white' }}>{`function App() {
   return (
     <Layout>
