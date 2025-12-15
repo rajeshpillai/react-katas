@@ -1,4 +1,4 @@
-import { Suspense } from 'react'
+import { Suspense, useState, useEffect } from 'react'
 import { RouterProvider, useRouter, Link } from '@router/Router'
 import { getLessonByPath, getAdjacentLessons } from '@router/routes'
 import Sidebar from '@components/Navigation/Sidebar'
@@ -25,6 +25,62 @@ function AppContent() {
             </div>
         )
     }
+
+    // Lesson Completion Logic
+    const [timeSpent, setTimeSpent] = useState(0)
+    const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false)
+    const [isShortContent, setIsShortContent] = useState(false)
+
+    // Reset state on path change
+    useEffect(() => {
+        setTimeSpent(0)
+        setHasScrolledToBottom(false)
+        setIsShortContent(false)
+
+        // Initial check for short content
+        const checkShortContent = () => {
+            if (document.documentElement.scrollHeight <= window.innerHeight + 100) {
+                setIsShortContent(true)
+            }
+        }
+
+        // Small delay to allow content to render
+        const timer = setTimeout(checkShortContent, 500)
+        window.addEventListener('resize', checkShortContent)
+
+        return () => {
+            clearTimeout(timer)
+            window.removeEventListener('resize', checkShortContent)
+        }
+    }, [currentPath])
+
+    // Timer
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setTimeSpent(prev => prev + 1)
+        }, 1000)
+        return () => clearInterval(timer)
+    }, [currentPath]) // Reset timer on path change implicitly by dependency but state reset handles logic
+
+    // Scroll Listener
+    useEffect(() => {
+        const handleScroll = () => {
+            const scrollTop = window.scrollY
+            const windowHeight = window.innerHeight
+            const docHeight = document.documentElement.scrollHeight
+
+            // If we are close to bottom (within 100px)
+            if (scrollTop + windowHeight >= docHeight - 100) {
+                setHasScrolledToBottom(true)
+            }
+        }
+
+        window.addEventListener('scroll', handleScroll)
+        return () => window.removeEventListener('scroll', handleScroll)
+    }, [])
+
+    const MIN_TIME_SECONDS = 30 // 30 seconds reading time requirement
+    const canComplete = isLessonCompleted(currentLesson.id) || ((hasScrolledToBottom || isShortContent) && timeSpent >= MIN_TIME_SECONDS)
 
     // Render the lesson component
     const LessonComponent = currentLesson.component
@@ -57,21 +113,39 @@ function AppContent() {
                             <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-size-sm)' }}>
                                 Mark this lesson as complete to track your progress.
                             </p>
+                            {!isCompleted && !canComplete && (
+                                <div style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginTop: 4 }}>
+                                    Requirements:
+                                    <span style={{ color: (hasScrolledToBottom || isShortContent) ? 'var(--color-success)' : 'inherit', marginLeft: 6 }}>
+                                        {(hasScrolledToBottom || isShortContent) ? '✓ Scrolled' : '○ Scroll to bottom'}
+                                    </span>
+                                    <span style={{ color: timeSpent >= MIN_TIME_SECONDS ? 'var(--color-success)' : 'inherit', margin: '0 8px' }}>•</span>
+                                    <span style={{ color: timeSpent >= MIN_TIME_SECONDS ? 'var(--color-success)' : 'inherit' }}>
+                                        {timeSpent >= MIN_TIME_SECONDS ? '✓ Time met' : `○ Read for ${Math.max(0, MIN_TIME_SECONDS - timeSpent)}s more`}
+                                    </span>
+                                </div>
+                            )}
                         </div>
                         <button
-                            onClick={() => toggleLessonCompletion(currentLesson.id)}
+                            onClick={() => canComplete && toggleLessonCompletion(currentLesson.id)}
+                            disabled={!canComplete}
                             style={{
                                 padding: 'var(--space-3) var(--space-6)',
-                                background: isCompleted ? 'var(--color-success)' : 'var(--bg-tertiary)',
-                                color: isCompleted ? 'white' : 'var(--text-primary)',
+                                background: isCompleted
+                                    ? 'var(--color-success)'
+                                    : canComplete
+                                        ? 'var(--bg-tertiary)'
+                                        : 'var(--bg-secondary)', // Disabled look
+                                color: isCompleted ? 'white' : canComplete ? 'var(--text-primary)' : 'var(--text-tertiary)',
                                 border: isCompleted ? 'none' : '1px solid var(--border-color)',
                                 borderRadius: 'var(--radius-md)',
-                                cursor: 'pointer',
+                                cursor: canComplete ? 'pointer' : 'not-allowed',
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: 'var(--space-2)',
                                 fontWeight: 'bold',
                                 transition: 'all 0.2s',
+                                opacity: !canComplete && !isCompleted ? 0.6 : 1
                             }}
                         >
                             {isCompleted ? (

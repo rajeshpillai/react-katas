@@ -96,3 +96,15 @@ A comprehensive React learning resource containing interactive lessons and katas
 - **Fixed:** Render counting logic in `ReactMemo.tsx`, `ComponentComposition.tsx`, and `ProviderPattern.tsx`. Previously, `useState` lazy initialization was correctly preventing re-renders of the counter state but failed to reflect the actual render count in the UI for educational purposes. Replaced with `useRef` to accurately display render counts without triggering extra re-renders.
 - **Verified:** Code splitting, component composition, and context providers function as expected.
 - **Verified:** Portal, Render Props, and Controlled/Uncontrolled components function correctly.
+
+### 2025-12-15 (Session 2)
+- **Source Code View Extension**:
+  - Extended the "Source Code" toggle view to all lessons in the "Performance" (`ProfilingDebugging.tsx`, `React19Compiler.tsx`) and "Patterns" (`CompoundComponents.tsx`, `ControlledUncontrolled.tsx`, `HigherOrderComponents.tsx`, `PortalPattern.tsx`, `RenderProps.tsx`) sections.
+- **Smart Completion Logic**:
+  - Implemented completion tracking in `App.tsx` requiring both:
+    1. Scrolling to the bottom of the page.
+    2. Spending a minimum amount of time on the page.
+  - Verified logic via automated browser tests.
+  - Updated `MIN_TIME_SECONDS` to 30 seconds for realistic reading time requirement.
+- **Housekeeping**:
+  - Created `src/vite-env.d.ts` to resolve CSS module type definition lint errors.
