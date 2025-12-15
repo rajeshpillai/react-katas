@@ -56,6 +56,16 @@ export const lessons: LessonMetadata[] = [
         component: lazy(() => import('@lessons/07-machine-coding/ToastSystem')),
         documentPath: '/lessons/07-machine-coding/03-toast-system.md',
     },
+    {
+        id: 'drag-and-drop',
+        title: 'Drag & Drop (Kanban)',
+        description: 'Native HTML5 Drag and Drop API',
+        section: SECTIONS.MACHINE_CODING,
+        order: 34,
+        path: '/lessons/drag-and-drop',
+        component: lazy(() => import('@lessons/07-machine-coding/DragAndDrop')),
+        documentPath: '/lessons/07-machine-coding/04-drag-drop.md',
+    },
 
     // Section 1: Fundamentals
     {

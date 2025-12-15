@@ -5,7 +5,7 @@ A comprehensive React learning resource containing interactive lessons and katas
 
 ## Progress Status
 - **Total Sections**: 7
-- **Total Lessons**: 33 (including Virtualization and Machine Coding)
+- **Total Lessons**: 34 (including Virtualization and Machine Coding)
 
 ### 1. Fundamentals
 - [x] JSX Basics
@@ -54,6 +54,7 @@ A comprehensive React learning resource containing interactive lessons and katas
 - [x] File Explorer (Recursive)
 - [x] Auto-complete (Typeahead)
 - [x] Toast / Notification System
+- [x] Drag & Drop (Kanban)
 
 ## Change Log
 
@@ -86,6 +87,7 @@ A comprehensive React learning resource containing interactive lessons and katas
   - **File Explorer**: Implemented recursive file tree.
   - **Auto-complete**: Implemented typeahead with debouncing and caching.
   - **Toast System**: Implemented global notifications using Context and Portals.
+  - **Drag & Drop**: Implemented Kanban board with HTML5 DnD.
   - **Source Code View**: Added in-browser source code toggle for all machine coding lessons using Vite's `?raw` feature.
 
 ### Previous Updates
