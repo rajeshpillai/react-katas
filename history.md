@@ -22,6 +22,7 @@ A comprehensive React learning resource containing interactive lessons and katas
 - **Patterns Section**: Verified all patterns. Refactored `Accordion` in `CompoundComponents.tsx` to use Context correctly. Fixed Sidebar styling.
 - **State Management Section**: Verified context patterns. Fixed `ContextSelectors.tsx` to correctly notify subscribers (useEffect added) and fixed render counting logic.
 - **Accessibility Section**: Verified ARIA fundamentals and Forms/Keyboard Navigation demos. Confirmed form validation and keyboard interaction work as expected.
+- **Context Selectors Improvement**: Added `StandardContextDemo` to `ContextSelectors.tsx` to visually demonstrate the "extra re-renders" problem, addressing user feedback that the issue wasn't visible.
 - **UI Improvements**: Fixed Sidebar spacing issues.
   - Added explicit `margin-right` to lesson numbers for better separation from titles.
   - Fixed CSS Modules class naming issue (switched from camelCase to bracket notation for kebab-case classes).

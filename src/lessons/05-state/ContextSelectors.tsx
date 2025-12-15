@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useRef, useCallback, useSyncExternalStore, useEffect } from 'react'
+import { createContext, useContext, useState, useRef, useCallback, useSyncExternalStore, useEffect, memo, useMemo } from 'react'
 
 // Simple context selector implementation
 function createContextSelector<T>() {
@@ -21,8 +21,10 @@ function createContextSelector<T>() {
 
     const getSnapshot = useCallback(() => storeRef.current, [])
 
+    const contextValue = useMemo(() => ({ subscribe, getSnapshot }), [subscribe, getSnapshot])
+
     return (
-      <Context.Provider value={{ subscribe, getSnapshot } as any}>
+      <Context.Provider value={contextValue as any}>
         {children}
       </Context.Provider>
     )
@@ -68,7 +70,7 @@ export default function ContextSelectors() {
           }}
         >
           <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>❌ Problem:</h3>
-          <pre>
+          <pre style={{ background: 'transparent' }}>
             <code style={{ color: 'white' }}>{`const state = { user, theme, settings };
 
 // Component only uses theme
@@ -79,6 +81,19 @@ function Component() {
 
 // But re-renders when user or settings change!`}</code>
           </pre>
+        </div>
+
+        <div
+          style={{
+            background: 'var(--bg-secondary)',
+            padding: 'var(--space-6)',
+            borderRadius: 'var(--radius-lg)',
+            marginTop: 'var(--space-4)',
+            border: '2px solid var(--color-error)'
+          }}
+        >
+          <h3 style={{ marginBottom: 'var(--space-4)', color: 'var(--color-error)' }}>Interactive Problem Demo</h3>
+          <StandardContextDemo />
         </div>
       </section>
 
@@ -99,7 +114,7 @@ function Component() {
           }}
         >
           <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>✅ Solution:</h3>
-          <pre>
+          <pre style={{ background: 'transparent' }}>
             <code style={{ color: 'white' }}>{`// Only re-renders when theme changes!
 function Component() {
   const theme = useSelector(state => state.theme);
@@ -138,8 +153,10 @@ function Component() {
             padding: 'var(--space-6)',
             borderRadius: 'var(--radius-lg)',
             marginTop: 'var(--space-4)',
+            border: '2px solid var(--color-success)'
           }}
         >
+          <h3 style={{ marginBottom: 'var(--space-4)', color: 'var(--color-success)' }}>Interactive Solution Demo</h3>
           <AppDemo />
         </div>
       </section>
@@ -192,6 +209,122 @@ function Component() {
     </div>
   )
 }
+
+// --- Standard Context (The Problem) ---
+const StandardContext = createContext<AppState | null>(null)
+
+function StandardContextDemo() {
+  const [state, setState] = useState<AppState>({
+    count: 0,
+    user: 'John',
+    theme: 'light',
+  })
+
+  return (
+    <StandardContext.Provider value={state}>
+      <div>
+        <div style={{ display: 'flex', gap: 'var(--space-2)', marginBottom: 'var(--space-4)', flexWrap: 'wrap' }}>
+          <button
+            onClick={() => setState((s) => ({ ...s, count: s.count + 1 }))}
+            style={{
+              padding: 'var(--space-2) var(--space-4)',
+              background: 'var(--color-error)',
+              color: 'white',
+              border: 'none',
+              borderRadius: 'var(--radius-md)',
+              cursor: 'pointer',
+            }}
+          >
+            Increment Count
+          </button>
+          <button
+            onClick={() => setState((s) => ({ ...s, user: s.user === 'John' ? 'Jane' : 'John' }))}
+            style={{
+              padding: 'var(--space-2) var(--space-4)',
+              background: 'var(--color-error)',
+              color: 'white',
+              border: 'none',
+              borderRadius: 'var(--radius-md)',
+              cursor: 'pointer',
+            }}
+          >
+            Toggle User
+          </button>
+          <button
+            onClick={() => setState((s) => ({ ...s, theme: s.theme === 'light' ? 'dark' : 'light' }))}
+            style={{
+              padding: 'var(--space-2) var(--space-4)',
+              background: 'var(--color-error)',
+              color: 'white',
+              border: 'none',
+              borderRadius: 'var(--radius-md)',
+              cursor: 'pointer',
+            }}
+          >
+            Toggle Theme
+          </button>
+        </div>
+
+        <div style={{ display: 'grid', gap: 'var(--space-3)' }}>
+          <ProblemCountDisplay />
+          <ProblemUserDisplay />
+          <ProblemThemeDisplay />
+        </div>
+        <p style={{ color: 'var(--color-error)', fontSize: 'var(--font-size-sm)', marginTop: 'var(--space-4)' }}>
+          ⚠️ Notice: Clicking ANY button re-renders ALL components below!
+        </p>
+      </div>
+    </StandardContext.Provider>
+  )
+}
+
+function ProblemCountDisplay() {
+  const context = useContext(StandardContext)
+  if (!context) throw new Error('Missing Provider')
+
+  const renderCountRef = useRef(0)
+  renderCountRef.current += 1
+
+  return (
+    <div style={{ padding: 'var(--space-3)', background: 'var(--color-error-100)', borderRadius: 'var(--radius-md)' }}>
+      <p><strong>Count:</strong> {context.count}</p>
+      <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-tertiary)' }}>Renders: {renderCountRef.current}</p>
+    </div>
+  )
+}
+
+function ProblemUserDisplay() {
+  const context = useContext(StandardContext)
+  if (!context) throw new Error('Missing Provider')
+
+  const renderCountRef = useRef(0)
+  renderCountRef.current += 1
+
+  return (
+    <div style={{ padding: 'var(--space-3)', background: 'var(--color-error-100)', borderRadius: 'var(--radius-md)' }}>
+      <p><strong>User:</strong> {context.user}</p>
+      <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-tertiary)' }}>Renders: {renderCountRef.current}</p>
+    </div>
+  )
+}
+
+function ProblemThemeDisplay() {
+  const context = useContext(StandardContext)
+  if (!context) throw new Error('Missing Provider')
+
+  const renderCountRef = useRef(0)
+  renderCountRef.current += 1
+
+  return (
+    <div style={{ padding: 'var(--space-3)', background: 'var(--color-error-100)', borderRadius: 'var(--radius-md)' }}>
+      <p><strong>Theme:</strong> {context.theme}</p>
+      <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-tertiary)' }}>Renders: {renderCountRef.current}</p>
+    </div>
+  )
+}
+
+
+// --- Context Selectors (The Solution) ---
 
 // Demo
 
@@ -269,7 +402,7 @@ function AppDemo() {
   )
 }
 
-function CountDisplay() {
+const CountDisplay = memo(function CountDisplay() {
   const count = useSelector((state) => state.count)
   const renderCountRef = useRef(0)
   renderCountRef.current += 1
@@ -291,9 +424,9 @@ function CountDisplay() {
       </p>
     </div>
   )
-}
+})
 
-function UserDisplay() {
+const UserDisplay = memo(function UserDisplay() {
   const user = useSelector((state) => state.user)
   const renderCountRef = useRef(0)
   renderCountRef.current += 1
@@ -315,9 +448,9 @@ function UserDisplay() {
       </p>
     </div>
   )
-}
+})
 
-function ThemeDisplay() {
+const ThemeDisplay = memo(function ThemeDisplay() {
   const theme = useSelector((state) => state.theme)
   const renderCountRef = useRef(0)
   renderCountRef.current += 1
@@ -338,4 +471,4 @@ function ThemeDisplay() {
       <p style={{ fontSize: 'var(--font-size-sm)', color: 'white' }}>Renders: {renderCountRef.current}</p>
     </div>
   )
-}
+})
