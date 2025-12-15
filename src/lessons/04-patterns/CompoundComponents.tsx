@@ -157,6 +157,10 @@ function AccordionPanel({ children }) {
 }
 
 // Accordion implementation
+
+// Context for individual accordion items to share their index
+const AccordionItemContext = createContext<{ index: number } | null>(null)
+
 function Accordion({ children }: { children: ReactNode }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
 
@@ -170,15 +174,21 @@ function Accordion({ children }: { children: ReactNode }) {
 }
 
 function AccordionItem({ index, children }: { index: number; children: ReactNode }) {
-  return <div>{children}</div>
+  return (
+    <AccordionItemContext.Provider value={{ index }}>
+      <div>{children}</div>
+    </AccordionItemContext.Provider>
+  )
 }
 
 function AccordionHeader({ children }: { children: ReactNode }) {
   const context = useContext(AccordionContext)
-  if (!context) throw new Error('AccordionHeader must be used within Accordion')
+  const itemContext = useContext(AccordionItemContext)
 
-  // This is a simplified version - in production, you'd pass index differently
-  const [index] = useState(() => Math.random())
+  if (!context) throw new Error('AccordionHeader must be used within Accordion')
+  if (!itemContext) throw new Error('AccordionHeader must be used within AccordionItem')
+
+  const { index } = itemContext
 
   return (
     <button
@@ -201,9 +211,12 @@ function AccordionHeader({ children }: { children: ReactNode }) {
 
 function AccordionPanel({ children }: { children: ReactNode }) {
   const context = useContext(AccordionContext)
-  if (!context) throw new Error('AccordionPanel must be used within Accordion')
+  const itemContext = useContext(AccordionItemContext)
 
-  const [index] = useState(() => Math.random())
+  if (!context) throw new Error('AccordionPanel must be used within Accordion')
+  if (!itemContext) throw new Error('AccordionPanel must be used within AccordionItem')
+
+  const { index } = itemContext
 
   if (context.openIndex !== index) return null
 
