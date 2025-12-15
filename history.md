@@ -42,3 +42,18 @@ A comprehensive React learning resource containing interactive lessons and katas
 - **Fixed:** Render counting logic in `ReactMemo.tsx`, `ComponentComposition.tsx`, and `ProviderPattern.tsx`. Previously, `useState` lazy initialization was correctly preventing re-renders of the counter state but failed to reflect the actual render count in the UI for educational purposes. Replaced with `useRef` to accurately display render counts without triggering extra re-renders.
 - **Verified:** Code splitting, component composition, and context providers function as expected.
 - **Verified:** Portal, Render Props, and Controlled/Uncontrolled components function correctly.
+
+### Feature: Performance & Optimization Lesson
+- **Added:** New lesson `Virtualization.tsx` in "Performance Optimization" section.
+- **Implemented:** 
+  - "Slow" demo rendering 10k items directly to show DOM bottleneck.
+  - "Fast" demo implementing a custom `VirtualList` from scratch using windowing/virtualization.
+  - "Under the Hood" code block embedded directly in the UI for developer clarity.
+
+### Feature: Progress Tracking & Navigation
+- **Added:** Persistent progress tracking using `localStorage` via custom `useProgress` hook.
+- **UI Updates:** 
+  - Sidebar now displays completion percentage and checkmarks for finished lessons.
+  - Added "Mark as Complete" toggle button to every lesson.
+  - Added "Previous" and "Next" navigation buttons at the bottom of each lesson for sequential learning.
+
