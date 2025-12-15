@@ -17,7 +17,7 @@ export default function Sidebar({ completedLessons = [] }: SidebarProps) {
 
     return (
         <nav className={styles.sidebar}>
-            <div className={styles.logo}>React Katas</div>
+            <div className={styles.logo}><Link to="/">React Katas</Link></div>
 
             {sections.map((section) => {
                 const sectionLessons = getLessonsBySection(section)
