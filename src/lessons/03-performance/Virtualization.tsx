@@ -1,7 +1,10 @@
 import { useState } from 'react'
 
+// @ts-ignore
+import sourceCode from './Virtualization.tsx?raw'
+
 export default function Virtualization() {
-    const [activeTab, setActiveTab] = useState<'intro' | 'slow' | 'fast'>('intro')
+    const [activeTab, setActiveTab] = useState<'intro' | 'slow' | 'fast' | 'code'>('intro')
 
     return (
         <div>
@@ -10,53 +13,54 @@ export default function Virtualization() {
                 Rendering large lists of data can significantly degrade performance. <strong>Virtualization</strong> (or windowing) is a technique where you only render the items that are currently visible to the user.
             </p>
 
-            <div style={{ display: 'flex', gap: 'var(--space-2)', marginBottom: 'var(--space-6)' }}>
+            <div style={{ display: 'flex', gap: 'var(--space-2)', marginBottom: 'var(--space-6)', flexWrap: 'wrap' }}>
                 <button
                     onClick={() => setActiveTab('intro')}
-                    style={{
-                        padding: 'var(--space-2) var(--space-4)',
-                        background: activeTab === 'intro' ? 'var(--color-primary-600)' : 'var(--bg-secondary)',
-                        color: activeTab === 'intro' ? 'white' : 'var(--text-secondary)',
-                        border: 'none',
-                        borderRadius: 'var(--radius-md)',
-                        cursor: 'pointer',
-                    }}
+                    style={getTabStyle(activeTab === 'intro')}
                 >
                     Introduction
                 </button>
                 <button
                     onClick={() => setActiveTab('slow')}
-                    style={{
-                        padding: 'var(--space-2) var(--space-4)',
-                        background: activeTab === 'slow' ? 'var(--color-error)' : 'var(--bg-secondary)',
-                        color: activeTab === 'slow' ? 'white' : 'var(--text-secondary)',
-                        border: 'none',
-                        borderRadius: 'var(--radius-md)',
-                        cursor: 'pointer',
-                    }}
+                    style={getTabStyle(activeTab === 'slow')}
                 >
                     Slow Approach
                 </button>
                 <button
                     onClick={() => setActiveTab('fast')}
-                    style={{
-                        padding: 'var(--space-2) var(--space-4)',
-                        background: activeTab === 'fast' ? 'var(--color-success)' : 'var(--bg-secondary)',
-                        color: activeTab === 'fast' ? 'white' : 'var(--text-secondary)',
-                        border: 'none',
-                        borderRadius: 'var(--radius-md)',
-                        cursor: 'pointer',
-                    }}
+                    style={getTabStyle(activeTab === 'fast')}
                 >
                     Fast Approach (Virtualization)
+                </button>
+                <button
+                    onClick={() => setActiveTab('code')}
+                    style={getTabStyle(activeTab === 'code')}
+                >
+                    Source Code
                 </button>
             </div>
 
             {activeTab === 'intro' && <IntroSection />}
             {activeTab === 'slow' && <SlowListDemo />}
             {activeTab === 'fast' && <VirtualListDemo />}
+            {activeTab === 'code' && (
+                <pre style={{ padding: 20, background: 'var(--bg-secondary)', borderRadius: 8, overflow: 'auto', fontSize: 14 }}>
+                    <code>{sourceCode}</code>
+                </pre>
+            )}
         </div>
     )
+}
+
+function getTabStyle(isActive: boolean): React.CSSProperties {
+    return {
+        padding: 'var(--space-2) var(--space-4)',
+        background: isActive ? 'var(--color-primary-600)' : 'var(--bg-secondary)',
+        color: isActive ? 'white' : 'var(--text-secondary)',
+        border: 'none',
+        borderRadius: 'var(--radius-md)',
+        cursor: 'pointer',
+    }
 }
 
 function IntroSection() {
