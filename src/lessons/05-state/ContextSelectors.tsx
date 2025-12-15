@@ -131,15 +131,45 @@ function Component() {
           React 18+ provides <code>useSyncExternalStore</code> for building selectors.
         </p>
 
-        <pre>
+        <pre style={{ background: 'transparent' }}>
           <code>{`function useContextSelector(context, selector) {
   const value = useContext(context);
   
   return useSyncExternalStore(
-    value.subscribe,
-    () => selector(value.getSnapshot())
+    value.subscribe, // React subscribes to changes
+    () => selector(value.getSnapshot()) // Selects only the data needed
   );
 }`}</code>
+        </pre>
+
+        <h3 style={{ marginTop: 'var(--space-6)', marginBottom: 'var(--space-3)' }}>
+          ⚙️ How it Works:
+        </h3>
+        <p>
+          We rely on <code>useSyncExternalStore</code> which is designed for subscribing to external state.
+        </p>
+
+        <h4 style={{ marginTop: 'var(--space-4)' }}>1. The Store (Provider)</h4>
+        <pre style={{ background: 'transparent' }}>
+          <code>{`// We store the state in a ref so updating it doesn't trigger a Provider re-render
+const storeRef = useRef(value);
+const subscribers = useRef(new Set());
+
+// When value changes, we notify subscribers manually
+useEffect(() => {
+  subscribers.current.forEach(callback => callback());
+}, [value]);`}</code>
+        </pre>
+
+        <h4 style={{ marginTop: 'var(--space-4)' }}>2. The Selector Hook</h4>
+        <pre style={{ background: 'transparent' }}>
+          <code>{`// Component subscribes ONLY to the result of the selector
+useSyncExternalStore(
+  subscribe, // Function to register a listener
+  () => selector(storeRef.current) // Snapshots the slice of state
+);
+
+// React only re-renders if the *result* of selector(storeRef.current) changes!`}</code>
         </pre>
       </section>
 

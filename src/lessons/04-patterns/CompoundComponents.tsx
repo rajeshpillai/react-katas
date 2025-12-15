@@ -138,6 +138,41 @@ function AccordionPanel({ children }) {
   return <div>{children}</div>;
 }`}</code>
           </pre>
+
+          <h3 style={{ marginTop: 'var(--space-6)', marginBottom: 'var(--space-3)' }}>
+            ⚙️ How it Works:
+          </h3>
+          <p>The parent `Accordion` holds the state, and children communicate via Context:</p>
+
+          <h4 style={{ marginTop: 'var(--space-4)' }}>1. Implicit State Sharing</h4>
+          <pre style={{ background: 'transparent' }}>
+            <code>{`const AccordionContext = createContext<{
+  openIndex: number | null
+  setOpenIndex: (index: number | null) => void
+} | null>(null)`}</code>
+          </pre>
+          <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}>
+            The <code>Accordion</code> component provides this context to all children.
+          </p>
+
+          <h4 style={{ marginTop: 'var(--space-4)' }}>2. Toggling State (Header)</h4>
+          <pre style={{ background: 'transparent' }}>
+            <code>{`// Inside AccordionHeader
+const { openIndex, setOpenIndex } = useContext(AccordionContext);
+
+// Toggle logic: if already open, close it (null), otherwise open this index
+onClick={() => setOpenIndex(openIndex === index ? null : index)}`}</code>
+          </pre>
+
+          <h4 style={{ marginTop: 'var(--space-4)' }}>3. Conditional Rendering (Panel)</h4>
+          <pre style={{ background: 'transparent' }}>
+            <code>{`// Inside AccordionPanel
+const { openIndex } = useContext(AccordionContext);
+
+// Only render children if this panel is the open one
+if (openIndex !== index) return null;
+return <div>{children}</div>;`}</code>
+          </pre>
         </div>
       </section>
 
