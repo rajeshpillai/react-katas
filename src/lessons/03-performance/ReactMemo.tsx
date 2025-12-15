@@ -142,6 +142,54 @@ const handleClick = useCallback(() => {}, []);
         </div>
       </section>
 
+      {/* Section 5: Under the Hood - Shallow Comparison */}
+      <section style={{ marginBottom: 'var(--space-8)' }}>
+        <h2>Under the Hood: Shallow Comparison</h2>
+        <p>
+          React.memo uses <strong>shallow comparison</strong> (<code>Object.is</code>) to check if props have changed. It does NOT dig deep into objects.
+        </p>
+
+        <div
+          style={{
+            background: 'var(--bg-tertiary)',
+            padding: 'var(--space-4)',
+            borderRadius: 'var(--radius-lg)',
+            marginTop: 'var(--space-4)',
+          }}
+        >
+          <h3 style={{ marginBottom: 'var(--space-3)' }}>🔍 How Shallow Compare Actually Works</h3>
+          <pre>
+            <code>{`// Simplified implementation of what React does:
+function shallowEqual(objA, objB) {
+  if (Object.is(objA, objB)) return true;
+
+  if (typeof objA !== 'object' || objA === null ||
+      typeof objB !== 'object' || objB === null) {
+    return false;
+  }
+
+  const keysA = Object.keys(objA);
+  const keysB = Object.keys(objB);
+
+  if (keysA.length !== keysB.length) return false;
+
+  // Only checks if the values of the keys are strictly equal
+  for (let i = 0; i < keysA.length; i++) {
+    if (!Object.prototype.hasOwnProperty.call(objB, keysA[i]) ||
+        !Object.is(objA[keysA[i]], objB[keysA[i]])) {
+      return false;
+    }
+  }
+
+  return true;
+}`}</code>
+          </pre>
+          <p style={{ marginTop: 'var(--space-2)', fontStyle: 'italic', fontSize: 'var(--font-size-sm)' }}>
+            This is why <code>{`{a: 1} === {a: 1}`}</code> is false in JavaScript, and why <code>memo</code> re-renders if you pass a new object!
+          </p>
+        </div>
+      </section>
+
       {/* Key Takeaways */}
       <section>
         <h2>Key Takeaways</h2>

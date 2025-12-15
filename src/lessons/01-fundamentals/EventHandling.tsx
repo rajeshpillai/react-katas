@@ -412,6 +412,39 @@ const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
                 </div>
             </section>
 
+            {/* Section 7: Under the Hood - Event Delegation */}
+            <section style={{ marginBottom: 'var(--space-8)' }}>
+                <h2>Under the Hood: Event Delegation</h2>
+                <p>
+                    React doesn't attach event listeners to every single element. Instead, it uses <strong>Event Delegation</strong>.
+                </p>
+
+                <div
+                    style={{
+                        background: 'var(--color-accent-600)',
+                        color: 'white',
+                        padding: 'var(--space-4)',
+                        borderRadius: 'var(--radius-lg)',
+                        marginTop: 'var(--space-4)',
+                    }}
+                >
+                    <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>⚡ How It Works</h3>
+                    <p style={{ marginBottom: 'var(--space-3)' }}>
+                        React attaches a SINGLE event listener for each event type (click, change, etc.) to the <strong>root</strong> of your app (usually the div you mounted React into).
+                    </p>
+                    <ul style={{ paddingLeft: 'var(--space-6)', marginBottom: 'var(--space-4)' }}>
+                        <li>When you click a button, the browser's native event bubbles up to the root.</li>
+                        <li>React catches it at the root.</li>
+                        <li>React figures out which component fired it.</li>
+                        <li>React creates a "Synthetic Event" wrapper.</li>
+                        <li>React calls your <code>onClick</code> handler.</li>
+                    </ul>
+                    <p style={{ fontSize: 'var(--font-size-sm)', fontStyle: 'italic', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: 'var(--space-2)' }}>
+                        This is why <code>e.stopPropagation()</code> works in React even if you stop propagation to parent DOM nodes - React handles its own bubbling logic!
+                    </p>
+                </div>
+            </section>
+
             {/* Key Takeaways */}
             <section>
                 <h2>Key Takeaways</h2>

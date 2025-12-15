@@ -223,6 +223,41 @@ const [count, setCount] = useState(0);
                 </div>
             </section>
 
+            {/* Section 5: Under the Hood - State Batching */}
+            <section style={{ marginBottom: 'var(--space-8)' }}>
+                <h2>Under the Hood: State Batching</h2>
+                <p>
+                    React doesn't update state immediately. Instead, it "batches" updates together for
+                    performance. This means multiple state updates in the same event handler might result
+                    in only ONE re-render!
+                </p>
+
+                <div
+                    style={{
+                        background: 'var(--color-info)',
+                        color: 'white',
+                        padding: 'var(--space-4)',
+                        borderRadius: 'var(--radius-lg)',
+                        marginTop: 'var(--space-4)',
+                    }}
+                >
+                    <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>⚙️ How Batching Works</h3>
+                    <pre style={{ background: 'transparent' }}>
+                        <code style={{ color: 'white' }}>{`// Render Count: 0
+
+const handleClick = () => {
+  setCount(c => c + 1); // Update queued
+  setName('Alice');     // Update queued
+  setIsVisible(false);  // Update queued
+  
+  // React reconciles ALL changes in one go!
+  // Component re-renders ONCE with all new values.
+}
+`}</code>
+                    </pre>
+                </div>
+            </section>
+
             {/* Key Takeaways */}
             <section>
                 <h2>Key Takeaways</h2>
