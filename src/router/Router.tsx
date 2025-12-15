@@ -58,26 +58,25 @@ export function RouterProvider({ children }: RouterProviderProps) {
 }
 
 // Link component for navigation
-interface LinkProps {
+interface LinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
     to: string
-    children: ReactNode
-    className?: string
     activeClassName?: string
 }
 
-export function Link({ to, children, className = '', activeClassName = '' }: LinkProps) {
+export function Link({ to, children, className = '', activeClassName = '', ...props }: LinkProps) {
     const { currentPath, navigate } = useRouter()
     const isActive = currentPath === to
 
     const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
         e.preventDefault()
         navigate(to)
+        props.onClick?.(e)
     }
 
     const finalClassName = `${className} ${isActive ? activeClassName : ''}`.trim()
 
     return (
-        <a href={to} onClick={handleClick} className={finalClassName}>
+        <a href={to} onClick={handleClick} className={finalClassName} {...props}>
             {children}
         </a>
     )

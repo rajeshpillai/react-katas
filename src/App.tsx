@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
-import { RouterProvider, useRouter } from '@router/Router'
-import { getLessonByPath } from '@router/routes'
+import { RouterProvider, useRouter, Link } from '@router/Router'
+import { getLessonByPath, getAdjacentLessons } from '@router/routes'
 import Sidebar from '@components/Navigation/Sidebar'
 import styles from './App.module.css'
 import { useProgress } from '@hooks/useProgress'
@@ -29,6 +29,7 @@ function AppContent() {
     // Render the lesson component
     const LessonComponent = currentLesson.component
     const isCompleted = isLessonCompleted(currentLesson.id)
+    const { previous, next } = getAdjacentLessons(currentPath)
 
     return (
         <div className={styles.app}>
@@ -44,41 +45,104 @@ function AppContent() {
                     marginTop: 'var(--space-8)',
                     padding: 'var(--space-6)',
                     borderTop: '1px solid var(--border-color)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between'
                 }}>
-                    <div>
-                        <h3>Lesson Complete?</h3>
-                        <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-size-sm)' }}>
-                            Mark this lesson as complete to track your progress.
-                        </p>
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        marginBottom: 'var(--space-6)'
+                    }}>
+                        <div>
+                            <h3>Lesson Complete?</h3>
+                            <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-size-sm)' }}>
+                                Mark this lesson as complete to track your progress.
+                            </p>
+                        </div>
+                        <button
+                            onClick={() => toggleLessonCompletion(currentLesson.id)}
+                            style={{
+                                padding: 'var(--space-3) var(--space-6)',
+                                background: isCompleted ? 'var(--color-success)' : 'var(--bg-tertiary)',
+                                color: isCompleted ? 'white' : 'var(--text-primary)',
+                                border: isCompleted ? 'none' : '1px solid var(--border-color)',
+                                borderRadius: 'var(--radius-md)',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 'var(--space-2)',
+                                fontWeight: 'bold',
+                                transition: 'all 0.2s',
+                            }}
+                        >
+                            {isCompleted ? (
+                                <>
+                                    <span>✓</span>
+                                    <span>Completed</span>
+                                </>
+                            ) : (
+                                <span>Mark as Complete</span>
+                            )}
+                        </button>
                     </div>
-                    <button
-                        onClick={() => toggleLessonCompletion(currentLesson.id)}
-                        style={{
-                            padding: 'var(--space-3) var(--space-6)',
-                            background: isCompleted ? 'var(--color-success)' : 'var(--bg-tertiary)',
-                            color: isCompleted ? 'white' : 'var(--text-primary)',
-                            border: isCompleted ? 'none' : '1px solid var(--border-color)',
-                            borderRadius: 'var(--radius-md)',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 'var(--space-2)',
-                            fontWeight: 'bold',
-                            transition: 'all 0.2s',
-                        }}
-                    >
-                        {isCompleted ? (
-                            <>
-                                <span>✓</span>
-                                <span>Completed</span>
-                            </>
-                        ) : (
-                            <span>Mark as Complete</span>
-                        )}
-                    </button>
+
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        gap: 'var(--space-4)',
+                        paddingTop: 'var(--space-6)',
+                        borderTop: '1px dashed var(--border-color)'
+                    }}>
+                        {previous ? (
+                            <Link
+                                to={previous.path}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 'var(--space-2)',
+                                    color: 'var(--text-secondary)',
+                                    textDecoration: 'none',
+                                    padding: 'var(--space-3) var(--space-4)',
+                                    borderRadius: 'var(--radius-md)',
+                                    border: '1px solid var(--border-color)',
+                                    background: 'var(--bg-secondary)',
+                                    transition: 'all 0.2s',
+                                    fontSize: 'var(--font-size-sm)'
+                                }}
+                            >
+                                <span>←</span>
+                                <div>
+                                    <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-tertiary)' }}>Previous</div>
+                                    <div style={{ fontWeight: '500', color: 'var(--text-primary)' }}>{previous.title}</div>
+                                </div>
+                            </Link>
+                        ) : <div />}
+
+                        {next ? (
+                            <Link
+                                to={next.path}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 'var(--space-2)',
+                                    color: 'var(--text-secondary)',
+                                    textDecoration: 'none',
+                                    padding: 'var(--space-3) var(--space-4)',
+                                    borderRadius: 'var(--radius-md)',
+                                    border: '1px solid var(--border-color)',
+                                    background: 'var(--bg-secondary)',
+                                    transition: 'all 0.2s',
+                                    fontSize: 'var(--font-size-sm)',
+                                    textAlign: 'right'
+                                }}
+                            >
+                                <div>
+                                    <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-tertiary)' }}>Next</div>
+                                    <div style={{ fontWeight: '500', color: 'var(--text-primary)' }}>{next.title}</div>
+                                </div>
+                                <span>→</span>
+                            </Link>
+                        ) : <div />}
+                    </div>
                 </div>
             </main>
         </div>
