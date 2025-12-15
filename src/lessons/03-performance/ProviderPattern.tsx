@@ -34,7 +34,7 @@ export default function ProviderPattern() {
           }}
         >
           <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>❌ Bad Pattern:</h3>
-          <pre>
+          <pre style={{ background: 'transparent' }}>
             <code style={{ color: 'white' }}>{`function App() {
   const [theme, setTheme] = useState('light');
   const [user, setUser] = useState(null);
@@ -67,7 +67,7 @@ export default function ProviderPattern() {
           }}
         >
           <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>✅ Good Pattern:</h3>
-          <pre>
+          <pre style={{ background: 'transparent' }}>
             <code style={{ color: 'white' }}>{`// Split into two contexts
 const ThemeContext = createContext(null);
 const ThemeUpdateContext = createContext(null);
