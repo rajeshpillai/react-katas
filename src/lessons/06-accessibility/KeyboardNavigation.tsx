@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, createContext, useContext, KeyboardEvent } from 'react'
 
 export default function KeyboardNavigation() {
   return (
@@ -167,6 +167,62 @@ export default function KeyboardNavigation() {
         </div>
       </section>
 
+      {/* Section 6: Accessible Tabs */}
+      <section style={{ marginBottom: 'var(--space-8)' }}>
+        <h2>Compound Pattern: Accessible Tabs</h2>
+        <p>
+          A fully accessible Tabs component using the compound pattern and roving tabindex.
+          Try navigating with Arrow keys!
+        </p>
+
+        <div
+          style={{
+            background: 'var(--bg-secondary)',
+            padding: 'var(--space-6)',
+            borderRadius: 'var(--radius-lg)',
+            marginTop: 'var(--space-4)',
+          }}
+        >
+          <h3>Interactive Tabs Demo:</h3>
+          <Tabs defaultValue="account">
+            <TabsList>
+              <TabsTrigger value="account">Account</TabsTrigger>
+              <TabsTrigger value="password">Password</TabsTrigger>
+              <TabsTrigger value="settings">Settings</TabsTrigger>
+            </TabsList>
+            <TabsContent value="account">
+              <div style={{ padding: 'var(--space-4)', background: 'var(--bg-primary)', borderRadius: 'var(--radius-md)' }}>
+                <h4 style={{ marginBottom: 'var(--space-2)' }}>Account Settings</h4>
+                <p>Manage your account details and preferences here.</p>
+              </div>
+            </TabsContent>
+            <TabsContent value="password">
+              <div style={{ padding: 'var(--space-4)', background: 'var(--bg-primary)', borderRadius: 'var(--radius-md)' }}>
+                <h4 style={{ marginBottom: 'var(--space-2)' }}>Password Change</h4>
+                <p>Update your password securely.</p>
+              </div>
+            </TabsContent>
+            <TabsContent value="settings">
+              <div style={{ padding: 'var(--space-4)', background: 'var(--bg-primary)', borderRadius: 'var(--radius-md)' }}>
+                <h4 style={{ marginBottom: 'var(--space-2)' }}>General Settings</h4>
+                <p>Configure application behavior.</p>
+              </div>
+            </TabsContent>
+          </Tabs>
+
+          <pre style={{ marginTop: 'var(--space-4)', background: 'transparent' }}>
+            <code>{`<Tabs defaultValue="account">
+  <TabsList>
+    <TabsTrigger value="account">Account</TabsTrigger>
+    <TabsTrigger value="password">Password</TabsTrigger>
+  </TabsList>
+  <TabsContent value="account">...</TabsContent>
+  <TabsContent value="password">...</TabsContent>
+</Tabs>`}</code>
+          </pre>
+        </div>
+      </section>
+
       {/* Key Takeaways */}
       <section>
         <h2>Key Takeaways</h2>
@@ -226,6 +282,105 @@ function CustomButton() {
       <p style={{ color: 'var(--text-tertiary)', fontSize: 'var(--font-size-sm)' }}>
         Tab to focus, then press Enter or Space
       </p>
+    </div>
+  )
+}
+
+// --- Accessible Tabs Implementation ---
+
+const TabsContext = createContext<{
+  activeTab: string
+  setActiveTab: (value: string) => void
+} | null>(null)
+
+function Tabs({ defaultValue, children }: { defaultValue: string; children: React.ReactNode }) {
+  const [activeTab, setActiveTab] = useState(defaultValue)
+
+  return <TabsContext.Provider value={{ activeTab, setActiveTab }}>{children}</TabsContext.Provider>
+}
+
+function TabsList({ children }: { children: React.ReactNode }) {
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    const tabs = containerRef.current?.querySelectorAll('[role="tab"]')
+    if (!tabs) return
+
+    const index = Array.from(tabs).indexOf(document.activeElement as Element)
+    let nextIndex = index
+
+    if (e.key === 'ArrowRight') {
+      nextIndex = (index + 1) % tabs.length
+    } else if (e.key === 'ArrowLeft') {
+      nextIndex = (index - 1 + tabs.length) % tabs.length
+    } else if (e.key === 'Home') {
+      nextIndex = 0
+    } else if (e.key === 'End') {
+      nextIndex = tabs.length - 1
+    } else {
+      return
+    }
+
+    e.preventDefault()
+      ; (tabs[nextIndex] as HTMLElement).focus()
+  }
+
+  return (
+    <div
+      ref={containerRef}
+      role="tablist"
+      aria-orientation="horizontal"
+      onKeyDown={handleKeyDown}
+      style={{
+        display: 'flex',
+        borderBottom: '1px solid var(--border-color)',
+        marginBottom: 'var(--space-4)',
+      }}
+    >
+      {children}
+    </div>
+  )
+}
+
+function TabsTrigger({ value, children }: { value: string; children: React.ReactNode }) {
+  const context = useContext(TabsContext)
+  if (!context) throw new Error('TabsTrigger must be used within Tabs')
+
+  const isActive = context.activeTab === value
+
+  return (
+    <button
+      role="tab"
+      aria-selected={isActive}
+      tabIndex={isActive ? 0 : -1}
+      onClick={() => context.setActiveTab(value)}
+      // When focused, automatically select (optional, common in roving tabindex)
+      onFocus={() => context.setActiveTab(value)}
+      style={{
+        padding: 'var(--space-2) var(--space-4)',
+        background: 'transparent',
+        border: 'none',
+        borderBottom: isActive ? '2px solid var(--color-primary-500)' : '2px solid transparent',
+        color: isActive ? 'var(--color-primary-500)' : 'var(--text-secondary)',
+        fontWeight: isActive ? 'bold' : 'normal',
+        cursor: 'pointer',
+        outline: 'none',
+      }}
+    >
+      {children}
+    </button>
+  )
+}
+
+function TabsContent({ value, children }: { value: string; children: React.ReactNode }) {
+  const context = useContext(TabsContext)
+  if (!context) throw new Error('TabsContent must be used within Tabs')
+
+  if (context.activeTab !== value) return null
+
+  return (
+    <div role="tabpanel" tabIndex={0} style={{ outline: 'none' }}>
+      {children}
     </div>
   )
 }
