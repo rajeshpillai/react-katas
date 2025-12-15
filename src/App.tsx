@@ -3,9 +3,11 @@ import { RouterProvider, useRouter } from '@router/Router'
 import { getLessonByPath } from '@router/routes'
 import Sidebar from '@components/Navigation/Sidebar'
 import styles from './App.module.css'
+import { useProgress } from '@hooks/useProgress'
 
 function AppContent() {
     const { currentPath } = useRouter()
+    const { completedLessons, toggleLessonCompletion, isLessonCompleted } = useProgress()
 
     // Get the current lesson based on path
     const currentLesson = getLessonByPath(currentPath)
@@ -15,7 +17,7 @@ function AppContent() {
         return (
             <div className={styles.app}>
                 <aside className={styles.sidebar}>
-                    <Sidebar />
+                    <Sidebar completedLessons={completedLessons} />
                 </aside>
                 <main className={styles.mainContent}>
                     <HomePage />
@@ -26,16 +28,58 @@ function AppContent() {
 
     // Render the lesson component
     const LessonComponent = currentLesson.component
+    const isCompleted = isLessonCompleted(currentLesson.id)
 
     return (
         <div className={styles.app}>
             <aside className={styles.sidebar}>
-                <Sidebar />
+                <Sidebar completedLessons={completedLessons} />
             </aside>
             <main className={styles.mainContent}>
                 <Suspense fallback={<div className={styles.loading} />}>
                     <LessonComponent />
                 </Suspense>
+
+                <div style={{
+                    marginTop: 'var(--space-8)',
+                    padding: 'var(--space-6)',
+                    borderTop: '1px solid var(--border-color)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                }}>
+                    <div>
+                        <h3>Lesson Complete?</h3>
+                        <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-size-sm)' }}>
+                            Mark this lesson as complete to track your progress.
+                        </p>
+                    </div>
+                    <button
+                        onClick={() => toggleLessonCompletion(currentLesson.id)}
+                        style={{
+                            padding: 'var(--space-3) var(--space-6)',
+                            background: isCompleted ? 'var(--color-success)' : 'var(--bg-tertiary)',
+                            color: isCompleted ? 'white' : 'var(--text-primary)',
+                            border: isCompleted ? 'none' : '1px solid var(--border-color)',
+                            borderRadius: 'var(--radius-md)',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 'var(--space-2)',
+                            fontWeight: 'bold',
+                            transition: 'all 0.2s',
+                        }}
+                    >
+                        {isCompleted ? (
+                            <>
+                                <span>✓</span>
+                                <span>Completed</span>
+                            </>
+                        ) : (
+                            <span>Mark as Complete</span>
+                        )}
+                    </button>
+                </div>
             </main>
         </div>
     )
