@@ -36,6 +36,16 @@ export const lessons: LessonMetadata[] = [
         component: lazy(() => import('@lessons/07-machine-coding/FileExplorer')),
         documentPath: '/lessons/07-machine-coding/01-file-explorer.md',
     },
+    {
+        id: 'auto-complete',
+        title: 'Auto-complete (Typeahead)',
+        description: 'Debounced search with caching and race condition handling',
+        section: SECTIONS.MACHINE_CODING,
+        order: 32,
+        path: '/lessons/auto-complete',
+        component: lazy(() => import('@lessons/07-machine-coding/AutoComplete')),
+        documentPath: '/lessons/07-machine-coding/02-auto-complete.md',
+    },
 
     // Section 1: Fundamentals
     {

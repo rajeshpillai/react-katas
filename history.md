@@ -4,8 +4,8 @@
 A comprehensive React learning resource containing interactive lessons and katas.
 
 ## Progress Status
-- **Total Sections**: 6
-- **Total Lessons**: 31 (including Virtualization)
+- **Total Sections**: 7
+- **Total Lessons**: 33 (including Virtualization and Machine Coding)
 
 ### 1. Fundamentals
 - [x] JSX Basics
@@ -50,6 +50,10 @@ A comprehensive React learning resource containing interactive lessons and katas
 - [x] Accessible Forms
 - [x] Testing Accessibility
 
+### 7. Machine Coding Challenges
+- [x] File Explorer (Recursive)
+- [x] Auto-complete (Typeahead)
+
 ## Change Log
 
 ### 2025-12-15
@@ -76,6 +80,14 @@ A comprehensive React learning resource containing interactive lessons and katas
   - Added new lesson `Virtualization.tsx` to "Performance Optimization".
   - Created "Slow" and "Fast" list demos.
   - Embedded implementation details directly in the UI.
+
+- **Machine Coding Section**:
+  - **File Explorer**: Implemented recursive file tree with folder expansion state.
+  - **Auto-complete**: Implemented typeahead with:
+    - Custom `useDebounce` hook.
+    - Race condition handling (useEffect cleanup).
+    - Client-side caching (useRef).
+    - Keyboard navigation (Arrows + Enter).
 
 ### Previous Updates
 - **Fixed:** Render counting logic in `ReactMemo.tsx`, `ComponentComposition.tsx`, and `ProviderPattern.tsx`. Previously, `useState` lazy initialization was correctly preventing re-renders of the counter state but failed to reflect the actual render count in the UI for educational purposes. Replaced with `useRef` to accurately display render counts without triggering extra re-renders.
