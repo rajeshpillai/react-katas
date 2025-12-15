@@ -30,7 +30,7 @@ interface RouterProviderProps {
 // Router provider component
 export function RouterProvider({ children }: RouterProviderProps) {
     const [currentPath, setCurrentPath] = useState(window.location.pathname)
-    const [params, setParams] = useState<RouteParams>({})
+    const [params] = useState<RouteParams>({})
 
     useEffect(() => {
         // Listen for browser back/forward navigation

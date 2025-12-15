@@ -5,8 +5,7 @@ export default function UseEffectCleanup() {
   const [showChat, setShowChat] = useState(false)
   const [showMouseTracker, setShowMouseTracker] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
-  const [searchResults, setSearchResults] = useState<string[]>([])
-  const [isSearching, setIsSearching] = useState(false)
+
 
   return (
     <div>

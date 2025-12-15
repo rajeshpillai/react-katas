@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 // @ts-ignore
 import sourceCode from './InfiniteScroll.tsx?raw'
 

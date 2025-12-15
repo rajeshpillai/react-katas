@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, ReactNode, useRef, Dispatch, SetStateAction } from 'react'
 
 // Example of a poorly optimized provider
-const BadThemeContext = createContext<any>(null)
+
 
 // Example of an optimized provider
 const ThemeContext = createContext<{ theme: string } | null>(null)

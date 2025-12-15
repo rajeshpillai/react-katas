@@ -159,8 +159,29 @@ Each lesson includes testing examples using:
 npm run test
 
 # Run tests with UI
+# Run tests with UI
 npm run test:ui
 ```
+
+## 📊 Performance Analysis
+
+We use **rollup-plugin-visualizer** to analyze the production bundle size.
+
+1. Build the application:
+   ```bash
+   npm run build
+   ```
+2. Open the generated report:
+   ```bash
+   # On macOS
+   open stats.html
+   # On Linux
+   xdg-open stats.html
+   # On Windows
+   start stats.html
+   ```
+
+This visual report helps identify large dependencies and assess the impact of code splitting strategies.
 
 ## 📖 Learning Path
 

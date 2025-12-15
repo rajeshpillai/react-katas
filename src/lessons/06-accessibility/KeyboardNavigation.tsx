@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, createContext, useContext, KeyboardEvent } from 'react'
+import { useState, useRef, createContext, useContext, KeyboardEvent } from 'react'
 
 export default function KeyboardNavigation() {
   return (

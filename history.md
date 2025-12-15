@@ -108,3 +108,10 @@ A comprehensive React learning resource containing interactive lessons and katas
   - Updated `MIN_TIME_SECONDS` to 30 seconds for realistic reading time requirement.
 - **Housekeeping**:
   - Created `src/vite-env.d.ts` to resolve CSS module type definition lint errors.
+
+### 2025-12-15 (Session 3)
+- **Performance Testing Setup**:
+  - Implemented static bundle analysis using `plugin-visualizer`.
+  - Configured Vite to generate `stats.html` on build.
+  - Resolved TypeScript build errors in `CustomHooks.tsx`, `UseRef.tsx`, `UseEffectCleanup.tsx` to ensure successful builds.
+  - Added "Performance Analysis" instructions to `README.md`.
