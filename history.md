@@ -86,6 +86,7 @@ A comprehensive React learning resource containing interactive lessons and katas
   - **File Explorer**: Implemented recursive file tree.
   - **Auto-complete**: Implemented typeahead with debouncing and caching.
   - **Toast System**: Implemented global notifications using Context and Portals.
+  - **Source Code View**: Added in-browser source code toggle for all machine coding lessons using Vite's `?raw` feature.
 
 ### Previous Updates
 - **Fixed:** Render counting logic in `ReactMemo.tsx`, `ComponentComposition.tsx`, and `ProviderPattern.tsx`. Previously, `useState` lazy initialization was correctly preventing re-renders of the counter state but failed to reflect the actual render count in the UI for educational purposes. Replaced with `useRef` to accurately display render counts without triggering extra re-renders.

@@ -158,8 +158,13 @@ const ToastDemo = () => {
     )
 }
 
+// @ts-ignore
+import sourceCode from './ToastSystem.tsx?raw'
+
 // --- Main Lesson Component ---
 export default function ToastSystem() {
+    const [activeTab, setActiveTab] = useState<'demo' | 'code'>('demo')
+
     return (
         <ToastProvider>
             <div>
@@ -172,17 +177,48 @@ export default function ToastSystem() {
                     as the toasts are rendered directly into the <code>document.body</code>.
                 </p>
 
-                <div style={{ padding: '20px', border: '1px solid var(--border-color)', borderRadius: '8px', background: 'var(--bg-secondary)', margin: '20px 0' }}>
-                    <ToastDemo />
+                <div style={{ marginBottom: 20, borderBottom: '1px solid var(--border-color)' }}>
+                    <button
+                        onClick={() => setActiveTab('demo')}
+                        style={{
+                            padding: '10px 20px',
+                            background: 'transparent',
+                            border: 'none',
+                            borderBottom: activeTab === 'demo' ? '2px solid var(--color-primary-500)' : '2px solid transparent',
+                            cursor: 'pointer',
+                            fontWeight: activeTab === 'demo' ? 'bold' : 'normal'
+                        }}
+                    >
+                        Implementation
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('code')}
+                        style={{
+                            padding: '10px 20px',
+                            background: 'transparent',
+                            border: 'none',
+                            borderBottom: activeTab === 'code' ? '2px solid var(--color-primary-500)' : '2px solid transparent',
+                            cursor: 'pointer',
+                            fontWeight: activeTab === 'code' ? 'bold' : 'normal'
+                        }}
+                    >
+                        Source Code
+                    </button>
                 </div>
 
-                <div style={{ marginTop: 40, padding: 20, background: 'var(--bg-tertiary)', borderRadius: 8 }}>
-                    <h3>Under the Hood: React Portal</h3>
-                    <p>
-                        The <code>ToastContainer</code> is rendered using <code>createPortal</code>. This logically keeps it in the React tree (so context works)
-                        but physically renders it at the end of the DOM body.
-                    </p>
-                    <pre style={{ margin: 0 }}>{`const ToastContainer = ({ toasts }) => {
+                {activeTab === 'demo' ? (
+                    <>
+                        <div style={{ padding: '20px', border: '1px solid var(--border-color)', borderRadius: '8px', background: 'var(--bg-secondary)', margin: '20px 0' }}>
+                            <ToastDemo />
+                        </div>
+
+                        <div style={{ marginTop: 40, padding: 20, background: 'var(--bg-tertiary)', borderRadius: 8 }}>
+                            <h3>Under the Hood: React Portal</h3>
+                            <p>
+                                The <code>ToastContainer</code> is rendered using <code>createPortal</code>. This logically keeps it in the React tree (so context works)
+                                but physically renders it at the end of the DOM body.
+                            </p>
+                            <pre style={{ margin: 0 }}>{`const ToastContainer = ({ toasts }) => {
   return createPortal(
     <div className="fixed-toast-container">
       {toasts.map(t => <ToastItem key={t.id} {...t} />)}
@@ -190,7 +226,19 @@ export default function ToastSystem() {
     document.body // Appended to <body>
   )
 }`}</pre>
-                </div>
+                        </div>
+                    </>
+                ) : (
+                    <pre style={{
+                        padding: 20,
+                        background: 'var(--bg-secondary)',
+                        borderRadius: 8,
+                        overflow: 'auto',
+                        fontSize: 14
+                    }}>
+                        <code>{sourceCode}</code>
+                    </pre>
+                )}
             </div>
         </ToastProvider>
     )

@@ -102,8 +102,12 @@ const TreeItem = ({ node, depth = 0 }: TreeItemProps) => {
     )
 }
 
+// @ts-ignore
+import sourceCode from './FileExplorer.tsx?raw'
+
 export default function FileExplorer() {
-    const [data, setData] = useState<FileNode>(INITIAL_DATA)
+    const [data] = useState<FileNode>(INITIAL_DATA)
+    const [activeTab, setActiveTab] = useState<'demo' | 'code'>('demo')
 
     return (
         <div>
@@ -113,26 +117,57 @@ export default function FileExplorer() {
                 It's a common interview question to test knowledge of recursion and state management.
             </p>
 
-            <div style={{
-                marginTop: 20,
-                width: 300,
-                border: '1px solid var(--border-color)',
-                borderRadius: 8,
-                padding: 10,
-                background: 'var(--bg-secondary)',
-                minHeight: 400
-            }}>
-                {/* We map the root items directly to simulate the top-level folder view */}
-                {data.items.map(item => (
-                    <TreeItem key={item.id} node={item} />
-                ))}
+            <div style={{ marginBottom: 20, borderBottom: '1px solid var(--border-color)' }}>
+                <button
+                    onClick={() => setActiveTab('demo')}
+                    style={{
+                        padding: '10px 20px',
+                        background: 'transparent',
+                        border: 'none',
+                        borderBottom: activeTab === 'demo' ? '2px solid var(--color-primary-500)' : '2px solid transparent',
+                        cursor: 'pointer',
+                        fontWeight: activeTab === 'demo' ? 'bold' : 'normal'
+                    }}
+                >
+                    Implementation
+                </button>
+                <button
+                    onClick={() => setActiveTab('code')}
+                    style={{
+                        padding: '10px 20px',
+                        background: 'transparent',
+                        border: 'none',
+                        borderBottom: activeTab === 'code' ? '2px solid var(--color-primary-500)' : '2px solid transparent',
+                        cursor: 'pointer',
+                        fontWeight: activeTab === 'code' ? 'bold' : 'normal'
+                    }}
+                >
+                    Source Code
+                </button>
             </div>
 
-            <div style={{ marginTop: 40, padding: 20, background: 'var(--bg-tertiary)', borderRadius: 8 }}>
-                <h3>Under the Hood: Recursive Component</h3>
-                <p>The key to this problem is a component that renders itself:</p>
-                <div style={{ overflowX: 'auto' }}>
-                    <pre style={{ margin: 0 }}>{`const TreeItem = ({ node }) => {
+            {activeTab === 'demo' ? (
+                <>
+                    <div style={{
+                        marginTop: 20,
+                        width: 300,
+                        border: '1px solid var(--border-color)',
+                        borderRadius: 8,
+                        padding: 10,
+                        background: 'var(--bg-secondary)',
+                        minHeight: 400
+                    }}>
+                        {/* We map the root items directly to simulate the top-level folder view */}
+                        {data.items.map(item => (
+                            <TreeItem key={item.id} node={item} />
+                        ))}
+                    </div>
+
+                    <div style={{ marginTop: 40, padding: 20, background: 'var(--bg-tertiary)', borderRadius: 8 }}>
+                        <h3>Under the Hood: Recursive Component</h3>
+                        <p>The key to this problem is a component that renders itself:</p>
+                        <div style={{ overflowX: 'auto' }}>
+                            <pre style={{ margin: 0 }}>{`const TreeItem = ({ node }) => {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
@@ -148,8 +183,20 @@ export default function FileExplorer() {
     </div>
   )
 }`}</pre>
-                </div>
-            </div>
+                        </div>
+                    </div>
+                </>
+            ) : (
+                <pre style={{
+                    padding: 20,
+                    background: 'var(--bg-secondary)',
+                    borderRadius: 8,
+                    overflow: 'auto',
+                    fontSize: 14
+                }}>
+                    <code>{sourceCode}</code>
+                </pre>
+            )}
         </div>
     )
 }
