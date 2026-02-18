@@ -37,6 +37,7 @@ export default defineConfig({
             output: {
                 manualChunks: {
                     'react-vendor': ['react', 'react-dom'],
+                    'playground-vendor': ['sucrase', 'codemirror', '@codemirror/lang-javascript', '@codemirror/lang-css'],
                 },
             },
         },

@@ -1,9 +1,9 @@
 import { Suspense, useState, useEffect } from 'react'
-import { RouterProvider, useRouter, Link } from '@router/Router'
+import { RouterProvider, useRouter, Link } from '@router/router'
 import { getLessonByPath, getAdjacentLessons } from '@router/routes'
-import Sidebar from '@components/Navigation/Sidebar'
+import Sidebar from '@components/navigation/sidebar'
 import styles from './App.module.css'
-import { useProgress } from '@hooks/useProgress'
+import { useProgress } from '@hooks/use-progress'
 
 function AppContent() {
     const { currentPath } = useRouter()

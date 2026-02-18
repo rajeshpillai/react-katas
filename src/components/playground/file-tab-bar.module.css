@@ -1,0 +1,98 @@
+.bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border-color, #e2e8f0);
+    background: var(--bg-secondary, #f8fafc);
+    padding: 0 4px;
+    min-height: 38px;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-bottom: none;
+}
+
+.tabs {
+    display: flex;
+    gap: 2px;
+    overflow-x: auto;
+}
+
+.tab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: 'Fira Code', monospace;
+    color: var(--text-secondary, #64748b);
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: color 0.15s, border-color 0.15s;
+}
+
+.tab:hover {
+    color: var(--text-primary, #1e293b);
+}
+
+.tab.active {
+    color: var(--color-primary-500, #3b82f6);
+    border-bottom-color: var(--color-primary-500, #3b82f6);
+    font-weight: 600;
+}
+
+.ext {
+    font-size: 9px;
+    padding: 1px 4px;
+    border-radius: 3px;
+    background: var(--bg-tertiary, #e2e8f0);
+    color: var(--text-tertiary, #94a3b8);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.tab.active .ext {
+    background: var(--color-primary-100, #dbeafe);
+    color: var(--color-primary-700, #1d4ed8);
+}
+
+.reset {
+    padding: 4px 10px;
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: var(--radius-sm, 4px);
+    background: transparent;
+    cursor: pointer;
+    font-size: 11px;
+    color: var(--text-secondary, #64748b);
+    transition: background 0.15s, color 0.15s;
+    margin-right: 4px;
+}
+
+.reset:hover {
+    background: var(--color-error, #ef4444);
+    color: white;
+    border-color: var(--color-error, #ef4444);
+}
+
+@media (prefers-color-scheme: dark) {
+    .bar {
+        background: #1e293b;
+        border-color: #334155;
+    }
+
+    .ext {
+        background: #334155;
+        color: #94a3b8;
+    }
+
+    .tab.active .ext {
+        background: #1e3a5f;
+        color: #93c5fd;
+    }
+
+    .reset {
+        border-color: #475569;
+    }
+}

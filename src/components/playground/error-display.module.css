@@ -1,0 +1,112 @@
+.container {
+    border: 1px solid #fca5a5;
+    border-radius: var(--radius-md);
+    background: #fef2f2;
+    overflow: hidden;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 12px;
+    background: #fee2e2;
+    border-bottom: 1px solid #fca5a5;
+}
+
+.title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #991b1b;
+}
+
+.dismiss {
+    padding: 2px 8px;
+    border: none;
+    border-radius: 3px;
+    background: transparent;
+    cursor: pointer;
+    font-size: 11px;
+    color: #991b1b;
+}
+
+.dismiss:hover {
+    background: #fca5a5;
+}
+
+.list {
+    max-height: 160px;
+    overflow-y: auto;
+}
+
+.error {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-family: 'Fira Code', monospace;
+    border-bottom: 1px solid #fecaca;
+}
+
+.error:last-child {
+    border-bottom: none;
+}
+
+.badge {
+    flex-shrink: 0;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    background: #dc2626;
+    color: white;
+}
+
+.location {
+    flex-shrink: 0;
+    color: #b91c1c;
+    font-weight: 500;
+}
+
+.message {
+    color: #7f1d1d;
+    word-break: break-word;
+}
+
+@media (prefers-color-scheme: dark) {
+    .container {
+        background: #450a0a;
+        border-color: #991b1b;
+    }
+
+    .header {
+        background: #7f1d1d;
+        border-color: #991b1b;
+    }
+
+    .title {
+        color: #fecaca;
+    }
+
+    .dismiss {
+        color: #fecaca;
+    }
+
+    .dismiss:hover {
+        background: #991b1b;
+    }
+
+    .error {
+        border-color: #7f1d1d;
+    }
+
+    .location {
+        color: #fca5a5;
+    }
+
+    .message {
+        color: #fecaca;
+    }
+}

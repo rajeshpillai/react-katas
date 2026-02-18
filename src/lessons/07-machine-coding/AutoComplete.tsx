@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, KeyboardEvent } from 'react'
-import { useDebounce } from '@hooks/useDebounce'
+import { useDebounce } from '@hooks/use-debounce'
 
 // --- Mock Data & API ---
 const FRUITS = [

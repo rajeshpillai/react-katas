@@ -1,6 +1,51 @@
-import { useState } from 'react'
+import { useState, lazy, Suspense } from 'react'
+import type { PlaygroundConfig } from '@components/playground'
+import sourceCode from './StateBasics.tsx?raw'
+
+const PlaygroundLayout = lazy(() =>
+    import('@components/playground').then((m) => ({ default: m.PlaygroundLayout }))
+)
+
+export const playgroundConfig: PlaygroundConfig = {
+    files: [
+        {
+            name: 'App.tsx',
+            language: 'tsx',
+            code: `import { useState } from 'react'
+
+export default function App() {
+    const [count, setCount] = useState(0)
+    const [name, setName] = useState('')
+
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Counter: {count}</h2>
+            <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+                <button onClick={() => setCount(c => c + 1)}>+</button>
+                <button onClick={() => setCount(c => c - 1)}>-</button>
+                <button onClick={() => setCount(0)}>Reset</button>
+            </div>
+
+            <h2>Greeting</h2>
+            <input
+                value={name}
+                onChange={e => setName(e.target.value)}
+                placeholder="Type your name..."
+                style={{ padding: 8, fontSize: 14, width: '100%', marginBottom: 8 }}
+            />
+            {name && <p>Hello, <strong>{name}</strong>!</p>}
+        </div>
+    )
+}
+`,
+        },
+    ],
+    entryFile: 'App.tsx',
+    height: 350,
+}
 
 export default function StateBasics() {
+    const [activeTab, setActiveTab] = useState<'lesson' | 'playground' | 'code'>('lesson')
     const [count, setCount] = useState(0)
     const [name, setName] = useState('')
     const [isVisible, setIsVisible] = useState(true)
@@ -8,6 +53,39 @@ export default function StateBasics() {
     return (
         <div>
             <h1>State Basics</h1>
+
+            <div style={{ marginBottom: 24, borderBottom: '1px solid var(--border-color)' }}>
+                {(['lesson', 'playground', 'code'] as const).map((tab) => (
+                    <button
+                        key={tab}
+                        onClick={() => setActiveTab(tab)}
+                        style={{
+                            padding: '10px 20px',
+                            background: 'transparent',
+                            border: 'none',
+                            borderBottom: activeTab === tab ? '2px solid var(--color-primary-500)' : '2px solid transparent',
+                            cursor: 'pointer',
+                            fontWeight: activeTab === tab ? 'bold' : 'normal',
+                            color: activeTab === tab ? 'var(--color-primary-500)' : 'var(--text-secondary)',
+                        }}
+                    >
+                        {tab === 'lesson' ? 'Lesson' : tab === 'playground' ? 'Playground' : 'Source Code'}
+                    </button>
+                ))}
+            </div>
+
+            {activeTab === 'playground' && (
+                <Suspense fallback={<div>Loading playground...</div>}>
+                    <PlaygroundLayout config={playgroundConfig} />
+                </Suspense>
+            )}
+
+            {activeTab === 'code' && (
+                <pre style={{ overflow: 'auto' }}><code>{sourceCode}</code></pre>
+            )}
+
+            {activeTab === 'lesson' && (
+            <div>
             <p>
                 State lets components "remember" information and respond to user interactions. The{' '}
                 <code>useState</code> hook is how we add state to function components.
@@ -272,6 +350,8 @@ const handleClick = () => {
                     <li>Always use the setter function to update state, never mutate directly</li>
                 </ul>
             </section>
+            </div>
+            )}
         </div>
     )
 }

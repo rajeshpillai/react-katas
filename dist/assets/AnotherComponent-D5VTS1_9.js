@@ -1,2 +1,0 @@
-import{j as o}from"./index-C8jGRvk-.js";import"./react-vendor-CVzL7Oab.js";function d(){return o.jsxs("div",{style:{padding:"var(--space-4)",background:"var(--color-accent-100)",borderRadius:"var(--radius-md)"},children:[o.jsx("h3",{children:"Another Lazy Component!"}),o.jsx("p",{children:"This is also code-split and loaded on demand."})]})}export{d as default};
-//# sourceMappingURL=AnotherComponent-D5VTS1_9.js.map

@@ -1,2 +1,0 @@
-import{j as e}from"./index-C8jGRvk-.js";import"./react-vendor-CVzL7Oab.js";function a(){return e.jsxs("div",{style:{padding:"var(--space-4)",background:"var(--color-success)",color:"white",borderRadius:"var(--radius-md)"},children:[e.jsx("h3",{style:{color:"white"},children:"Heavy Component Loaded!"}),e.jsx("p",{style:{color:"white"},children:"This component was lazy-loaded. Check your network tab to see it loaded as a separate chunk."})]})}export{a as default};
-//# sourceMappingURL=HeavyComponent-DXrdi08f.js.map

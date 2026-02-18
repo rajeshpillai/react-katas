@@ -1,0 +1,38 @@
+.layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    min-height: 400px;
+}
+
+.editorPane {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.editorBody {
+    flex: 1;
+    min-height: 300px;
+}
+
+.previewPane {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.previewHeader {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary, #64748b);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 8px 0 0;
+}
+
+@media (max-width: 768px) {
+    .layout {
+        grid-template-columns: 1fr;
+    }
+}

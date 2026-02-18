@@ -1,0 +1,13 @@
+.editor {
+    height: 100%;
+    overflow: hidden;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-top: none;
+}
+
+@media (prefers-color-scheme: dark) {
+    .editor {
+        border-color: #334155;
+    }
+}
