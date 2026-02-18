@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useRef, useCallback, useSyncExternalStore, memo, useMemo, ReactNode } from 'react'
+import { createContext, useContext, useState, useRef, useCallback, useSyncExternalStore, memo, useMemo, type ReactNode, type Dispatch, type SetStateAction } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
 import type { PlaygroundConfig } from '@components/playground'
 // @ts-ignore
@@ -43,18 +43,38 @@ function useStoreSelector<T, S>(
     selector: (state: T) => S,
     equalityFn: EqualityFn<S> = Object.is
 ): S {
-    const prevRef = useRef<S | undefined>(undefined)
+    // Cache the selected value so getSnapshot is stable across consecutive calls.
+    // useSyncExternalStore requires getSnapshot to return the same reference when
+    // called multiple times without a store change — otherwise React detects "tearing"
+    // and enters an infinite re-render loop.
+    const cache = useRef<{ value: S; stateVersion: T } | null>(null)
     const selectorRef = useRef(selector)
     const equalityRef = useRef(equalityFn)
     selectorRef.current = selector
     equalityRef.current = equalityFn
 
-    const getSnapshot = useCallback(() => {
-        const next = selectorRef.current(store.getState())
-        if (prevRef.current !== undefined && equalityRef.current(prevRef.current, next)) {
-            return prevRef.current
+    // Initialize cache on first render
+    if (cache.current === null) {
+        const value = selectorRef.current(store.getState())
+        cache.current = { value, stateVersion: store.getState() }
+    }
+
+    const getSnapshot = useCallback((): S => {
+        const currentState = store.getState()
+        const cached = cache.current!
+        // If store state hasn't changed, return cached value (same reference)
+        if (Object.is(cached.stateVersion, currentState)) {
+            return cached.value
         }
-        prevRef.current = next
+        // State changed — run selector and check equality
+        const next = selectorRef.current(currentState)
+        if (equalityRef.current(cached.value, next)) {
+            // Values are equal — update stateVersion but keep same value reference
+            cache.current = { value: cached.value, stateVersion: currentState }
+            return cached.value
+        }
+        // Genuinely new value
+        cache.current = { value: next, stateVersion: currentState }
         return next
     }, [store])
 
@@ -78,8 +98,8 @@ function shallowEqual<T>(a: T, b: T): boolean {
 // Part 3: Context-based store (for DI / component tree scoping)
 // ============================================================
 
-// Exported for use in other lessons / consumer code
-export function createStoreContext<T>(initialState: T) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function createStoreContext<T>(initialState: T) {
     const store = createStore(initialState)
     const StoreContext = createContext(store)
 
@@ -104,6 +124,8 @@ export function createStoreContext<T>(initialState: T) {
 
     return { Provider, useSelector, useDispatch, store }
 }
+// Referenced in teaching section only — suppress unused warning
+void createStoreContext
 
 // ============================================================
 // Playground config
@@ -150,18 +172,27 @@ function useStoreSelector<T, S>(
     selector: (state: T) => S,
     equalityFn: EqualityFn<S> = Object.is
 ): S {
-    const prevRef = useRef<S | undefined>(undefined)
+    const cache = useRef<{ value: S; stateVersion: T } | null>(null)
     const selectorRef = useRef(selector)
     const equalityRef = useRef(equalityFn)
     selectorRef.current = selector
     equalityRef.current = equalityFn
 
-    const getSnapshot = useCallback(() => {
-        const next = selectorRef.current(store.getState())
-        if (prevRef.current !== undefined && equalityRef.current(prevRef.current, next)) {
-            return prevRef.current
+    if (cache.current === null) {
+        const value = selectorRef.current(store.getState())
+        cache.current = { value, stateVersion: store.getState() }
+    }
+
+    const getSnapshot = useCallback((): S => {
+        const currentState = store.getState()
+        const cached = cache.current!
+        if (Object.is(cached.stateVersion, currentState)) return cached.value
+        const next = selectorRef.current(currentState)
+        if (equalityRef.current(cached.value, next)) {
+            cache.current = { value: cached.value, stateVersion: currentState }
+            return cached.value
         }
-        prevRef.current = next
+        cache.current = { value: next, stateVersion: currentState }
         return next
     }, [store])
 
@@ -363,7 +394,7 @@ const demoInitial: DemoState = {
 
 // --- Problem Demo: Standard Context ---
 
-const NaiveContext = createContext<{ state: DemoState; setState: React.Dispatch<React.SetStateAction<DemoState>> } | null>(null)
+const NaiveContext = createContext<{ state: DemoState; setState: Dispatch<SetStateAction<DemoState>> } | null>(null)
 
 function NaiveCountDisplay() {
     const ctx = useContext(NaiveContext)!
@@ -628,25 +659,38 @@ function Counter() {
 
                     <h3 style={{ marginTop: 'var(--space-6)' }}>Step 2: Build useSelector</h3>
                     <p>
-                        <code>useSyncExternalStore</code> handles the subscription. React calls <code>getSnapshot</code> on
-                        every store update — if the result is referentially equal to the previous one, React skips the re-render:
+                        <code>useSyncExternalStore</code> handles the subscription. The critical requirement:
+                        {' '}<code>getSnapshot</code> must return the <strong>same reference</strong> on consecutive calls
+                        without a store change — otherwise React detects "tearing" and enters an infinite loop.
+                        We cache the selected value keyed by the store state:
                     </p>
                     <pre><code>{`function useSelector<T, S>(
   store: Store<T>,
   selector: (state: T) => S,
   equalityFn: (a: S, b: S) => boolean = Object.is
 ): S {
-  const prevRef = useRef<S>();
+  // Cache: { value, stateVersion } — ensures getSnapshot is stable
+  const cache = useRef<{ value: S; stateVersion: T } | null>(null);
   const selectorRef = useRef(selector);
   selectorRef.current = selector;
 
-  const getSnapshot = useCallback(() => {
-    const next = selectorRef.current(store.getState());
-    // Custom equality check (default: Object.is)
-    if (prevRef.current !== undefined && equalityFn(prevRef.current, next)) {
-      return prevRef.current; // same value → same reference → no re-render
+  if (cache.current === null) {
+    cache.current = { value: selector(store.getState()), stateVersion: store.getState() };
+  }
+
+  const getSnapshot = useCallback((): S => {
+    const state = store.getState();
+    const cached = cache.current!;
+    // Same store state? Return cached (same reference — no re-render)
+    if (Object.is(cached.stateVersion, state)) return cached.value;
+    // State changed — run selector
+    const next = selectorRef.current(state);
+    if (equalityFn(cached.value, next)) {
+      // Values equal — keep old reference, update version
+      cache.current = { value: cached.value, stateVersion: state };
+      return cached.value;
     }
-    prevRef.current = next;
+    cache.current = { value: next, stateVersion: state };
     return next;
   }, [store]);
 
