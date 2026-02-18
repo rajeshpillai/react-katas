@@ -229,7 +229,7 @@ A publish script strips internal files (listed in `.ossignore`) and pushes a cle
 
 | Variable | Default | Description |
 |---|---|---|
-| `OSS_REMOTE` | `git@github.com:algorisys-oss/react-katas.git` | SSH URL of the OSS repo |
+| `OSS_REMOTE` | `https://github.com/algorisys-oss/react-katas.git` | URL of the OSS repo |
 | `OSS_BRANCH` | `main` | Branch to push to |
 | `OSS_MESSAGE` | auto-generated | Custom commit message |
 
