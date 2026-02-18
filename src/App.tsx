@@ -1,23 +1,41 @@
-import { Suspense, useState, useEffect } from 'react'
+import { Suspense, useState, useEffect, useCallback } from 'react'
 import { RouterProvider, useRouter, Link } from '@router/router'
 import { getLessonByPath, getAdjacentLessons } from '@router/routes'
 import Sidebar from '@components/navigation/sidebar'
 import styles from './App.module.css'
 import { useProgress } from '@hooks/use-progress'
+import '@hooks/use-theme' // Initializes theme from localStorage on load
+
+function useSidebarCollapse() {
+    const [collapsed, setCollapsed] = useState(() => {
+        try { return localStorage.getItem('react-katas-sidebar') === 'collapsed' } catch { return false }
+    })
+    const toggle = useCallback(() => {
+        setCollapsed((prev) => {
+            const next = !prev
+            try { localStorage.setItem('react-katas-sidebar', next ? 'collapsed' : 'expanded') } catch {}
+            return next
+        })
+    }, [])
+    return { collapsed, toggle }
+}
 
 function AppContent() {
     const { currentPath } = useRouter()
     const { completedLessons, toggleLessonCompletion, isLessonCompleted } = useProgress()
+    const { collapsed, toggle: toggleSidebar } = useSidebarCollapse()
 
     // Get the current lesson based on path
     const currentLesson = getLessonByPath(currentPath)
 
+    const appClass = `${styles.app} ${collapsed ? styles.sidebarCollapsed : ''}`
+
     // Render home page if no lesson is selected
     if (!currentLesson || currentPath === '/') {
         return (
-            <div className={styles.app}>
+            <div className={appClass}>
                 <aside className={styles.sidebar}>
-                    <Sidebar completedLessons={completedLessons} />
+                    <Sidebar completedLessons={completedLessons} collapsed={collapsed} onToggleCollapse={toggleSidebar} />
                 </aside>
                 <main className={styles.mainContent}>
                     <HomePage />
@@ -88,9 +106,9 @@ function AppContent() {
     const { previous, next } = getAdjacentLessons(currentPath)
 
     return (
-        <div className={styles.app}>
+        <div className={appClass}>
             <aside className={styles.sidebar}>
-                <Sidebar completedLessons={completedLessons} />
+                <Sidebar completedLessons={completedLessons} collapsed={collapsed} onToggleCollapse={toggleSidebar} />
             </aside>
             <main className={styles.mainContent}>
                 <Suspense fallback={<div className={styles.loading} />}>

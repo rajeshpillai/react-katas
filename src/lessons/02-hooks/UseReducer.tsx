@@ -1,9 +1,142 @@
 import { useReducer, useState } from 'react'
+import { LessonLayout } from '@components/lesson-layout'
+import type { PlaygroundConfig } from '@components/playground'
+// @ts-ignore
+import sourceCode from './UseReducer.tsx?raw'
+
+export const playgroundConfig: PlaygroundConfig = {
+  files: [
+    {
+      name: 'App.tsx',
+      language: 'tsx',
+      code: `import { useReducer, useState } from 'react'
+
+interface Todo {
+  id: number
+  text: string
+  completed: boolean
+}
+
+type TodoAction =
+  | { type: 'ADD_TODO'; text: string }
+  | { type: 'TOGGLE_TODO'; id: number }
+  | { type: 'DELETE_TODO'; id: number }
+
+function todoReducer(state: Todo[], action: TodoAction): Todo[] {
+  switch (action.type) {
+    case 'ADD_TODO':
+      return [...state, { id: Date.now(), text: action.text, completed: false }]
+    case 'TOGGLE_TODO':
+      return state.map(todo =>
+        todo.id === action.id ? { ...todo, completed: !todo.completed } : todo
+      )
+    case 'DELETE_TODO':
+      return state.filter(todo => todo.id !== action.id)
+    default:
+      return state
+  }
+}
+
+export default function App() {
+  const [todos, dispatch] = useReducer(todoReducer, [])
+  const [input, setInput] = useState('')
+
+  const handleAdd = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (input.trim()) {
+      dispatch({ type: 'ADD_TODO', text: input })
+      setInput('')
+    }
+  }
+
+  const completed = todos.filter(t => t.completed).length
+
+  return (
+    <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+      <h2>Todo List with useReducer</h2>
+
+      <form onSubmit={handleAdd} style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+        <input
+          type="text"
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          placeholder="Add a todo..."
+          style={{ flex: 1, padding: 8, fontSize: 14, border: '1px solid #ccc', borderRadius: 4 }}
+        />
+        <button
+          type="submit"
+          style={{ padding: '8px 16px', background: '#3b82f6', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}
+        >
+          Add
+        </button>
+      </form>
+
+      {todos.length > 0 && (
+        <p style={{ fontSize: 12, color: '#888', marginBottom: 8 }}>
+          {completed}/{todos.length} completed
+        </p>
+      )}
+
+      {todos.length === 0 ? (
+        <p style={{ color: '#999' }}>No todos yet. Add one above!</p>
+      ) : (
+        <ul style={{ listStyle: 'none', padding: 0 }}>
+          {todos.map(todo => (
+            <li
+              key={todo.id}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                padding: 8,
+                background: '#f9fafb',
+                borderRadius: 4,
+                marginBottom: 4,
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={todo.completed}
+                onChange={() => dispatch({ type: 'TOGGLE_TODO', id: todo.id })}
+                style={{ marginRight: 8 }}
+              />
+              <span style={{
+                flex: 1,
+                textDecoration: todo.completed ? 'line-through' : 'none',
+                color: todo.completed ? '#9ca3af' : '#111',
+              }}>
+                {todo.text}
+              </span>
+              <button
+                onClick={() => dispatch({ type: 'DELETE_TODO', id: todo.id })}
+                style={{
+                  padding: '4px 8px',
+                  background: '#ef4444',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: 4,
+                  cursor: 'pointer',
+                  fontSize: 12,
+                }}
+              >
+                Delete
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
+}
+`,
+    },
+  ],
+  entryFile: 'App.tsx',
+  height: 450,
+}
 
 export default function UseReducer() {
   return (
-    <div>
-      <h1>useReducer Hook</h1>
+    <LessonLayout title="useReducer Hook" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
       <p>
         <code>useReducer</code> is an alternative to <code>useState</code> for managing complex
         state logic. It's especially useful when state updates depend on previous state or when you
@@ -46,7 +179,7 @@ dispatch({ type: 'INCREMENT' });`}</code>
             marginTop: 'var(--space-4)',
           }}
         >
-          <p style={{ color: 'white', fontWeight: 'bold' }}>💡 When to Use useReducer:</p>
+          <p style={{ color: 'white', fontWeight: 'bold' }}>When to Use useReducer:</p>
           <ul style={{ paddingLeft: 'var(--space-6)' }}>
             <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
               Complex state logic with multiple sub-values
@@ -79,7 +212,7 @@ dispatch({ type: 'INCREMENT' });`}</code>
           <CounterReducer />
 
           <pre style={{ marginTop: 'var(--space-4)' }}>
-            <code>{`type Action = 
+            <code>{`type Action =
   | { type: 'INCREMENT' }
   | { type: 'DECREMENT' }
   | { type: 'RESET' };
@@ -298,7 +431,7 @@ dispatch({ type: 'INCREMENT' });`}</code>
             marginTop: 'var(--space-4)',
           }}
         >
-          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>✅ Do's</h3>
+          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>Do's</h3>
           <ul style={{ paddingLeft: 'var(--space-6)' }}>
             <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
               Use TypeScript to type actions and state
@@ -325,7 +458,7 @@ dispatch({ type: 'INCREMENT' });`}</code>
             marginTop: 'var(--space-4)',
           }}
         >
-          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>❌ Don'ts</h3>
+          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>Don'ts</h3>
           <ul style={{ paddingLeft: 'var(--space-6)' }}>
             <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
               Don't mutate state directly
@@ -357,7 +490,7 @@ dispatch({ type: 'INCREMENT' });`}</code>
           <li>TypeScript makes reducers safer with action type checking</li>
         </ul>
       </section>
-    </div>
+    </LessonLayout>
   )
 }
 

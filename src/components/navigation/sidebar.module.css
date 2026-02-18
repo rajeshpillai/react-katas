@@ -1,12 +1,76 @@
 .sidebar {
     padding: var(--space-6);
+    transition: width var(--transition-base, 0.2s), padding var(--transition-base, 0.2s);
+}
+
+.sidebar.collapsed {
+    padding: var(--space-3);
+}
+
+.logo-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-8);
+}
+
+.sidebar.collapsed .logo-row {
+    justify-content: center;
+    margin-bottom: var(--space-4);
+}
+
+.logo-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .logo {
     font-size: var(--font-size-2xl);
     font-weight: var(--font-weight-bold);
-    margin-bottom: var(--space-8);
     color: var(--text-primary);
+}
+
+.collapse-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: var(--bg-tertiary);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+}
+
+.collapse-toggle:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--border-color-hover);
+}
+
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: var(--bg-tertiary);
+    cursor: pointer;
+    font-size: var(--font-size-base);
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+}
+
+.theme-toggle:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--border-color-hover);
 }
 
 .section {
@@ -57,11 +121,9 @@
     font-weight: var(--font-weight-medium);
 }
 
-@media (prefers-color-scheme: dark) {
-    .lesson-link.active {
-        background-color: var(--color-primary-900);
-        color: var(--color-primary-200);
-    }
+:global(:root[data-theme="dark"]) .lesson-link.active {
+    background-color: var(--color-primary-900);
+    color: var(--color-primary-200);
 }
 
 .lesson-number {

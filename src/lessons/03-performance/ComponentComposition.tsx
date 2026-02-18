@@ -1,380 +1,426 @@
 import { useState, useRef } from 'react'
+import { LessonLayout } from '@components/lesson-layout'
+import type { PlaygroundConfig } from '@components/playground'
 
 // @ts-ignore
 import sourceCode from './ComponentComposition.tsx?raw'
 
-export default function ComponentComposition() {
-  const [activeTab, setActiveTab] = useState<'demo' | 'code'>('demo')
+export const playgroundConfig: PlaygroundConfig = {
+  files: [
+    {
+      name: 'App.tsx',
+      language: 'tsx',
+      code: `import { useState, useRef, ReactNode } from 'react'
+
+// -- Bad Pattern: Everything re-renders --
+function BadExample() {
+  const [count, setCount] = useState(0)
 
   return (
-    <div>
-      <h1>Component Composition</h1>
+    <div style={{ padding: 16, border: '2px solid #e53e3e', borderRadius: 8, marginBottom: 16 }}>
+      <h3 style={{ color: '#e53e3e' }}>Bad: Inline children</h3>
+      <button onClick={() => setCount(c => c + 1)} style={btnStyle}>
+        Count: {count}
+      </button>
+      <ExpensiveChild label="I re-render every time!" />
+    </div>
+  )
+}
+
+// -- Good Pattern: Lift content up --
+function GoodExample() {
+  return (
+    <LayoutWithState>
+      <ExpensiveChild label="I never re-render!" />
+    </LayoutWithState>
+  )
+}
+
+function LayoutWithState({ children }: { children: ReactNode }) {
+  const [count, setCount] = useState(0)
+
+  return (
+    <div style={{ padding: 16, border: '2px solid #38a169', borderRadius: 8 }}>
+      <h3 style={{ color: '#38a169' }}>Good: Children as props</h3>
+      <button onClick={() => setCount(c => c + 1)} style={btnStyle}>
+        Count: {count}
+      </button>
+      {children}
+    </div>
+  )
+}
+
+function ExpensiveChild({ label }: { label: string }) {
+  const renderCount = useRef(0)
+  renderCount.current += 1
+
+  return (
+    <div style={{ padding: 12, marginTop: 8, background: '#ebf8ff', borderRadius: 6 }}>
+      <strong>{label}</strong>
+      <div>Render count: {renderCount.current}</div>
+    </div>
+  )
+}
+
+const btnStyle = {
+  padding: '8px 16px',
+  background: '#3182ce',
+  color: 'white',
+  border: 'none',
+  borderRadius: 6,
+  cursor: 'pointer',
+  marginBottom: 8,
+}
+
+export default function App() {
+  return (
+    <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+      <h2>Component Composition</h2>
+      <p>Click the counter buttons and watch the render counts.</p>
+      <BadExample />
+      <GoodExample />
+    </div>
+  )
+}
+`,
+    },
+  ],
+  entryFile: 'App.tsx',
+  height: 500,
+}
+
+export default function ComponentComposition() {
+  return (
+    <LessonLayout title="Component Composition" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
       <p>
         Component composition is the <strong>most powerful performance optimization</strong> in
         React. It's better than memoization and works automatically with React 19's compiler!
       </p>
 
-      <div style={{ marginBottom: 20, borderBottom: '1px solid var(--border-color)' }}>
-        <button
-          onClick={() => setActiveTab('demo')}
-          style={{
-            padding: '10px 20px',
-            background: 'transparent',
-            border: 'none',
-            borderBottom: activeTab === 'demo' ? '2px solid var(--color-primary-500)' : '2px solid transparent',
-            cursor: 'pointer',
-            fontWeight: activeTab === 'demo' ? 'bold' : 'normal'
-          }}
-        >
-          Lesson
-        </button>
-        <button
-          onClick={() => setActiveTab('code')}
-          style={{
-            padding: '10px 20px',
-            background: 'transparent',
-            border: 'none',
-            borderBottom: activeTab === 'code' ? '2px solid var(--color-primary-500)' : '2px solid transparent',
-            cursor: 'pointer',
-            fontWeight: activeTab === 'code' ? 'bold' : 'normal'
-          }}
-        >
-          Source Code
-        </button>
-      </div>
+      {/* Section 1: The Problem */}
+      <section style={{ marginBottom: 'var(--space-8)' }}>
+        <h2>The Problem: Unnecessary Re-renders</h2>
+        <p>
+          When a parent component's state changes, all its children re-render by default, even if
+          they don't use that state.
+        </p>
 
-      {activeTab === 'demo' ? (
+        <div
+          style={{
+            background: 'var(--color-error)',
+            color: 'white',
+            padding: 'var(--space-4)',
+            borderRadius: 'var(--radius-lg)',
+            marginTop: 'var(--space-4)',
+          }}
+        >
+          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>Bad Pattern:</h3>
+          <pre style={{ background: 'transparent' }}>
+            <code style={{ color: 'white' }}>{`function App() {
+    const [count, setCount] = useState(0);
+
+    return (
+        <div>
+        <button onClick={() => setCount(count + 1)}>
+            Count: {count}
+        </button>
+        <ExpensiveComponent /> {/* Re-renders on every count change! */}
+        </div>
+    );
+    }`}</code>
+          </pre>
+          <p style={{ color: 'white', marginTop: 'var(--space-3)' }}>
+            Problem: ExpensiveComponent re-renders even though it doesn't use count!
+          </p>
+        </div>
+      </section>
+
+      {/* Section 2: Solution - Lift Content Up */}
+      <section style={{ marginBottom: 'var(--space-8)' }}>
+        <h2>Solution 1: Lift Content Up (Children Prop)</h2>
+        <p>
+          Move state down to the component that needs it, and pass expensive components as{' '}
+          <code>children</code>.
+        </p>
+
+        <div
+          style={{
+            background: 'var(--color-success)',
+            color: 'white',
+            padding: 'var(--space-4)',
+            borderRadius: 'var(--radius-lg)',
+            marginTop: 'var(--space-4)',
+          }}
+        >
+          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>Solution:</h3>
+          <pre style={{ background: 'transparent' }}>
+            <code style={{ color: 'white' }}>{`function App() {
+    return (
+        <Layout>
+        <ExpensiveComponent /> {/* Doesn't re-render! */}
+        </Layout>
+    );
+    }
+
+    function Layout({ children }) {
+    const [count, setCount] = useState(0);
+
+    return (
+        <div>
+        <button onClick={() => setCount(count + 1)}>
+            Count: {count}
+        </button>
+        {children} {/* Children don't re-render when count changes! */}
+        </div>
+    );
+    }`}</code>
+          </pre>
+          <p style={{ color: 'white', marginTop: 'var(--space-3)' }}>
+            Children are created by the parent, so they don't re-render when Layout's state
+            changes!
+          </p>
+        </div>
+
+        <div
+          style={{
+            background: 'var(--bg-secondary)',
+            padding: 'var(--space-6)',
+            borderRadius: 'var(--radius-lg)',
+            marginTop: 'var(--space-4)',
+          }}
+        >
+          <h3>Interactive Example:</h3>
+          <ChildrenPropDemo />
+        </div>
+      </section>
+
+      {/* Section 3: Slot Pattern */}
+      <section style={{ marginBottom: 'var(--space-8)' }}>
+        <h2>Solution 2: Slot Pattern (Multiple Props)</h2>
+        <p>
+          Pass multiple components as props to create flexible, performant layouts.
+        </p>
+
+        <div
+          style={{
+            background: 'var(--bg-secondary)',
+            padding: 'var(--space-6)',
+            borderRadius: 'var(--radius-lg)',
+            marginTop: 'var(--space-4)',
+          }}
+        >
+          <h3>Slot Pattern Example:</h3>
+          <SlotPatternDemo />
+
+          <pre style={{ marginTop: 'var(--space-4)' }}>
+            <code>{`function Dashboard({ sidebar, header, content }) {
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+        <div>
+        <button onClick={() => setIsOpen(!isOpen)}>Toggle</button>
+        {header}    {/* Doesn't re-render */}
+        {sidebar}   {/* Doesn't re-render */}
+        {content}   {/* Doesn't re-render */}
+        </div>
+    );
+    }
+
+    // Usage
+    <Dashboard
+    header={<Header />}
+    sidebar={<Sidebar />}
+    content={<Content />}
+    />`}</code>
+          </pre>
+        </div>
+      </section>
+
+      {/* Section 4: State Colocation */}
+      <section style={{ marginBottom: 'var(--space-8)' }}>
+        <h2>Solution 3: State Colocation</h2>
+        <p>
+          Keep state as close as possible to where it's used. Don't lift state up unless you need
+          to!
+        </p>
+
+        <div
+          style={{
+            background: 'var(--bg-secondary)',
+            padding: 'var(--space-6)',
+            borderRadius: 'var(--radius-lg)',
+            marginTop: 'var(--space-4)',
+          }}
+        >
+          <h3>State Colocation Example:</h3>
+          <StateColocationDemo />
+
+          <pre style={{ marginTop: 'var(--space-4)' }}>
+            <code>{`// Bad: State too high
+    function App() {
+    const [formData, setFormData] = useState({});
+    return (
         <>
-          {/* Section 1: The Problem */}
-          <section style={{ marginBottom: 'var(--space-8)' }}>
-            <h2>The Problem: Unnecessary Re-renders</h2>
-            <p>
-              When a parent component's state changes, all its children re-render by default, even if
-              they don't use that state.
-            </p>
-
-            <div
-              style={{
-                background: 'var(--color-error)',
-                color: 'white',
-                padding: 'var(--space-4)',
-                borderRadius: 'var(--radius-lg)',
-                marginTop: 'var(--space-4)',
-              }}
-            >
-              <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>❌ Bad Pattern:</h3>
-              <pre style={{ background: 'transparent' }}>
-                <code style={{ color: 'white' }}>{`function App() {
-        const [count, setCount] = useState(0);
-        
-        return (
-            <div>
-            <button onClick={() => setCount(count + 1)}>
-                Count: {count}
-            </button>
-            <ExpensiveComponent /> {/* Re-renders on every count change! */}
-            </div>
-        );
-        }`}</code>
-              </pre>
-              <p style={{ color: 'white', marginTop: 'var(--space-3)' }}>
-                Problem: ExpensiveComponent re-renders even though it doesn't use count!
-              </p>
-            </div>
-          </section>
-
-          {/* Section 2: Solution - Lift Content Up */}
-          <section style={{ marginBottom: 'var(--space-8)' }}>
-            <h2>Solution 1: Lift Content Up (Children Prop)</h2>
-            <p>
-              Move state down to the component that needs it, and pass expensive components as{' '}
-              <code>children</code>.
-            </p>
-
-            <div
-              style={{
-                background: 'var(--color-success)',
-                color: 'white',
-                padding: 'var(--space-4)',
-                borderRadius: 'var(--radius-lg)',
-                marginTop: 'var(--space-4)',
-              }}
-            >
-              <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>✅ Solution:</h3>
-              <pre style={{ background: 'transparent' }}>
-                <code style={{ color: 'white' }}>{`function App() {
-        return (
-            <Layout>
-            <ExpensiveComponent /> {/* Doesn't re-render! */}
-            </Layout>
-        );
-        }
-
-        function Layout({ children }) {
-        const [count, setCount] = useState(0);
-        
-        return (
-            <div>
-            <button onClick={() => setCount(count + 1)}>
-                Count: {count}
-            </button>
-            {children} {/* Children don't re-render when count changes! */}
-            </div>
-        );
-        }`}</code>
-              </pre>
-              <p style={{ color: 'white', marginTop: 'var(--space-3)' }}>
-                ✨ Children are created by the parent, so they don't re-render when Layout's state
-                changes!
-              </p>
-            </div>
-
-            <div
-              style={{
-                background: 'var(--bg-secondary)',
-                padding: 'var(--space-6)',
-                borderRadius: 'var(--radius-lg)',
-                marginTop: 'var(--space-4)',
-              }}
-            >
-              <h3>Interactive Example:</h3>
-              <ChildrenPropDemo />
-            </div>
-          </section>
-
-          {/* Section 3: Slot Pattern */}
-          <section style={{ marginBottom: 'var(--space-8)' }}>
-            <h2>Solution 2: Slot Pattern (Multiple Props)</h2>
-            <p>
-              Pass multiple components as props to create flexible, performant layouts.
-            </p>
-
-            <div
-              style={{
-                background: 'var(--bg-secondary)',
-                padding: 'var(--space-6)',
-                borderRadius: 'var(--radius-lg)',
-                marginTop: 'var(--space-4)',
-              }}
-            >
-              <h3>Slot Pattern Example:</h3>
-              <SlotPatternDemo />
-
-              <pre style={{ marginTop: 'var(--space-4)' }}>
-                <code>{`function Dashboard({ sidebar, header, content }) {
-        const [isOpen, setIsOpen] = useState(false);
-        
-        return (
-            <div>
-            <button onClick={() => setIsOpen(!isOpen)}>Toggle</button>
-            {header}    {/* Doesn't re-render */}
-            {sidebar}   {/* Doesn't re-render */}
-            {content}   {/* Doesn't re-render */}
-            </div>
-        );
-        }
-
-        // Usage
-        <Dashboard
-        header={<Header />}
-        sidebar={<Sidebar />}
-        content={<Content />}
-        />`}</code>
-              </pre>
-            </div>
-          </section>
-
-          {/* Section 4: State Colocation */}
-          <section style={{ marginBottom: 'var(--space-8)' }}>
-            <h2>Solution 3: State Colocation</h2>
-            <p>
-              Keep state as close as possible to where it's used. Don't lift state up unless you need
-              to!
-            </p>
-
-            <div
-              style={{
-                background: 'var(--bg-secondary)',
-                padding: 'var(--space-6)',
-                borderRadius: 'var(--radius-lg)',
-                marginTop: 'var(--space-4)',
-              }}
-            >
-              <h3>State Colocation Example:</h3>
-              <StateColocationDemo />
-
-              <pre style={{ marginTop: 'var(--space-4)' }}>
-                <code>{`// ❌ Bad: State too high
-        function App() {
-        const [formData, setFormData] = useState({});
-        return (
-            <>
-            <Form data={formData} onChange={setFormData} />
-            <OtherComponent /> {/* Re-renders on every form change! */}
-            </>
-        );
-        }
-
-        // ✅ Good: State colocated
-        function App() {
-        return (
-            <>
-            <Form /> {/* State is inside Form */}
-            <OtherComponent /> {/* Never re-renders! */}
-            </>
-        );
-        }
-
-        function Form() {
-        const [formData, setFormData] = useState({});
-        // ... form logic
-        }`}</code>
-              </pre>
-            </div>
-          </section>
-
-          {/* Section 5: Component Extraction */}
-          <section style={{ marginBottom: 'var(--space-8)' }}>
-            <h2>Solution 4: Extract Stateful Components</h2>
-            <p>
-              Extract the part that changes into its own component to isolate re-renders.
-            </p>
-
-            <div
-              style={{
-                background: 'var(--bg-secondary)',
-                padding: 'var(--space-6)',
-                borderRadius: 'var(--radius-lg)',
-                marginTop: 'var(--space-4)',
-              }}
-            >
-              <h3>Component Extraction Example:</h3>
-              <ComponentExtractionDemo />
-
-              <pre style={{ marginTop: 'var(--space-4)' }}>
-                <code>{`// ❌ Bad: Everything re-renders
-        function Page() {
-        const [count, setCount] = useState(0);
-        return (
-            <>
-            <button onClick={() => setCount(count + 1)}>
-                {count}
-            </button>
-            <ExpensiveList /> {/* Re-renders! */}
-            <ExpensiveChart /> {/* Re-renders! */}
-            </>
-        );
-        }
-
-        // ✅ Good: Extract counter
-        function Page() {
-        return (
-            <>
-            <Counter /> {/* Only this re-renders */}
-            <ExpensiveList />
-            <ExpensiveChart />
-            </>
-        );
-        }
-
-        function Counter() {
-        const [count, setCount] = useState(0);
-        return <button onClick={() => setCount(count + 1)}>{count}</button>;
-        }`}</code>
-              </pre>
-            </div>
-          </section>
-
-          {/* Section 6: Why This Works */}
-          <section style={{ marginBottom: 'var(--space-8)' }}>
-            <h2>Why Composition Beats Memoization</h2>
-
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: 'var(--space-4)',
-                marginTop: 'var(--space-4)',
-              }}
-            >
-              <div
-                style={{
-                  padding: 'var(--space-4)',
-                  background: 'var(--color-success)',
-                  color: 'white',
-                  borderRadius: 'var(--radius-lg)',
-                }}
-              >
-                <h3 style={{ color: 'white' }}>Composition</h3>
-                <ul style={{ paddingLeft: 'var(--space-6)' }}>
-                  <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
-                    ✅ Works automatically
-                  </li>
-                  <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
-                    ✅ No extra code needed
-                  </li>
-                  <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
-                    ✅ Better architecture
-                  </li>
-                  <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
-                    ✅ More maintainable
-                  </li>
-                  <li style={{ color: 'white' }}>✅ React 19 compiler optimizes it</li>
-                </ul>
-              </div>
-
-              <div
-                style={{
-                  padding: 'var(--space-4)',
-                  background: 'var(--color-warning)',
-                  color: 'white',
-                  borderRadius: 'var(--radius-lg)',
-                }}
-              >
-                <h3 style={{ color: 'white' }}>Memoization</h3>
-                <ul style={{ paddingLeft: 'var(--space-6)' }}>
-                  <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
-                    ⚠️ Requires manual work
-                  </li>
-                  <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
-                    ⚠️ More code to maintain
-                  </li>
-                  <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
-                    ⚠️ Can be misused
-                  </li>
-                  <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
-                    ⚠️ Dependency tracking
-                  </li>
-                  <li style={{ color: 'white' }}>⚠️ Use as last resort</li>
-                </ul>
-              </div>
-            </div>
-          </section>
-
-          {/* Key Takeaways */}
-          <section>
-            <h2>Key Takeaways</h2>
-            <ul>
-              <li>
-                <strong>Composition is the primary performance pattern</strong> - use it first!
-              </li>
-              <li>
-                Use <code>children</code> prop to prevent unnecessary re-renders
-              </li>
-              <li>Slot pattern for multiple component props</li>
-              <li>Keep state colocated - as close to where it's used as possible</li>
-              <li>Extract stateful components to isolate re-renders</li>
-              <li>Composition works automatically with React 19 compiler</li>
-              <li>Better architecture beats memoization every time!</li>
-            </ul>
-          </section>
+        <Form data={formData} onChange={setFormData} />
+        <OtherComponent /> {/* Re-renders on every form change! */}
         </>
-      ) : (
-        <pre style={{ padding: 20, background: 'var(--bg-secondary)', borderRadius: 8, overflow: 'auto', fontSize: 14 }}>
-          <code>{sourceCode}</code>
-        </pre>
-      )}
-    </div>
+    );
+    }
+
+    // Good: State colocated
+    function App() {
+    return (
+        <>
+        <Form /> {/* State is inside Form */}
+        <OtherComponent /> {/* Never re-renders! */}
+        </>
+    );
+    }
+
+    function Form() {
+    const [formData, setFormData] = useState({});
+    // ... form logic
+    }`}</code>
+          </pre>
+        </div>
+      </section>
+
+      {/* Section 5: Component Extraction */}
+      <section style={{ marginBottom: 'var(--space-8)' }}>
+        <h2>Solution 4: Extract Stateful Components</h2>
+        <p>
+          Extract the part that changes into its own component to isolate re-renders.
+        </p>
+
+        <div
+          style={{
+            background: 'var(--bg-secondary)',
+            padding: 'var(--space-6)',
+            borderRadius: 'var(--radius-lg)',
+            marginTop: 'var(--space-4)',
+          }}
+        >
+          <h3>Component Extraction Example:</h3>
+          <ComponentExtractionDemo />
+
+          <pre style={{ marginTop: 'var(--space-4)' }}>
+            <code>{`// Bad: Everything re-renders
+    function Page() {
+    const [count, setCount] = useState(0);
+    return (
+        <>
+        <button onClick={() => setCount(count + 1)}>
+            {count}
+        </button>
+        <ExpensiveList /> {/* Re-renders! */}
+        <ExpensiveChart /> {/* Re-renders! */}
+        </>
+    );
+    }
+
+    // Good: Extract counter
+    function Page() {
+    return (
+        <>
+        <Counter /> {/* Only this re-renders */}
+        <ExpensiveList />
+        <ExpensiveChart />
+        </>
+    );
+    }
+
+    function Counter() {
+    const [count, setCount] = useState(0);
+    return <button onClick={() => setCount(count + 1)}>{count}</button>;
+    }`}</code>
+          </pre>
+        </div>
+      </section>
+
+      {/* Section 6: Why This Works */}
+      <section style={{ marginBottom: 'var(--space-8)' }}>
+        <h2>Why Composition Beats Memoization</h2>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: 'var(--space-4)',
+            marginTop: 'var(--space-4)',
+          }}
+        >
+          <div
+            style={{
+              padding: 'var(--space-4)',
+              background: 'var(--color-success)',
+              color: 'white',
+              borderRadius: 'var(--radius-lg)',
+            }}
+          >
+            <h3 style={{ color: 'white' }}>Composition</h3>
+            <ul style={{ paddingLeft: 'var(--space-6)' }}>
+              <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
+                Works automatically
+              </li>
+              <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
+                No extra code needed
+              </li>
+              <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
+                Better architecture
+              </li>
+              <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
+                More maintainable
+              </li>
+              <li style={{ color: 'white' }}>React 19 compiler optimizes it</li>
+            </ul>
+          </div>
+
+          <div
+            style={{
+              padding: 'var(--space-4)',
+              background: 'var(--color-warning)',
+              color: 'white',
+              borderRadius: 'var(--radius-lg)',
+            }}
+          >
+            <h3 style={{ color: 'white' }}>Memoization</h3>
+            <ul style={{ paddingLeft: 'var(--space-6)' }}>
+              <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
+                Requires manual work
+              </li>
+              <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
+                More code to maintain
+              </li>
+              <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
+                Can be misused
+              </li>
+              <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
+                Dependency tracking
+              </li>
+              <li style={{ color: 'white' }}>Use as last resort</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* Key Takeaways */}
+      <section>
+        <h2>Key Takeaways</h2>
+        <ul>
+          <li>
+            <strong>Composition is the primary performance pattern</strong> - use it first!
+          </li>
+          <li>
+            Use <code>children</code> prop to prevent unnecessary re-renders
+          </li>
+          <li>Slot pattern for multiple component props</li>
+          <li>Keep state colocated - as close to where it's used as possible</li>
+          <li>Extract stateful components to isolate re-renders</li>
+          <li>Composition works automatically with React 19 compiler</li>
+          <li>Better architecture beats memoization every time!</li>
+        </ul>
+      </section>
+    </LessonLayout>
   )
 }
 

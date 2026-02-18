@@ -1,4 +1,116 @@
 import { useState, useEffect } from 'react'
+import { LessonLayout } from '@components/lesson-layout'
+import type { PlaygroundConfig } from '@components/playground'
+// @ts-ignore
+import sourceCode from './UseEffectCleanup.tsx?raw'
+
+export const playgroundConfig: PlaygroundConfig = {
+  files: [
+    {
+      name: 'App.tsx',
+      language: 'tsx',
+      code: `import { useState, useEffect } from 'react'
+
+function Timer() {
+  const [seconds, setSeconds] = useState(0)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSeconds(s => s + 1)
+    }, 1000)
+
+    // Cleanup: clear interval on unmount
+    return () => {
+      clearInterval(interval)
+    }
+  }, [])
+
+  return (
+    <div style={{ padding: 12, background: '#e0f2fe', borderRadius: 8, marginBottom: 8 }}>
+      <strong>Timer:</strong> {seconds}s
+      <p style={{ fontSize: 12, color: '#666' }}>
+        Unmount me to see cleanup in the console
+      </p>
+    </div>
+  )
+}
+
+function MouseTracker() {
+  const [position, setPosition] = useState({ x: 0, y: 0 })
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setPosition({ x: e.clientX, y: e.clientY })
+    }
+
+    window.addEventListener('mousemove', handleMouseMove)
+
+    // Cleanup: remove event listener on unmount
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+    }
+  }, [])
+
+  return (
+    <div style={{ padding: 12, background: '#fef3c7', borderRadius: 8, marginBottom: 8 }}>
+      <strong>Mouse Position:</strong> X: {position.x}, Y: {position.y}
+      <p style={{ fontSize: 12, color: '#666' }}>
+        Move your mouse around. Listener is cleaned up on unmount.
+      </p>
+    </div>
+  )
+}
+
+export default function App() {
+  const [showTimer, setShowTimer] = useState(false)
+  const [showTracker, setShowTracker] = useState(false)
+
+  return (
+    <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+      <h2>Timer with Start/Stop (Cleanup Demo)</h2>
+      <button
+        onClick={() => setShowTimer(v => !v)}
+        style={{
+          padding: '8px 16px',
+          background: showTimer ? '#ef4444' : '#22c55e',
+          color: 'white',
+          border: 'none',
+          borderRadius: 6,
+          cursor: 'pointer',
+          marginBottom: 12,
+        }}
+      >
+        {showTimer ? 'Unmount Timer' : 'Mount Timer'}
+      </button>
+      {showTimer && <Timer />}
+
+      <hr style={{ margin: '20px 0' }} />
+
+      <h2>Mouse Position Tracker (Event Listener Cleanup)</h2>
+      <button
+        onClick={() => setShowTracker(v => !v)}
+        style={{
+          padding: '8px 16px',
+          background: showTracker ? '#ef4444' : '#22c55e',
+          color: 'white',
+          border: 'none',
+          borderRadius: 6,
+          cursor: 'pointer',
+          marginBottom: 12,
+        }}
+      >
+        {showTracker ? 'Stop Tracking' : 'Start Tracking'}
+      </button>
+      {showTracker && <MouseTracker />}
+    </div>
+  )
+}
+`,
+    },
+  ],
+  entryFile: 'App.tsx',
+  height: 400,
+}
 
 export default function UseEffectCleanup() {
   const [showTimer, setShowTimer] = useState(false)
@@ -8,8 +120,7 @@ export default function UseEffectCleanup() {
 
 
   return (
-    <div>
-      <h1>useEffect Cleanup</h1>
+    <LessonLayout title="useEffect Cleanup" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
       <p>
         Cleanup functions prevent <strong>memory leaks</strong> and unwanted behavior. They run
         before the effect re-executes and when the component unmounts.
@@ -43,7 +154,7 @@ export default function UseEffectCleanup() {
             marginTop: 'var(--space-4)',
           }}
         >
-          <p style={{ color: 'white', fontWeight: 'bold' }}>⚠️ Critical Rule:</p>
+          <p style={{ color: 'white', fontWeight: 'bold' }}>Critical Rule:</p>
           <p style={{ color: 'white' }}>
             If your effect sets up something (timer, subscription, listener), it MUST clean it up!
           </p>
@@ -86,20 +197,20 @@ export default function UseEffectCleanup() {
           <pre style={{ marginTop: 'var(--space-4)' }}>
             <code>{`function TimerComponent() {
   const [seconds, setSeconds] = useState(0);
-  
+
   useEffect(() => {
     // Set up the interval
     const interval = setInterval(() => {
       setSeconds(s => s + 1);
     }, 1000);
-    
+
     // Cleanup: clear the interval
     return () => {
       clearInterval(interval);
       console.log('Timer cleaned up!');
     };
   }, []);
-  
+
   return <div>Seconds: {seconds}</div>;
 }`}</code>
           </pre>
@@ -139,23 +250,23 @@ export default function UseEffectCleanup() {
           <pre style={{ marginTop: 'var(--space-4)' }}>
             <code>{`function MouseTracker() {
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  
+
   useEffect(() => {
     // Define the handler
     const handleMouseMove = (e: MouseEvent) => {
       setPosition({ x: e.clientX, y: e.clientY });
     };
-    
+
     // Add listener
     window.addEventListener('mousemove', handleMouseMove);
-    
+
     // Cleanup: remove listener
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       console.log('Mouse listener removed!');
     };
   }, []);
-  
+
   return <div>Mouse: {position.x}, {position.y}</div>;
 }`}</code>
           </pre>
@@ -197,22 +308,22 @@ export default function UseEffectCleanup() {
           <pre style={{ marginTop: 'var(--space-4)' }}>
             <code>{`function ChatComponent() {
   const [messages, setMessages] = useState([]);
-  
+
   useEffect(() => {
     // Simulate WebSocket connection
     const ws = new WebSocket('wss://chat.example.com');
-    
+
     ws.onmessage = (event) => {
       setMessages(prev => [...prev, event.data]);
     };
-    
+
     // Cleanup: close connection
     return () => {
       ws.close();
       console.log('WebSocket closed!');
     };
   }, []);
-  
+
   return <div>Messages: {messages.length}</div>;
 }`}</code>
           </pre>
@@ -255,11 +366,11 @@ export default function UseEffectCleanup() {
           <pre style={{ marginTop: 'var(--space-4)' }}>
             <code>{`function SearchResults({ searchTerm }) {
   const [results, setResults] = useState([]);
-  
+
   useEffect(() => {
     // Create abort controller
     const controller = new AbortController();
-    
+
     async function search() {
       try {
         const response = await fetch(
@@ -274,15 +385,15 @@ export default function UseEffectCleanup() {
         }
       }
     }
-    
+
     if (searchTerm) search();
-    
+
     // Cleanup: abort the fetch
     return () => {
       controller.abort();
     };
   }, [searchTerm]);
-  
+
   return <div>Results: {results.length}</div>;
 }`}</code>
           </pre>
@@ -308,19 +419,19 @@ export default function UseEffectCleanup() {
             <code>{`function DebouncedSearch() {
   const [input, setInput] = useState('');
   const [debouncedValue, setDebouncedValue] = useState('');
-  
+
   useEffect(() => {
     // Set up timeout
     const timer = setTimeout(() => {
       setDebouncedValue(input);
     }, 500); // Wait 500ms after user stops typing
-    
+
     // Cleanup: clear timeout if input changes again
     return () => {
       clearTimeout(timer);
     };
   }, [input]); // Re-run when input changes
-  
+
   return (
     <input
       value={input}
@@ -352,7 +463,7 @@ export default function UseEffectCleanup() {
               borderRadius: 'var(--radius-lg)',
             }}
           >
-            <h4 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>❌ Wrong</h4>
+            <h4 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>Wrong</h4>
             <pre>
               <code style={{ color: 'white' }}>{`useEffect(() => {
   setInterval(() => {
@@ -374,13 +485,13 @@ export default function UseEffectCleanup() {
               borderRadius: 'var(--radius-lg)',
             }}
           >
-            <h4 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>✅ Correct</h4>
+            <h4 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>Correct</h4>
             <pre>
               <code style={{ color: 'white' }}>{`useEffect(() => {
   const id = setInterval(() => {
     console.log('tick');
   }, 1000);
-  
+
   return () => clearInterval(id);
 }, []);`}</code>
             </pre>
@@ -412,7 +523,7 @@ export default function UseEffectCleanup() {
           <li>Forgetting cleanup leads to memory leaks and bugs!</li>
         </ul>
       </section>
-    </div>
+    </LessonLayout>
   )
 }
 
@@ -443,7 +554,7 @@ function TimerComponent() {
       }}
     >
       <p style={{ color: 'var(--color-primary-700)', fontWeight: 'bold' }}>
-        ⏱️ Timer: {seconds} seconds
+        Timer: {seconds} seconds
       </p>
       <p style={{ color: 'var(--color-primary-600)', fontSize: 'var(--font-size-sm)' }}>
         Check console - cleanup runs when you unmount!
@@ -479,7 +590,7 @@ function MouseTracker() {
       }}
     >
       <p style={{ color: 'var(--color-accent-700)', fontWeight: 'bold' }}>
-        🖱️ Mouse Position: X: {position.x}, Y: {position.y}
+        Mouse Position: X: {position.x}, Y: {position.y}
       </p>
       <p style={{ color: 'var(--color-accent-600)', fontSize: 'var(--font-size-sm)' }}>
         Move your mouse! Listener is cleaned up on unmount.
@@ -519,7 +630,7 @@ function ChatComponent() {
       }}
     >
       <p style={{ color: 'white', fontWeight: 'bold' }}>
-        💬 Chat {isConnected ? 'Connected' : 'Disconnected'}
+        Chat {isConnected ? 'Connected' : 'Disconnected'}
       </p>
       <p style={{ color: 'white' }}>Messages received: {messageCount}</p>
       <p style={{ color: 'white', fontSize: 'var(--font-size-sm)' }}>

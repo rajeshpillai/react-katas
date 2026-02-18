@@ -1,7 +1,109 @@
+import { LessonLayout } from '@components/lesson-layout'
+import type { PlaygroundConfig } from '@components/playground'
+// @ts-ignore
+import sourceCode from './GlobalStatePatterns.tsx?raw'
+
+export const playgroundConfig: PlaygroundConfig = {
+    files: [
+        {
+            name: 'App.tsx',
+            language: 'tsx',
+            code: `import { useSyncExternalStore } from 'react'
+
+type Listener = () => void
+
+function createStore<T>(initialState: T) {
+    let state = initialState
+    const listeners = new Set<Listener>()
+
+    return {
+        getSnapshot: () => state,
+        subscribe: (listener: Listener) => {
+            listeners.add(listener)
+            return () => listeners.delete(listener)
+        },
+        setState: (updater: (prev: T) => T) => {
+            state = updater(state)
+            listeners.forEach((l) => l())
+        },
+    }
+}
+
+// Shared counter store
+const counterStore = createStore({ count: 0 })
+
+function useCounterStore() {
+    const state = useSyncExternalStore(
+        counterStore.subscribe,
+        counterStore.getSnapshot
+    )
+    return { ...state, setState: counterStore.setState }
+}
+
+function CounterA() {
+    const { count, setState } = useCounterStore()
+
+    return (
+        <div style={{
+            padding: 16,
+            background: '#dbeafe',
+            borderRadius: 8,
+            marginBottom: 12,
+        }}>
+            <h3>Component A</h3>
+            <p style={{ fontSize: 32, fontWeight: 'bold', margin: '8px 0' }}>{count}</p>
+            <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={() => setState((s) => ({ count: s.count + 1 }))}>+1</button>
+                <button onClick={() => setState((s) => ({ count: s.count - 1 }))}>-1</button>
+            </div>
+        </div>
+    )
+}
+
+function CounterB() {
+    const { count, setState } = useCounterStore()
+
+    return (
+        <div style={{
+            padding: 16,
+            background: '#fce7f3',
+            borderRadius: 8,
+            marginBottom: 12,
+        }}>
+            <h3>Component B</h3>
+            <p style={{ fontSize: 32, fontWeight: 'bold', margin: '8px 0' }}>{count}</p>
+            <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={() => setState((s) => ({ count: s.count + 5 }))}>+5</button>
+                <button onClick={() => setState((s) => ({ count: 0 }))}>Reset</button>
+            </div>
+        </div>
+    )
+}
+
+export default function App() {
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Shared External Store</h2>
+            <p style={{ marginBottom: 16 }}>
+                Both components share the same counter store via useSyncExternalStore.
+                Updating from one component instantly reflects in the other.
+            </p>
+            <CounterA />
+            <CounterB />
+        </div>
+    )
+}
+`,
+        },
+    ],
+    entryFile: 'App.tsx',
+    height: 450,
+}
+
 export default function GlobalStatePatterns() {
   return (
-    <div>
-      <h1>Global State Patterns</h1>
+    <LessonLayout title="Global State Patterns" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+      <div>
       <p>
         Explore different patterns for managing global state in React applications, from Context to
         modern state management libraries.
@@ -20,7 +122,7 @@ export default function GlobalStatePatterns() {
             marginTop: 'var(--space-4)',
           }}
         >
-          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>💡 Use Global State For:</h3>
+          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>Use Global State For:</h3>
           <ul style={{ paddingLeft: 'var(--space-6)' }}>
             <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
               User authentication status
@@ -63,8 +165,8 @@ function AppProvider({ children }) {
         </pre>
 
         <div style={{ marginTop: 'var(--space-3)', padding: 'var(--space-3)', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)' }}>
-          <p><strong>✅ Pros:</strong> Built-in, no dependencies, simple</p>
-          <p><strong>❌ Cons:</strong> Performance issues with large state, no devtools</p>
+          <p><strong>Pros:</strong> Built-in, no dependencies, simple</p>
+          <p><strong>Cons:</strong> Performance issues with large state, no devtools</p>
         </div>
       </section>
 
@@ -94,8 +196,8 @@ function Component() {
         </pre>
 
         <div style={{ marginTop: 'var(--space-3)', padding: 'var(--space-3)', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)' }}>
-          <p><strong>✅ Pros:</strong> Simple API, great performance, devtools, small bundle</p>
-          <p><strong>❌ Cons:</strong> External dependency</p>
+          <p><strong>Pros:</strong> Simple API, great performance, devtools, small bundle</p>
+          <p><strong>Cons:</strong> External dependency</p>
         </div>
       </section>
 
@@ -121,8 +223,8 @@ function Component() {
         </pre>
 
         <div style={{ marginTop: 'var(--space-3)', padding: 'var(--space-3)', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)' }}>
-          <p><strong>✅ Pros:</strong> Atomic updates, great TypeScript support, flexible</p>
-          <p><strong>❌ Cons:</strong> Learning curve, external dependency</p>
+          <p><strong>Pros:</strong> Atomic updates, great TypeScript support, flexible</p>
+          <p><strong>Cons:</strong> Learning curve, external dependency</p>
         </div>
       </section>
 
@@ -153,8 +255,8 @@ const store = configureStore({
         </pre>
 
         <div style={{ marginTop: 'var(--space-3)', padding: 'var(--space-3)', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)' }}>
-          <p><strong>✅ Pros:</strong> Powerful devtools, middleware, established ecosystem</p>
-          <p><strong>❌ Cons:</strong> Larger bundle, more boilerplate</p>
+          <p><strong>Pros:</strong> Powerful devtools, middleware, established ecosystem</p>
+          <p><strong>Cons:</strong> Larger bundle, more boilerplate</p>
         </div>
       </section>
 
@@ -171,7 +273,7 @@ const store = configureStore({
             marginTop: 'var(--space-4)',
           }}
         >
-          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>✅ Recommendations:</h3>
+          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>Recommendations:</h3>
           <ul style={{ paddingLeft: 'var(--space-6)' }}>
             <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
               <strong>Small apps:</strong> Context API
@@ -201,6 +303,7 @@ const store = configureStore({
           <li>Consider bundle size and learning curve</li>
         </ul>
       </section>
-    </div>
+      </div>
+    </LessonLayout>
   )
 }

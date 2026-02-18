@@ -1,4 +1,107 @@
 import { useState, FormEvent, ChangeEvent, MouseEvent, KeyboardEvent } from 'react'
+import { LessonLayout } from '@components/lesson-layout'
+import type { PlaygroundConfig } from '@components/playground'
+import sourceCode from './EventHandling.tsx?raw'
+
+export const playgroundConfig: PlaygroundConfig = {
+    files: [
+        {
+            name: 'App.tsx',
+            language: 'tsx',
+            code: `import { useState } from 'react'
+
+export default function App() {
+    const [clicks, setClicks] = useState(0)
+    const [lastKey, setLastKey] = useState('')
+    const [formData, setFormData] = useState({ name: '', email: '' })
+    const [submitted, setSubmitted] = useState<{ name: string; email: string } | null>(null)
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault()
+        setSubmitted(formData)
+        setFormData({ name: '', email: '' })
+    }
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target
+        setFormData(prev => ({ ...prev, [name]: value }))
+    }
+
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Event Handling Demo</h2>
+
+            {/* Click events */}
+            <section style={{ marginBottom: 20 }}>
+                <h3>Click Events</h3>
+                <p>Clicked <strong>{clicks}</strong> times</p>
+                <button
+                    onClick={() => setClicks(c => c + 1)}
+                    style={{ padding: '8px 16px', marginRight: 8 }}
+                >
+                    Click me
+                </button>
+                <button
+                    onClick={() => setClicks(0)}
+                    style={{ padding: '8px 16px' }}
+                >
+                    Reset
+                </button>
+            </section>
+
+            {/* Keyboard events */}
+            <section style={{ marginBottom: 20 }}>
+                <h3>Keyboard Events</h3>
+                <input
+                    placeholder="Press any key..."
+                    onKeyDown={e => setLastKey(e.key)}
+                    style={{ padding: 8, fontSize: 14, width: '100%', marginBottom: 8 }}
+                />
+                {lastKey && <p>Last key: <strong>{lastKey}</strong></p>}
+            </section>
+
+            {/* Form events */}
+            <section>
+                <h3>Form Events</h3>
+                <form onSubmit={handleSubmit}>
+                    <input
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        placeholder="Name"
+                        style={{ padding: 8, fontSize: 14, width: '100%', marginBottom: 8 }}
+                    />
+                    <input
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        placeholder="Email"
+                        style={{ padding: 8, fontSize: 14, width: '100%', marginBottom: 8 }}
+                    />
+                    <button type="submit" style={{ padding: '8px 16px' }}>
+                        Submit
+                    </button>
+                </form>
+                {submitted && (
+                    <div style={{
+                        marginTop: 12,
+                        padding: 12,
+                        background: '#d1fae5',
+                        borderRadius: 6,
+                    }}>
+                        <p><strong>Submitted:</strong> {submitted.name} ({submitted.email})</p>
+                    </div>
+                )}
+            </section>
+        </div>
+    )
+}
+`,
+        },
+    ],
+    entryFile: 'App.tsx',
+    height: 450,
+}
 
 export default function EventHandling() {
     const [clickCount, setClickCount] = useState(0)
@@ -36,8 +139,8 @@ export default function EventHandling() {
     }
 
     return (
-        <div>
-            <h1>Event Handling</h1>
+        <LessonLayout title="Event Handling" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+            <div>
             <p>
                 React uses <strong>synthetic events</strong> - a cross-browser wrapper around the browser's
                 native event system. This ensures events work consistently across all browsers.
@@ -369,7 +472,7 @@ const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
                     }}
                 >
                     <div>
-                        <h4>❌ Don't Call Immediately:</h4>
+                        <h4>Don't Call Immediately:</h4>
                         <pre>
                             <code>{`// This calls the function immediately!
 <button onClick={handleClick()}>
@@ -379,7 +482,7 @@ const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
                     </div>
 
                     <div>
-                        <h4>✅ Pass Function Reference:</h4>
+                        <h4>Pass Function Reference:</h4>
                         <pre>
                             <code>{`// This passes the function to be called later
 <button onClick={handleClick}>
@@ -389,7 +492,7 @@ const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
                     </div>
 
                     <div>
-                        <h4>✅ Inline Arrow Function:</h4>
+                        <h4>Inline Arrow Function:</h4>
                         <pre>
                             <code>{`// Use when you need to pass arguments
 <button onClick={() => handleClick(id)}>
@@ -399,7 +502,7 @@ const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
                     </div>
 
                     <div>
-                        <h4>✅ With Event Object:</h4>
+                        <h4>With Event Object:</h4>
                         <pre>
                             <code>{`// Access event object
 <button onClick={(e) => {
@@ -428,7 +531,7 @@ const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
                         marginTop: 'var(--space-4)',
                     }}
                 >
-                    <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>⚡ How It Works</h3>
+                    <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>How It Works</h3>
                     <p style={{ marginBottom: 'var(--space-3)' }}>
                         React attaches a SINGLE event listener for each event type (click, change, etc.) to the <strong>root</strong> of your app (usually the div you mounted React into).
                     </p>
@@ -463,6 +566,7 @@ const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
                     <li>Event handlers receive a synthetic event object with useful properties</li>
                 </ul>
             </section>
-        </div>
+            </div>
+        </LessonLayout>
     )
 }

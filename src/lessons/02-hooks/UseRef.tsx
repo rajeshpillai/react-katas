@@ -1,9 +1,139 @@
 import React, { useState, useRef, useEffect } from 'react'
+import { LessonLayout } from '@components/lesson-layout'
+import type { PlaygroundConfig } from '@components/playground'
+// @ts-ignore
+import sourceCode from './UseRef.tsx?raw'
+
+export const playgroundConfig: PlaygroundConfig = {
+  files: [
+    {
+      name: 'App.tsx',
+      language: 'tsx',
+      code: `import { useState, useRef, useEffect } from 'react'
+
+function FocusDemo() {
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  return (
+    <div style={{ marginBottom: 24 }}>
+      <h3>Focus an Input with Ref</h3>
+      <input
+        ref={inputRef}
+        type="text"
+        placeholder="Click button to focus me"
+        style={{ padding: 8, fontSize: 14, marginRight: 8, border: '1px solid #ccc', borderRadius: 4 }}
+      />
+      <button
+        onClick={() => inputRef.current?.focus()}
+        style={{ padding: '8px 16px', background: '#3b82f6', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}
+      >
+        Focus Input
+      </button>
+    </div>
+  )
+}
+
+function RenderCounter() {
+  const [count, setCount] = useState(0)
+  const renderCount = useRef(0)
+
+  renderCount.current += 1
+
+  return (
+    <div style={{ marginBottom: 24 }}>
+      <h3>Render Counter</h3>
+      <p>State Count: <strong>{count}</strong></p>
+      <p>Render Count: <strong>{renderCount.current}</strong></p>
+      <p style={{ fontSize: 12, color: '#888' }}>
+        Render count increments without causing re-renders!
+      </p>
+      <button
+        onClick={() => setCount(c => c + 1)}
+        style={{ padding: '8px 16px', background: '#3b82f6', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}
+      >
+        Increment State
+      </button>
+    </div>
+  )
+}
+
+function Stopwatch() {
+  const [time, setTime] = useState(0)
+  const [isRunning, setIsRunning] = useState(false)
+  const intervalRef = useRef<number | null>(null)
+
+  const start = () => {
+    if (intervalRef.current) return
+    setIsRunning(true)
+    intervalRef.current = window.setInterval(() => {
+      setTime(t => t + 1)
+    }, 1000)
+  }
+
+  const stop = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
+      setIsRunning(false)
+    }
+  }
+
+  const reset = () => {
+    stop()
+    setTime(0)
+  }
+
+  return (
+    <div>
+      <h3>Stopwatch (useRef for interval ID)</h3>
+      <p style={{ fontSize: 32, fontWeight: 'bold' }}>{time}s</p>
+      <div style={{ display: 'flex', gap: 8 }}>
+        <button
+          onClick={start}
+          disabled={isRunning}
+          style={{ padding: '8px 16px', background: isRunning ? '#9ca3af' : '#22c55e', color: 'white', border: 'none', borderRadius: 4, cursor: isRunning ? 'not-allowed' : 'pointer' }}
+        >
+          Start
+        </button>
+        <button
+          onClick={stop}
+          disabled={!isRunning}
+          style={{ padding: '8px 16px', background: !isRunning ? '#9ca3af' : '#ef4444', color: 'white', border: 'none', borderRadius: 4, cursor: !isRunning ? 'not-allowed' : 'pointer' }}
+        >
+          Stop
+        </button>
+        <button
+          onClick={reset}
+          style={{ padding: '8px 16px', background: '#6b7280', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}
+        >
+          Reset
+        </button>
+      </div>
+    </div>
+  )
+}
+
+export default function App() {
+  return (
+    <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+      <FocusDemo />
+      <hr />
+      <RenderCounter />
+      <hr />
+      <Stopwatch />
+    </div>
+  )
+}
+`,
+    },
+  ],
+  entryFile: 'App.tsx',
+  height: 500,
+}
 
 export default function UseRef() {
   return (
-    <div>
-      <h1>useRef Hook</h1>
+    <LessonLayout title="useRef Hook" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
       <p>
         The <code>useRef</code> hook lets you reference values that don't trigger re-renders when
         changed. It's perfect for accessing DOM elements and storing mutable values.
@@ -36,7 +166,7 @@ ref.current = newValue;`}</code>
             marginTop: 'var(--space-4)',
           }}
         >
-          <p style={{ color: 'white', fontWeight: 'bold' }}>💡 Key Difference:</p>
+          <p style={{ color: 'white', fontWeight: 'bold' }}>Key Difference:</p>
           <p style={{ color: 'white' }}>
             Changing <code>ref.current</code> does NOT trigger a re-render, unlike{' '}
             <code>setState</code>!
@@ -63,12 +193,12 @@ ref.current = newValue;`}</code>
           <pre style={{ marginTop: 'var(--space-4)' }}>
             <code>{`function FocusInput() {
   const inputRef = useRef<HTMLInputElement>(null);
-  
+
   const handleFocus = () => {
     // Access the DOM element directly
     inputRef.current?.focus();
   };
-  
+
   return (
     <>
       <input ref={inputRef} type="text" />
@@ -103,10 +233,10 @@ ref.current = newValue;`}</code>
             <code>{`function RenderCounter() {
   const [count, setCount] = useState(0);
   const renderCount = useRef(0);
-  
+
   // Increment on every render (doesn't cause re-render)
   renderCount.current += 1;
-  
+
   return (
     <div>
       <p>State: {count}</p>
@@ -141,12 +271,12 @@ ref.current = newValue;`}</code>
             <code>{`function PreviousValue() {
   const [count, setCount] = useState(0);
   const prevCountRef = useRef(0);
-  
+
   useEffect(() => {
     // Update previous value after render
     prevCountRef.current = count;
   }, [count]);
-  
+
   return (
     <div>
       <p>Current: {count}</p>
@@ -181,22 +311,22 @@ ref.current = newValue;`}</code>
             <code>{`function Stopwatch() {
   const [time, setTime] = useState(0);
   const intervalRef = useRef<number | null>(null);
-  
+
   const start = () => {
     if (intervalRef.current) return; // Already running
-    
+
     intervalRef.current = setInterval(() => {
       setTime(t => t + 1);
     }, 1000);
   };
-  
+
   const stop = () => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
   };
-  
+
   return (
     <>
       <p>Time: {time}s</p>
@@ -228,14 +358,14 @@ ref.current = newValue;`}</code>
           <pre style={{ marginTop: 'var(--space-4)' }}>
             <code>{`function ScrollToElement() {
   const targetRef = useRef<HTMLDivElement>(null);
-  
+
   const scrollToTarget = () => {
     targetRef.current?.scrollIntoView({
       behavior: 'smooth',
       block: 'center'
     });
   };
-  
+
   return (
     <>
       <button onClick={scrollToTarget}>Scroll to Target</button>
@@ -315,7 +445,7 @@ countRef.current += 1; // No re-render`}</code>
             marginTop: 'var(--space-4)',
           }}
         >
-          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>✅ When to Use useRef</h3>
+          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>When to Use useRef</h3>
           <ul style={{ paddingLeft: 'var(--space-6)' }}>
             <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
               Accessing DOM elements (focus, scroll, measure)
@@ -352,7 +482,7 @@ countRef.current += 1; // No re-render`}</code>
           </li>
         </ul>
       </section>
-    </div>
+    </LessonLayout>
   )
 }
 

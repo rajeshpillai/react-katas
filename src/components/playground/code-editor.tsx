@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { EditorState, Compartment } from '@codemirror/state'
 import { EditorView, keymap } from '@codemirror/view'
 import { basicSetup } from 'codemirror'
@@ -19,12 +19,28 @@ function getLanguageExtension(lang: 'tsx' | 'ts' | 'css') {
     return javascript({ jsx: lang === 'tsx', typescript: true })
 }
 
+function useIsDark(): boolean {
+    const [dark, setDark] = useState(() => document.documentElement.dataset.theme === 'dark')
+
+    useEffect(() => {
+        const observer = new MutationObserver(() => {
+            setDark(document.documentElement.dataset.theme === 'dark')
+        })
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+        return () => observer.disconnect()
+    }, [])
+
+    return dark
+}
+
 export function CodeEditor({ code, language, onChange }: CodeEditorProps) {
     const containerRef = useRef<HTMLDivElement>(null)
     const viewRef = useRef<EditorView | null>(null)
     const langCompartment = useRef(new Compartment())
+    const themeCompartment = useRef(new Compartment())
     const onChangeRef = useRef(onChange)
     onChangeRef.current = onChange
+    const isDark = useIsDark()
 
     // Track whether we're programmatically updating the doc
     const isUpdatingRef = useRef(false)
@@ -32,15 +48,13 @@ export function CodeEditor({ code, language, onChange }: CodeEditorProps) {
     useEffect(() => {
         if (!containerRef.current) return
 
-        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-
         const state = EditorState.create({
             doc: code,
             extensions: [
                 basicSetup,
                 keymap.of([indentWithTab]),
                 langCompartment.current.of(getLanguageExtension(language)),
-                ...(isDark ? [oneDark] : []),
+                themeCompartment.current.of(isDark ? oneDark : []),
                 EditorView.updateListener.of((update) => {
                     if (update.docChanged && !isUpdatingRef.current) {
                         onChangeRef.current(update.state.doc.toString())
@@ -62,6 +76,16 @@ export function CodeEditor({ code, language, onChange }: CodeEditorProps) {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+    // Dynamically switch dark/light theme
+    useEffect(() => {
+        const view = viewRef.current
+        if (!view) return
+
+        view.dispatch({
+            effects: themeCompartment.current.reconfigure(isDark ? oneDark : []),
+        })
+    }, [isDark])
 
     // Update document when code changes externally (e.g., file tab switch, reset)
     useEffect(() => {

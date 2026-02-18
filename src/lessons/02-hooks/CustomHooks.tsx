@@ -1,9 +1,133 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { LessonLayout } from '@components/lesson-layout'
+import type { PlaygroundConfig } from '@components/playground'
+// @ts-ignore
+import sourceCode from './CustomHooks.tsx?raw'
+
+export const playgroundConfig: PlaygroundConfig = {
+  files: [
+    {
+      name: 'App.tsx',
+      language: 'tsx',
+      code: `import { useState, useEffect, useCallback } from 'react'
+
+// Custom Hook: useLocalStorage
+function useLocalStorage<T>(key: string, initialValue: T) {
+  const [value, setValue] = useState<T>(() => {
+    try {
+      const item = window.localStorage.getItem(key)
+      return item ? JSON.parse(item) : initialValue
+    } catch {
+      return initialValue
+    }
+  })
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(key, JSON.stringify(value))
+    } catch (error) {
+      console.error('Error saving to localStorage:', error)
+    }
+  }, [key, value])
+
+  return [value, setValue] as const
+}
+
+// Custom Hook: useToggle
+function useToggle(initialValue: boolean = false) {
+  const [value, setValue] = useState(initialValue)
+
+  const toggle = useCallback(() => setValue(v => !v), [])
+  const setTrue = useCallback(() => setValue(true), [])
+  const setFalse = useCallback(() => setValue(false), [])
+
+  return { value, toggle, setTrue, setFalse }
+}
+
+export default function App() {
+  const [name, setName] = useLocalStorage('playground-name', '')
+  const [theme, setTheme] = useLocalStorage('playground-theme', 'light')
+  const modal = useToggle(false)
+  const darkMode = useToggle(false)
+
+  return (
+    <div style={{
+      padding: 16,
+      fontFamily: 'sans-serif',
+      background: darkMode.value ? '#1f2937' : 'white',
+      color: darkMode.value ? 'white' : '#111',
+      minHeight: 300,
+    }}>
+      <h2>useLocalStorage Demo</h2>
+      <input
+        value={name}
+        onChange={e => setName(e.target.value)}
+        placeholder="Type your name (persists in localStorage)..."
+        style={{
+          padding: 8, fontSize: 14, width: '100%', marginBottom: 8,
+          border: '1px solid #ccc', borderRadius: 4,
+        }}
+      />
+      <p>Stored value: <strong>{name || '(empty)'}</strong></p>
+      <p style={{ fontSize: 12, color: '#888' }}>
+        This value persists across page reloads via localStorage.
+      </p>
+
+      <hr style={{ margin: '20px 0' }} />
+
+      <h2>useToggle Demo</h2>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+        <button
+          onClick={modal.toggle}
+          style={{
+            padding: '8px 16px',
+            background: modal.value ? '#ef4444' : '#22c55e',
+            color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer',
+          }}
+        >
+          {modal.value ? 'Hide' : 'Show'} Modal
+        </button>
+        <button
+          onClick={darkMode.toggle}
+          style={{
+            padding: '8px 16px',
+            background: darkMode.value ? '#374151' : '#e5e7eb',
+            color: darkMode.value ? 'white' : '#111',
+            border: 'none', borderRadius: 6, cursor: 'pointer',
+          }}
+        >
+          {darkMode.value ? 'Dark Mode' : 'Light Mode'}
+        </button>
+      </div>
+
+      {modal.value && (
+        <div style={{
+          padding: 16, background: '#3b82f6', color: 'white',
+          borderRadius: 8, marginBottom: 12,
+        }}>
+          <p style={{ fontWeight: 'bold' }}>Modal is visible!</p>
+          <p>Controlled by useToggle hook</p>
+          <button
+            onClick={modal.setFalse}
+            style={{ padding: '4px 12px', background: 'white', color: '#3b82f6', border: 'none', borderRadius: 4, cursor: 'pointer' }}
+          >
+            Close
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+`,
+    },
+  ],
+  entryFile: 'App.tsx',
+  height: 450,
+}
 
 export default function CustomHooks() {
   return (
-    <div>
-      <h1>Custom Hooks</h1>
+    <LessonLayout title="Custom Hooks" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
       <p>
         Custom hooks let you extract component logic into reusable functions. They're just
         JavaScript functions that use other hooks!
@@ -26,7 +150,7 @@ export default function CustomHooks() {
             marginTop: 'var(--space-4)',
           }}
         >
-          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>💡 Key Rules:</h3>
+          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>Key Rules:</h3>
           <ul style={{ paddingLeft: 'var(--space-6)' }}>
             <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
               Must start with "<code>use</code>" (e.g., <code>useWindowSize</code>)
@@ -298,7 +422,7 @@ function Counter() {
             marginTop: 'var(--space-4)',
           }}
         >
-          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>✅ Do's</h3>
+          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>Do's</h3>
           <ul style={{ paddingLeft: 'var(--space-6)' }}>
             <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
               Always start hook names with "use"
@@ -325,7 +449,7 @@ function Counter() {
             marginTop: 'var(--space-4)',
           }}
         >
-          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>❌ Don'ts</h3>
+          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>Don'ts</h3>
           <ul style={{ paddingLeft: 'var(--space-6)' }}>
             <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
               Don't call hooks conditionally
@@ -357,7 +481,7 @@ function Counter() {
           <li>Custom hooks make your code more maintainable and testable</li>
         </ul>
       </section>
-    </div>
+    </LessonLayout>
   )
 }
 
@@ -501,7 +625,7 @@ function WindowSizeDemo() {
       }}
     >
       <p style={{ color: 'var(--color-primary-700)', fontWeight: 'bold', fontSize: 'var(--font-size-2xl)' }}>
-        {width} × {height}
+        {width} x {height}
       </p>
       <p style={{ color: 'var(--color-primary-600)', fontSize: 'var(--font-size-sm)' }}>
         Resize your browser window to see it update!
@@ -582,7 +706,7 @@ function ToggleDemo() {
             cursor: 'pointer',
           }}
         >
-          {darkMode.value ? '🌙 Dark' : '☀️ Light'}
+          {darkMode.value ? 'Dark' : 'Light'}
         </button>
       </div>
 

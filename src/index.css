@@ -120,14 +120,13 @@
   --z-tooltip: 1600;
 }
 
-/* Dark mode */
-@media (prefers-color-scheme: dark) {
-  :root {
+/* Dark mode — controlled via data-theme attribute set by useTheme hook */
+:root[data-theme="dark"] {
     --bg-primary: var(--color-gray-900);
     --bg-secondary: var(--color-gray-800);
     --bg-tertiary: var(--color-gray-700);
     --bg-elevated: var(--color-gray-800);
-    
+
     --text-primary: var(--color-gray-50);
     --text-secondary: var(--color-gray-300);
     --text-tertiary: var(--color-gray-400);
@@ -140,7 +139,6 @@
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3);
     --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.3), 0 8px 10px -6px rgb(0 0 0 / 0.3);
-  }
 }
 
 /* ============================================
@@ -269,9 +267,7 @@ li {
   color: var(--color-primary-900);
 }
 
-@media (prefers-color-scheme: dark) {
-  ::selection {
+:root[data-theme="dark"] ::selection {
     background-color: var(--color-primary-800);
     color: var(--color-primary-100);
-  }
 }

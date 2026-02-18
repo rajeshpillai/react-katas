@@ -1,4 +1,105 @@
 import { useState } from 'react'
+import { LessonLayout } from '@components/lesson-layout'
+import type { PlaygroundConfig } from '@components/playground'
+import sourceCode from './ConditionalRendering.tsx?raw'
+
+export const playgroundConfig: PlaygroundConfig = {
+    files: [
+        {
+            name: 'App.tsx',
+            language: 'tsx',
+            code: `import { useState } from 'react'
+
+type Status = 'idle' | 'loading' | 'success' | 'error'
+
+function StatusMessage({ status }: { status: Status }) {
+    switch (status) {
+        case 'loading':
+            return <p style={{ color: '#2563eb' }}>Loading...</p>
+        case 'success':
+            return <p style={{ color: '#16a34a' }}>Data loaded successfully!</p>
+        case 'error':
+            return <p style={{ color: '#dc2626' }}>Something went wrong.</p>
+        default:
+            return <p style={{ color: '#666' }}>Click "Fetch" to load data.</p>
+    }
+}
+
+export default function App() {
+    const [isLoggedIn, setIsLoggedIn] = useState(false)
+    const [items, setItems] = useState<string[]>([])
+    const [status, setStatus] = useState<Status>('idle')
+
+    const addItem = () => {
+        setItems(prev => [...prev, \`Item \${prev.length + 1}\`])
+    }
+
+    const fetchData = () => {
+        setStatus('loading')
+        setTimeout(() => {
+            setStatus(Math.random() > 0.3 ? 'success' : 'error')
+        }, 1500)
+    }
+
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Conditional Rendering</h2>
+
+            {/* Ternary */}
+            <section style={{ marginBottom: 20 }}>
+                <h3>Ternary Operator</h3>
+                <button
+                    onClick={() => setIsLoggedIn(v => !v)}
+                    style={{ padding: '8px 16px', marginBottom: 8 }}
+                >
+                    {isLoggedIn ? 'Log out' : 'Log in'}
+                </button>
+                {isLoggedIn ? (
+                    <p style={{ color: '#16a34a' }}>Welcome back! You are logged in.</p>
+                ) : (
+                    <p style={{ color: '#666' }}>Please log in to continue.</p>
+                )}
+            </section>
+
+            {/* Logical AND */}
+            <section style={{ marginBottom: 20 }}>
+                <h3>Logical AND (&&)</h3>
+                <button onClick={addItem} style={{ padding: '8px 16px', marginBottom: 8 }}>
+                    Add Item
+                </button>
+                {items.length > 0 && (
+                    <ul>
+                        {items.map((item, i) => (
+                            <li key={i}>{item}</li>
+                        ))}
+                    </ul>
+                )}
+                {items.length === 0 && (
+                    <p style={{ color: '#999' }}>No items yet. Click the button above.</p>
+                )}
+            </section>
+
+            {/* Switch pattern */}
+            <section>
+                <h3>Switch / Multiple States</h3>
+                <button
+                    onClick={fetchData}
+                    disabled={status === 'loading'}
+                    style={{ padding: '8px 16px', marginBottom: 8 }}
+                >
+                    {status === 'loading' ? 'Fetching...' : 'Fetch Data'}
+                </button>
+                <StatusMessage status={status} />
+            </section>
+        </div>
+    )
+}
+`,
+        },
+    ],
+    entryFile: 'App.tsx',
+    height: 400,
+}
 
 export default function ConditionalRendering() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -21,8 +122,8 @@ export default function ConditionalRendering() {
   }
 
   return (
-    <div>
-      <h1>Conditional Rendering</h1>
+    <LessonLayout title="Conditional Rendering" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+      <div>
       <p>
         In React, you can render different UI based on conditions. There are several patterns for
         conditional rendering, each with its own use case.
@@ -63,7 +164,7 @@ export default function ConditionalRendering() {
             <code>{`function LoginStatus({ isLoggedIn }: { isLoggedIn: boolean }) {
   // Use if-else before return
   if (isLoggedIn) {
-    return <h3>Welcome back! 👋</h3>;
+    return <h3>Welcome back!</h3>;
   } else {
     return <h3>Please log in to continue</h3>;
   }
@@ -140,7 +241,7 @@ export default function ConditionalRendering() {
           >
             {userRole === 'admin' ? (
               <p style={{ color: 'var(--color-accent-600)', fontWeight: 'bold' }}>
-                🔑 Admin Dashboard Access
+                Admin Dashboard Access
               </p>
             ) : (
               <p style={{ color: 'var(--text-secondary)' }}>Limited Access</p>
@@ -321,7 +422,7 @@ export default function ConditionalRendering() {
             <code>{`function Modal({ isOpen, onClose }) {
   // Return null if not open - renders nothing
   if (!isOpen) return null;
-  
+
   return (
     <div className="modal">
       <div className="modal-content">
@@ -348,26 +449,26 @@ export default function ConditionalRendering() {
           }}
         >
           <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>
-            ✅ Do's and ❌ Don'ts
+            Do's and Don'ts
           </h3>
           <ul style={{ paddingLeft: 'var(--space-6)' }}>
             <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
-              ✅ Use <code>&&</code> for simple show/hide
+              Use <code>&&</code> for simple show/hide
             </li>
             <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
-              ✅ Use ternary for two alternatives
+              Use ternary for two alternatives
             </li>
             <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
-              ✅ Use switch/case for multiple conditions
+              Use switch/case for multiple conditions
             </li>
             <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
-              ❌ Avoid deeply nested ternaries (hard to read)
+              Avoid deeply nested ternaries (hard to read)
             </li>
             <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
-              ❌ Don't use <code>&&</code> with numbers (0 will render!)
+              Don't use <code>&&</code> with numbers (0 will render!)
             </li>
             <li style={{ color: 'white' }}>
-              ✅ Extract complex conditions into separate components
+              Extract complex conditions into separate components
             </li>
           </ul>
         </div>
@@ -396,7 +497,8 @@ export default function ConditionalRendering() {
           <li>Extract complex conditions into separate components</li>
         </ul>
       </section>
-    </div>
+      </div>
+    </LessonLayout>
   )
 }
 
@@ -413,7 +515,7 @@ function LoginStatus({ isLoggedIn }: { isLoggedIn: boolean }) {
           borderRadius: 'var(--radius-md)',
         }}
       >
-        <h3 style={{ color: 'white' }}>Welcome back! 👋</h3>
+        <h3 style={{ color: 'white' }}>Welcome back!</h3>
         <p style={{ color: 'white' }}>You are logged in</p>
       </div>
     )
@@ -445,7 +547,7 @@ function LoadingStateDisplay({ state }: { state: 'idle' | 'loading' | 'success' 
             textAlign: 'center',
           }}
         >
-          <p style={{ color: 'white' }}>⏳ Loading data...</p>
+          <p style={{ color: 'white' }}>Loading data...</p>
         </div>
       )
     case 'success':
@@ -458,7 +560,7 @@ function LoadingStateDisplay({ state }: { state: 'idle' | 'loading' | 'success' 
             borderRadius: 'var(--radius-md)',
           }}
         >
-          <p style={{ color: 'white' }}>✅ Data loaded successfully!</p>
+          <p style={{ color: 'white' }}>Data loaded successfully!</p>
         </div>
       )
     case 'error':
@@ -471,7 +573,7 @@ function LoadingStateDisplay({ state }: { state: 'idle' | 'loading' | 'success' 
             borderRadius: 'var(--radius-md)',
           }}
         >
-          <p style={{ color: 'white' }}>❌ Error loading data. Please try again.</p>
+          <p style={{ color: 'white' }}>Error loading data. Please try again.</p>
         </div>
       )
     default:

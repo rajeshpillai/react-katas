@@ -20,6 +20,8 @@ function ensureReactGlobals() {
     }
 }
 
+type MaximizedPane = 'editor' | 'preview' | null
+
 export function PlaygroundLayout({ config }: { config: PlaygroundConfig }) {
     const entryFile = config.entryFile || 'App.tsx'
     const height = config.height || 400
@@ -30,6 +32,11 @@ export function PlaygroundLayout({ config }: { config: PlaygroundConfig }) {
     const [files, setFiles] = useState(buildFilesMap)
     const [activeFile, setActiveFile] = useState(entryFile)
     const [runtimeErrors, setRuntimeErrors] = useState<PlaygroundError[]>([])
+    const [maximized, setMaximized] = useState<MaximizedPane>(null)
+
+    const toggleMaximize = useCallback((pane: 'editor' | 'preview') => {
+        setMaximized((prev) => (prev === pane ? null : pane))
+    }, [])
 
     // Expose React globals for iframe
     useEffect(ensureReactGlobals, [])
@@ -77,38 +84,60 @@ export function PlaygroundLayout({ config }: { config: PlaygroundConfig }) {
         config.files.find((f) => f.name === activeFile)?.language || 'tsx'
     const fileNames = config.files.map((f) => f.name)
 
+    const layoutClass = [
+        styles.layout,
+        maximized === 'editor' ? styles.editorMaximized : '',
+        maximized === 'preview' ? styles.previewMaximized : '',
+    ].filter(Boolean).join(' ')
+
     return (
-        <div className={styles.layout}>
-            <div className={styles.editorPane}>
-                <FileTabBar
-                    files={fileNames}
-                    activeFile={activeFile}
-                    onSelectFile={setActiveFile}
-                    onReset={handleReset}
-                />
-                <div className={styles.editorBody}>
-                    <CodeEditor
-                        code={currentCode}
-                        language={currentLang}
-                        onChange={handleCodeChange}
+        <div className={layoutClass}>
+            {maximized !== 'preview' && (
+                <div className={styles.editorPane}>
+                    <FileTabBar
+                        files={fileNames}
+                        activeFile={activeFile}
+                        onSelectFile={setActiveFile}
+                        onReset={handleReset}
+                        isMaximized={maximized === 'editor'}
+                        onToggleMaximize={() => toggleMaximize('editor')}
                     />
+                    <div className={styles.editorBody}>
+                        <CodeEditor
+                            code={currentCode}
+                            language={currentLang}
+                            onChange={handleCodeChange}
+                        />
+                    </div>
                 </div>
-            </div>
-            <div className={styles.previewPane}>
-                <div className={styles.previewHeader}>Preview</div>
-                <Preview
-                    iframeDoc={iframeDoc}
-                    height={height}
-                    onError={handleRuntimeError}
-                    onReady={handleReady}
-                />
-                {allErrors.length > 0 && (
-                    <ErrorDisplay
-                        errors={allErrors}
-                        onDismiss={handleDismissErrors}
+            )}
+            {maximized !== 'editor' && (
+                <div className={styles.previewPane}>
+                    <div className={styles.previewHeader}>
+                        <span>Preview</span>
+                        <button
+                            className={styles.maximizeBtn}
+                            onClick={() => toggleMaximize('preview')}
+                            title={maximized === 'preview' ? 'Restore' : 'Maximize'}
+                            aria-label={maximized === 'preview' ? 'Restore preview' : 'Maximize preview'}
+                        >
+                            {maximized === 'preview' ? '\u29C9' : '\u2922'}
+                        </button>
+                    </div>
+                    <Preview
+                        iframeDoc={iframeDoc}
+                        height={maximized === 'preview' ? height + 200 : height}
+                        onError={handleRuntimeError}
+                        onReady={handleReady}
                     />
-                )}
-            </div>
+                    {allErrors.length > 0 && (
+                        <ErrorDisplay
+                            errors={allErrors}
+                            onDismiss={handleDismissErrors}
+                        />
+                    )}
+                </div>
+            )}
         </div>
     )
 }

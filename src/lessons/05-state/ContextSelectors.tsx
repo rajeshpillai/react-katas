@@ -1,4 +1,8 @@
 import { createContext, useContext, useState, useRef, useCallback, useSyncExternalStore, useEffect, memo, useMemo } from 'react'
+import { LessonLayout } from '@components/lesson-layout'
+import type { PlaygroundConfig } from '@components/playground'
+// @ts-ignore
+import sourceCode from './ContextSelectors.tsx?raw'
 
 // Simple context selector implementation
 function createContextSelector<T>() {
@@ -43,10 +47,127 @@ function createContextSelector<T>() {
   return { Provider, useSelector }
 }
 
+export const playgroundConfig: PlaygroundConfig = {
+    files: [
+        {
+            name: 'App.tsx',
+            language: 'tsx',
+            code: `import { useState, useRef, useCallback, useEffect, useMemo, useSyncExternalStore } from 'react'
+
+// --- External store pattern using useSyncExternalStore ---
+
+type Listener = () => void
+
+function createStore<T>(initialState: T) {
+    let state = initialState
+    const listeners = new Set<Listener>()
+
+    return {
+        getSnapshot: () => state,
+        subscribe: (listener: Listener) => {
+            listeners.add(listener)
+            return () => listeners.delete(listener)
+        },
+        setState: (updater: (prev: T) => T) => {
+            state = updater(state)
+            listeners.forEach((l) => l())
+        },
+    }
+}
+
+interface AppState {
+    count: number
+    user: string
+    theme: string
+}
+
+const store = createStore<AppState>({ count: 0, user: 'John', theme: 'light' })
+
+function useSelector<S>(selector: (state: AppState) => S): S {
+    return useSyncExternalStore(
+        store.subscribe,
+        () => selector(store.getSnapshot())
+    )
+}
+
+function CountDisplay() {
+    const count = useSelector((s) => s.count)
+    const renderRef = useRef(0)
+    renderRef.current += 1
+
+    return (
+        <div style={{ padding: 12, background: '#dbeafe', borderRadius: 6, marginBottom: 8 }}>
+            <strong>Count:</strong> {count}
+            <span style={{ marginLeft: 12, fontSize: 12, color: '#666' }}>Renders: {renderRef.current}</span>
+        </div>
+    )
+}
+
+function UserDisplay() {
+    const user = useSelector((s) => s.user)
+    const renderRef = useRef(0)
+    renderRef.current += 1
+
+    return (
+        <div style={{ padding: 12, background: '#fce7f3', borderRadius: 6, marginBottom: 8 }}>
+            <strong>User:</strong> {user}
+            <span style={{ marginLeft: 12, fontSize: 12, color: '#666' }}>Renders: {renderRef.current}</span>
+        </div>
+    )
+}
+
+function ThemeDisplay() {
+    const theme = useSelector((s) => s.theme)
+    const renderRef = useRef(0)
+    renderRef.current += 1
+
+    return (
+        <div style={{ padding: 12, background: '#d1fae5', borderRadius: 6, marginBottom: 8 }}>
+            <strong>Theme:</strong> {theme}
+            <span style={{ marginLeft: 12, fontSize: 12, color: '#666' }}>Renders: {renderRef.current}</span>
+        </div>
+    )
+}
+
+export default function App() {
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Context Selector Pattern</h2>
+            <p style={{ marginBottom: 12 }}>
+                Each component subscribes to only one slice of state. Clicking a button
+                only re-renders the component that uses that value.
+            </p>
+            <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
+                <button onClick={() => store.setState((s) => ({ ...s, count: s.count + 1 }))}>
+                    Increment Count
+                </button>
+                <button onClick={() => store.setState((s) => ({ ...s, user: s.user === 'John' ? 'Jane' : 'John' }))}>
+                    Toggle User
+                </button>
+                <button onClick={() => store.setState((s) => ({ ...s, theme: s.theme === 'light' ? 'dark' : 'light' }))}>
+                    Toggle Theme
+                </button>
+            </div>
+            <CountDisplay />
+            <UserDisplay />
+            <ThemeDisplay />
+            <p style={{ fontSize: 12, color: '#888', marginTop: 12 }}>
+                Watch the render counts -- only the relevant component re-renders!
+            </p>
+        </div>
+    )
+}
+`,
+        },
+    ],
+    entryFile: 'App.tsx',
+    height: 450,
+}
+
 export default function ContextSelectors() {
   return (
-    <div>
-      <h1>Context Selectors</h1>
+    <LessonLayout title="Context Selectors" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+      <div>
       <p>
         Learn how to optimize Context performance by selecting only the data you need. Prevent
         unnecessary re-renders with context selectors!
@@ -69,7 +190,7 @@ export default function ContextSelectors() {
             marginTop: 'var(--space-4)',
           }}
         >
-          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>❌ Problem:</h3>
+          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>Problem:</h3>
           <pre style={{ background: 'transparent' }}>
             <code style={{ color: 'white' }}>{`const state = { user, theme, settings };
 
@@ -113,7 +234,7 @@ function Component() {
             marginTop: 'var(--space-4)',
           }}
         >
-          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>✅ Solution:</h3>
+          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>Solution:</h3>
           <pre style={{ background: 'transparent' }}>
             <code style={{ color: 'white' }}>{`// Only re-renders when theme changes!
 function Component() {
@@ -134,7 +255,7 @@ function Component() {
         <pre style={{ background: 'transparent' }}>
           <code>{`function useContextSelector(context, selector) {
   const value = useContext(context);
-  
+
   return useSyncExternalStore(
     value.subscribe, // React subscribes to changes
     () => selector(value.getSnapshot()) // Selects only the data needed
@@ -143,7 +264,7 @@ function Component() {
         </pre>
 
         <h3 style={{ marginTop: 'var(--space-6)', marginBottom: 'var(--space-3)' }}>
-          ⚙️ How it Works:
+          How it Works:
         </h3>
         <p>
           We rely on <code>useSyncExternalStore</code> which is designed for subscribing to external state.
@@ -204,7 +325,7 @@ useSyncExternalStore(
             marginTop: 'var(--space-4)',
           }}
         >
-          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>💡 Popular Libraries:</h3>
+          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>Popular Libraries:</h3>
           <ul style={{ paddingLeft: 'var(--space-6)' }}>
             <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
               <strong>use-context-selector</strong> - Lightweight selector hook
@@ -236,7 +357,8 @@ useSyncExternalStore(
           <li>Consider state management libraries for complex apps</li>
         </ul>
       </section>
-    </div>
+      </div>
+    </LessonLayout>
   )
 }
 
@@ -301,7 +423,7 @@ function StandardContextDemo() {
           <ProblemThemeDisplay />
         </div>
         <p style={{ color: 'var(--color-error)', fontSize: 'var(--font-size-sm)', marginTop: 'var(--space-4)' }}>
-          ⚠️ Notice: Clicking ANY button re-renders ALL components below!
+          Notice: Clicking ANY button re-renders ALL components below!
         </p>
       </div>
     </StandardContext.Provider>

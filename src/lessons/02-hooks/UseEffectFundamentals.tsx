@@ -1,4 +1,73 @@
 import { useState, useEffect } from 'react'
+import { LessonLayout } from '@components/lesson-layout'
+import type { PlaygroundConfig } from '@components/playground'
+// @ts-ignore
+import sourceCode from './UseEffectFundamentals.tsx?raw'
+
+export const playgroundConfig: PlaygroundConfig = {
+  files: [
+    {
+      name: 'App.tsx',
+      language: 'tsx',
+      code: `import { useState, useEffect } from 'react'
+
+export default function App() {
+  const [count, setCount] = useState(0)
+  const [seconds, setSeconds] = useState(0)
+  const [isRunning, setIsRunning] = useState(false)
+
+  // Effect 1: Update document title on every render
+  useEffect(() => {
+    document.title = \`Count: \${count}\`
+  })
+
+  // Effect 2: Timer with cleanup and dependency array
+  useEffect(() => {
+    if (!isRunning) return
+
+    const interval = setInterval(() => {
+      setSeconds(s => s + 1)
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [isRunning])
+
+  return (
+    <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+      <h2>Document Title Updater</h2>
+      <p>Count: <strong>{count}</strong></p>
+      <p style={{ fontSize: 12, color: '#888' }}>
+        Check the browser tab title - it updates with the count!
+      </p>
+      <button onClick={() => setCount(c => c + 1)} style={{ marginRight: 8 }}>
+        Increment
+      </button>
+      <button onClick={() => setCount(0)}>Reset</button>
+
+      <hr style={{ margin: '20px 0' }} />
+
+      <h2>Timer with Cleanup</h2>
+      <p style={{ fontSize: 32, fontWeight: 'bold' }}>{seconds}s</p>
+      <div style={{ display: 'flex', gap: 8 }}>
+        <button onClick={() => setIsRunning(r => !r)}>
+          {isRunning ? 'Stop' : 'Start'}
+        </button>
+        <button onClick={() => { setIsRunning(false); setSeconds(0) }}>
+          Reset
+        </button>
+      </div>
+      <p style={{ fontSize: 12, color: '#888', marginTop: 8 }}>
+        The interval is cleaned up when stopped or when the component unmounts.
+      </p>
+    </div>
+  )
+}
+`,
+    },
+  ],
+  entryFile: 'App.tsx',
+  height: 400,
+}
 
 export default function UseEffectFundamentals() {
   const [count, setCount] = useState(0)
@@ -69,8 +138,7 @@ export default function UseEffectFundamentals() {
   }
 
   return (
-    <div>
-      <h1>useEffect Fundamentals</h1>
+    <LessonLayout title="useEffect Fundamentals" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
       <p>
         The <code>useEffect</code> hook lets you perform <strong>side effects</strong> in function
         components. Side effects include data fetching, subscriptions, timers, and manually
@@ -101,7 +169,7 @@ export default function UseEffectFundamentals() {
           }}
         >
           <p style={{ color: 'white' }}>
-            💡 <strong>Key Concept:</strong> Effects run <em>after</em> React updates the DOM.
+            <strong>Key Concept:</strong> Effects run <em>after</em> React updates the DOM.
             This ensures your UI is always in sync before side effects execute.
           </p>
         </div>
@@ -115,7 +183,7 @@ export default function UseEffectFundamentals() {
           <code>{`useEffect(() => {
   // Your side effect code here
   console.log('Effect ran!');
-  
+
   // Optional: return cleanup function
   return () => {
     console.log('Cleanup!');
@@ -165,7 +233,7 @@ export default function UseEffectFundamentals() {
             Count: <strong>{count}</strong>
           </div>
           <p style={{ marginBottom: 'var(--space-4)', color: 'var(--text-secondary)' }}>
-            👆 Check your browser tab - the title updates with the count!
+            Check your browser tab - the title updates with the count!
           </p>
           <button
             onClick={() => setCount(count + 1)}
@@ -280,7 +348,7 @@ useEffect(() => {
     const interval = setInterval(() => {
       setSeconds(s => s + 1);
     }, 1000);
-    
+
     // Cleanup: clear interval when effect re-runs or unmounts
     return () => {
       clearInterval(interval);
@@ -326,10 +394,10 @@ useEffect(() => {
   const handleResize = () => {
     setWindowWidth(window.innerWidth);
   };
-  
+
   // Add event listener
   window.addEventListener('resize', handleResize);
-  
+
   // Cleanup: remove event listener
   return () => {
     window.removeEventListener('resize', handleResize);
@@ -394,7 +462,7 @@ useEffect(() => {
     const data = await response.json();
     setUser(data);
   }
-  
+
   fetchData();
 }, []); // Empty array - fetch once on mount`}</code>
           </pre>
@@ -414,7 +482,7 @@ useEffect(() => {
             marginTop: 'var(--space-4)',
           }}
         >
-          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>⚠️ Watch Out For:</h3>
+          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>Watch Out For:</h3>
           <ul style={{ paddingLeft: 'var(--space-6)' }}>
             <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
               <strong>Missing dependencies:</strong> Always include all values used in the effect
@@ -450,6 +518,6 @@ useEffect(() => {
           <li>Next lesson: useEffect cleanup patterns and advanced techniques!</li>
         </ul>
       </section>
-    </div>
+    </LessonLayout>
   )
 }

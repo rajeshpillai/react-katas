@@ -5,6 +5,8 @@ interface FileTabBarProps {
     activeFile: string
     onSelectFile: (fileName: string) => void
     onReset: () => void
+    isMaximized?: boolean
+    onToggleMaximize?: () => void
 }
 
 const LANG_LABELS: Record<string, string> = {
@@ -20,7 +22,7 @@ function getExtLabel(fileName: string): string {
     return LANG_LABELS[ext] || ext.toUpperCase()
 }
 
-export function FileTabBar({ files, activeFile, onSelectFile, onReset }: FileTabBarProps) {
+export function FileTabBar({ files, activeFile, onSelectFile, onReset, isMaximized, onToggleMaximize }: FileTabBarProps) {
     return (
         <div className={styles.bar}>
             <div className={styles.tabs}>
@@ -35,9 +37,21 @@ export function FileTabBar({ files, activeFile, onSelectFile, onReset }: FileTab
                     </button>
                 ))}
             </div>
-            <button className={styles.reset} onClick={onReset} title="Reset all files to original">
-                Reset
-            </button>
+            <div className={styles.actions}>
+                <button className={styles.reset} onClick={onReset} title="Reset all files to original">
+                    Reset
+                </button>
+                {onToggleMaximize && (
+                    <button
+                        className={styles.maximize}
+                        onClick={onToggleMaximize}
+                        title={isMaximized ? 'Restore' : 'Maximize'}
+                        aria-label={isMaximized ? 'Restore editor' : 'Maximize editor'}
+                    >
+                        {isMaximized ? '\u29C9' : '\u2922'}
+                    </button>
+                )}
+            </div>
         </div>
     )
 }

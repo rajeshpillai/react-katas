@@ -4,6 +4,11 @@
     min-height: 100vh;
     background-color: var(--bg-primary);
     padding: 4px;
+    transition: grid-template-columns 0.2s ease;
+}
+
+.app.sidebarCollapsed {
+    grid-template-columns: 48px 1fr;
 }
 
 .sidebar {
@@ -14,6 +19,12 @@
     top: 0;
     height: 100vh;
     margin-right: 2em;
+    transition: width 0.2s ease;
+}
+
+.sidebarCollapsed .sidebar {
+    margin-right: 0;
+    overflow: hidden;
 }
 
 .main-content {

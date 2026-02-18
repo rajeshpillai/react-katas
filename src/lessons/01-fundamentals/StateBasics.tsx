@@ -1,10 +1,7 @@
-import { useState, lazy, Suspense } from 'react'
+import { useState } from 'react'
+import { LessonLayout } from '@components/lesson-layout'
 import type { PlaygroundConfig } from '@components/playground'
 import sourceCode from './StateBasics.tsx?raw'
-
-const PlaygroundLayout = lazy(() =>
-    import('@components/playground').then((m) => ({ default: m.PlaygroundLayout }))
-)
 
 export const playgroundConfig: PlaygroundConfig = {
     files: [
@@ -45,46 +42,12 @@ export default function App() {
 }
 
 export default function StateBasics() {
-    const [activeTab, setActiveTab] = useState<'lesson' | 'playground' | 'code'>('lesson')
     const [count, setCount] = useState(0)
     const [name, setName] = useState('')
     const [isVisible, setIsVisible] = useState(true)
 
     return (
-        <div>
-            <h1>State Basics</h1>
-
-            <div style={{ marginBottom: 24, borderBottom: '1px solid var(--border-color)' }}>
-                {(['lesson', 'playground', 'code'] as const).map((tab) => (
-                    <button
-                        key={tab}
-                        onClick={() => setActiveTab(tab)}
-                        style={{
-                            padding: '10px 20px',
-                            background: 'transparent',
-                            border: 'none',
-                            borderBottom: activeTab === tab ? '2px solid var(--color-primary-500)' : '2px solid transparent',
-                            cursor: 'pointer',
-                            fontWeight: activeTab === tab ? 'bold' : 'normal',
-                            color: activeTab === tab ? 'var(--color-primary-500)' : 'var(--text-secondary)',
-                        }}
-                    >
-                        {tab === 'lesson' ? 'Lesson' : tab === 'playground' ? 'Playground' : 'Source Code'}
-                    </button>
-                ))}
-            </div>
-
-            {activeTab === 'playground' && (
-                <Suspense fallback={<div>Loading playground...</div>}>
-                    <PlaygroundLayout config={playgroundConfig} />
-                </Suspense>
-            )}
-
-            {activeTab === 'code' && (
-                <pre style={{ overflow: 'auto' }}><code>{sourceCode}</code></pre>
-            )}
-
-            {activeTab === 'lesson' && (
+        <LessonLayout title="State Basics" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
             <div>
             <p>
                 State lets components "remember" information and respond to user interactions. The{' '}
@@ -205,7 +168,7 @@ const [count, setCount] = useState(0);
                     >
                         {name ? (
                             <p>
-                                Hello, <strong>{name}</strong>! 👋
+                                Hello, <strong>{name}</strong>!
                             </p>
                         ) : (
                             <p style={{ color: 'var(--text-tertiary)' }}>Type your name above...</p>
@@ -295,7 +258,7 @@ const [count, setCount] = useState(0);
                                 borderRadius: 'var(--radius-md)',
                             }}
                         >
-                            <p>🎉 This message is conditionally rendered based on state!</p>
+                            <p>This message is conditionally rendered based on state!</p>
                         </div>
                     )}
                 </div>
@@ -319,7 +282,7 @@ const [count, setCount] = useState(0);
                         marginTop: 'var(--space-4)',
                     }}
                 >
-                    <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>⚙️ How Batching Works</h3>
+                    <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>How Batching Works</h3>
                     <pre style={{ background: 'transparent' }}>
                         <code style={{ color: 'white' }}>{`// Render Count: 0
 
@@ -327,7 +290,7 @@ const handleClick = () => {
   setCount(c => c + 1); // Update queued
   setName('Alice');     // Update queued
   setIsVisible(false);  // Update queued
-  
+
   // React reconciles ALL changes in one go!
   // Component re-renders ONCE with all new values.
 }
@@ -351,7 +314,6 @@ const handleClick = () => {
                 </ul>
             </section>
             </div>
-            )}
-        </div>
+        </LessonLayout>
     )
 }

@@ -1,4 +1,71 @@
 import { useState } from 'react'
+import { LessonLayout } from '@components/lesson-layout'
+import type { PlaygroundConfig } from '@components/playground'
+import sourceCode from './JSXBasics.tsx?raw'
+
+export const playgroundConfig: PlaygroundConfig = {
+    files: [
+        {
+            name: 'App.tsx',
+            language: 'tsx',
+            code: `import { useState } from 'react'
+
+function Greeting({ name }: { name: string }) {
+    return <p>Hello, <strong>{name}</strong>!</p>
+}
+
+export default function App() {
+    const [text, setText] = useState('')
+    const currentYear = new Date().getFullYear()
+    const isLearning = true
+
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>JSX Basics Demo</h2>
+
+            {/* Embedding expressions */}
+            <section style={{ marginBottom: 16 }}>
+                <h3>Expressions in JSX</h3>
+                <ul>
+                    <li>Math: 2 + 2 = <strong>{2 + 2}</strong></li>
+                    <li>Year: <strong>{currentYear}</strong></li>
+                    <li>Ternary: <strong>{isLearning ? 'Currently learning!' : 'Not learning'}</strong></li>
+                </ul>
+            </section>
+
+            {/* Conditional rendering */}
+            <section style={{ marginBottom: 16 }}>
+                <h3>Conditional Rendering</h3>
+                <input
+                    value={text}
+                    onChange={e => setText(e.target.value)}
+                    placeholder="Type your name..."
+                    style={{ padding: 8, fontSize: 14, width: '100%', marginBottom: 8 }}
+                />
+                {text ? (
+                    <Greeting name={text} />
+                ) : (
+                    <p style={{ color: '#999' }}>Enter a name above to see a greeting.</p>
+                )}
+            </section>
+
+            {/* Fragments */}
+            <section>
+                <h3>Fragment Example</h3>
+                <>
+                    <p>This paragraph and the next are wrapped in a Fragment.</p>
+                    <p>No extra DOM node is added around them.</p>
+                </>
+            </section>
+        </div>
+    )
+}
+`,
+        },
+    ],
+    entryFile: 'App.tsx',
+    height: 400,
+}
 
 export default function JSXBasics() {
     const [showTransformed, setShowTransformed] = useState(false)
@@ -9,8 +76,8 @@ export default function JSXBasics() {
     const isLearning = true
 
     return (
-        <div>
-            <h1>JSX Basics</h1>
+        <LessonLayout title="JSX Basics" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+            <div>
             <p>
                 JSX (JavaScript XML) is a syntax extension for JavaScript that lets you write HTML-like
                 markup inside JavaScript files. It's the foundation of React development.
@@ -130,7 +197,7 @@ const isLearning = true;
                         marginBottom: 'var(--space-4)',
                     }}
                 >
-                    <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>💡 Key Rules</h3>
+                    <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>Key Rules</h3>
                     <ol style={{ paddingLeft: 'var(--space-6)' }}>
                         <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
                             <strong>Return a single root element</strong> - Wrap multiple elements in a parent
@@ -187,7 +254,8 @@ const isLearning = true;
                     <li>Fragments let you group elements without adding DOM nodes</li>
                 </ul>
             </section>
-        </div>
+            </div>
+        </LessonLayout>
     )
 }
 

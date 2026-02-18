@@ -1,7 +1,158 @@
+import { LessonLayout } from '@components/lesson-layout'
+import type { PlaygroundConfig } from '@components/playground'
+// @ts-ignore
+import sourceCode from './StateMachines.tsx?raw'
+
+export const playgroundConfig: PlaygroundConfig = {
+    files: [
+        {
+            name: 'App.tsx',
+            language: 'tsx',
+            code: `import { useReducer } from 'react'
+
+type State = 'idle' | 'loading' | 'success' | 'error'
+type Event = { type: 'FETCH' } | { type: 'SUCCESS'; data: string } | { type: 'ERROR'; error: string } | { type: 'RESET' }
+
+interface MachineState {
+    status: State
+    data: string | null
+    error: string | null
+}
+
+const transitions: Record<State, Partial<Record<Event['type'], State>>> = {
+    idle: { FETCH: 'loading' },
+    loading: { SUCCESS: 'success', ERROR: 'error' },
+    success: { FETCH: 'loading', RESET: 'idle' },
+    error: { FETCH: 'loading', RESET: 'idle' },
+}
+
+function reducer(state: MachineState, event: Event): MachineState {
+    const nextStatus = transitions[state.status][event.type]
+    if (!nextStatus) return state
+
+    switch (event.type) {
+        case 'FETCH':
+            return { status: 'loading', data: null, error: null }
+        case 'SUCCESS':
+            return { status: 'success', data: event.data, error: null }
+        case 'ERROR':
+            return { status: 'error', data: null, error: event.error }
+        case 'RESET':
+            return { status: 'idle', data: null, error: null }
+        default:
+            return state
+    }
+}
+
+const initialState: MachineState = { status: 'idle', data: null, error: null }
+
+const colors: Record<State, string> = {
+    idle: '#6b7280',
+    loading: '#f59e0b',
+    success: '#10b981',
+    error: '#ef4444',
+}
+
+export default function App() {
+    const [state, dispatch] = useReducer(reducer, initialState)
+
+    const simulateFetch = () => {
+        dispatch({ type: 'FETCH' })
+        setTimeout(() => {
+            if (Math.random() > 0.3) {
+                dispatch({ type: 'SUCCESS', data: 'Data loaded at ' + new Date().toLocaleTimeString() })
+            } else {
+                dispatch({ type: 'ERROR', error: 'Network request failed' })
+            }
+        }, 1500)
+    }
+
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Traffic Light State Machine</h2>
+            <p style={{ marginBottom: 16 }}>
+                Demonstrates idle -> loading -> success/error transitions using useReducer.
+            </p>
+
+            <div style={{
+                padding: 20,
+                borderRadius: 8,
+                border: '2px solid ' + colors[state.status],
+                marginBottom: 16,
+                textAlign: 'center',
+            }}>
+                <div style={{
+                    width: 60,
+                    height: 60,
+                    borderRadius: '50%',
+                    background: colors[state.status],
+                    margin: '0 auto 12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'white',
+                    fontWeight: 'bold',
+                    fontSize: 11,
+                    textTransform: 'uppercase',
+                }}>
+                    {state.status}
+                </div>
+                {state.status === 'loading' && <p>Loading...</p>}
+                {state.status === 'success' && <p style={{ color: colors.success }}>{state.data}</p>}
+                {state.status === 'error' && <p style={{ color: colors.error }}>{state.error}</p>}
+                {state.status === 'idle' && <p style={{ color: '#999' }}>Ready to fetch</p>}
+            </div>
+
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+                <button
+                    onClick={simulateFetch}
+                    disabled={state.status === 'loading'}
+                    style={{
+                        padding: '8px 20px',
+                        background: state.status === 'loading' ? '#ccc' : '#3b82f6',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: 6,
+                        cursor: state.status === 'loading' ? 'not-allowed' : 'pointer',
+                    }}
+                >
+                    {state.status === 'loading' ? 'Loading...' : 'Fetch Data'}
+                </button>
+                {(state.status === 'success' || state.status === 'error') && (
+                    <button
+                        onClick={() => dispatch({ type: 'RESET' })}
+                        style={{
+                            padding: '8px 20px',
+                            background: '#6b7280',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: 6,
+                            cursor: 'pointer',
+                        }}
+                    >
+                        Reset
+                    </button>
+                )}
+            </div>
+
+            <div style={{ marginTop: 16, fontSize: 12, color: '#888' }}>
+                <strong>Valid transitions from "{state.status}":</strong>{' '}
+                {Object.keys(transitions[state.status]).join(', ') || 'none'}
+            </div>
+        </div>
+    )
+}
+`,
+        },
+    ],
+    entryFile: 'App.tsx',
+    height: 450,
+}
+
 export default function StateMachines() {
   return (
-    <div>
-      <h1>State Machines</h1>
+    <LessonLayout title="State Machines" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+      <div>
       <p>
         State machines provide a structured way to manage complex state transitions. They make your
         app's behavior predictable and easier to reason about.
@@ -24,7 +175,7 @@ export default function StateMachines() {
             marginTop: 'var(--space-4)',
           }}
         >
-          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>💡 Key Concepts:</h3>
+          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>Key Concepts:</h3>
           <ul style={{ paddingLeft: 'var(--space-6)' }}>
             <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
               <strong>States:</strong> Possible conditions (idle, loading, success, error)
@@ -77,7 +228,7 @@ const [state, dispatch] = useReducer(reducer, 'red');
             marginTop: 'var(--space-4)',
           }}
         >
-          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>✅ Advantages:</h3>
+          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>Advantages:</h3>
           <ul style={{ paddingLeft: 'var(--space-6)' }}>
             <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
               Impossible states are impossible
@@ -143,7 +294,7 @@ const fetchMachine = createMachine({
             marginTop: 'var(--space-4)',
           }}
         >
-          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>💡 Perfect For:</h3>
+          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>Perfect For:</h3>
           <ul style={{ paddingLeft: 'var(--space-6)' }}>
             <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
               Multi-step forms and wizards
@@ -174,6 +325,7 @@ const fetchMachine = createMachine({
           <li>Consider for multi-step forms and auth flows</li>
         </ul>
       </section>
-    </div>
+      </div>
+    </LessonLayout>
   )
 }

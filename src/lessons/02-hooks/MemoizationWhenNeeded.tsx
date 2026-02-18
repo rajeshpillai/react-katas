@@ -1,9 +1,94 @@
 import { useState, useMemo, useCallback, memo } from 'react'
+import { LessonLayout } from '@components/lesson-layout'
+import type { PlaygroundConfig } from '@components/playground'
+// @ts-ignore
+import sourceCode from './MemoizationWhenNeeded.tsx?raw'
+
+export const playgroundConfig: PlaygroundConfig = {
+  files: [
+    {
+      name: 'App.tsx',
+      language: 'tsx',
+      code: `import { useState, useMemo, useCallback, memo } from 'react'
+
+// Simulate an expensive calculation
+function expensiveCalculation(num: number): number {
+  console.log('Computing expensive result...')
+  let result = 0
+  for (let i = 0; i < 50000000; i++) {
+    result += num
+  }
+  return result
+}
+
+// Memoized child component
+const MemoizedButton = memo(function MemoizedButton({ onClick, label }: { onClick: () => void; label: string }) {
+  console.log('MemoizedButton rendered:', label)
+  return (
+    <button
+      onClick={onClick}
+      style={{ padding: '8px 16px', background: '#8b5cf6', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer', marginRight: 8 }}
+    >
+      {label}
+    </button>
+  )
+})
+
+export default function App() {
+  const [count, setCount] = useState(0)
+  const [text, setText] = useState('')
+
+  // useMemo: only recompute when count changes
+  const expensiveResult = useMemo(() => {
+    return expensiveCalculation(count)
+  }, [count])
+
+  // useCallback: stable function reference
+  const handleIncrement = useCallback(() => {
+    setCount(c => c + 1)
+  }, [])
+
+  const handleReset = useCallback(() => {
+    setCount(0)
+  }, [])
+
+  return (
+    <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+      <h2>useMemo - Expensive Calculation</h2>
+      <p>Count: <strong>{count}</strong></p>
+      <p>Expensive Result: <strong>{expensiveResult}</strong></p>
+      <p style={{ fontSize: 12, color: '#888' }}>
+        Check the console - computation only runs when count changes, not when you type.
+      </p>
+
+      <input
+        value={text}
+        onChange={e => setText(e.target.value)}
+        placeholder="Type here (no recomputation)..."
+        style={{ padding: 8, fontSize: 14, width: '100%', marginBottom: 16, border: '1px solid #ccc', borderRadius: 4 }}
+      />
+
+      <hr style={{ margin: '20px 0' }} />
+
+      <h2>useCallback - Stable References</h2>
+      <p style={{ fontSize: 12, color: '#888', marginBottom: 8 }}>
+        Check the console - MemoizedButton only renders when its props change.
+      </p>
+      <MemoizedButton onClick={handleIncrement} label="Increment" />
+      <MemoizedButton onClick={handleReset} label="Reset" />
+    </div>
+  )
+}
+`,
+    },
+  ],
+  entryFile: 'App.tsx',
+  height: 450,
+}
 
 export default function MemoizationWhenNeeded() {
   return (
-    <div>
-      <h1>Memoization (When You Need It)</h1>
+    <LessonLayout title="Memoization (When You Need It)" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
       <p>
         In React 19, the <strong>React Compiler</strong> automatically optimizes most components.
         Manual memoization with <code>useMemo</code> and <code>useCallback</code> is now optional
@@ -27,7 +112,7 @@ export default function MemoizationWhenNeeded() {
             marginTop: 'var(--space-4)',
           }}
         >
-          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>✅ What's Automatic:</h3>
+          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>What's Automatic:</h3>
           <ul style={{ paddingLeft: 'var(--space-6)' }}>
             <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
               Component re-renders are optimized automatically
@@ -52,7 +137,7 @@ export default function MemoizationWhenNeeded() {
           }}
         >
           <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>
-            ⚠️ When You Still Need Manual Memoization:
+            When You Still Need Manual Memoization:
           </h3>
           <ul style={{ paddingLeft: 'var(--space-6)' }}>
             <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
@@ -95,10 +180,10 @@ export default function MemoizationWhenNeeded() {
   const [count, setCount] = useState(0);
   const [input, setInput] = useState('');
 
-  // ❌ Without useMemo: runs on every render
+  // Without useMemo: runs on every render
   // const result = expensiveOperation(count);
 
-  // ✅ With useMemo: only runs when count changes
+  // With useMemo: only runs when count changes
   const result = useMemo(() => {
     console.log('Computing...');
     return expensiveOperation(count);
@@ -140,10 +225,10 @@ export default function MemoizationWhenNeeded() {
   const [count, setCount] = useState(0);
   const [text, setText] = useState('');
 
-  // ❌ Without useCallback: new function on every render
+  // Without useCallback: new function on every render
   // const handleClick = () => setCount(count + 1);
 
-  // ✅ With useCallback: same function reference
+  // With useCallback: same function reference
   const handleClick = useCallback(() => {
     setCount(c => c + 1);
   }, []); // Empty deps - function never changes
@@ -231,7 +316,7 @@ function Parent() {
           }}
         >
           <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>
-            ❌ Don't Memoize These:
+            Don't Memoize These:
           </h3>
           <ul style={{ paddingLeft: 'var(--space-6)' }}>
             <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
@@ -267,7 +352,7 @@ function Parent() {
           }}
         >
           <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>
-            💡 Best Practice in React 19:
+            Best Practice in React 19:
           </h3>
           <ol style={{ paddingLeft: 'var(--space-6)' }}>
             <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
@@ -307,7 +392,7 @@ function Parent() {
           <li>Next section: Performance patterns that work better than memoization!</li>
         </ul>
       </section>
-    </div>
+    </LessonLayout>
   )
 }
 

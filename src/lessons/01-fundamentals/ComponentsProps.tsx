@@ -1,9 +1,107 @@
 import { ReactNode } from 'react'
+import { LessonLayout } from '@components/lesson-layout'
+import type { PlaygroundConfig } from '@components/playground'
+import sourceCode from './ComponentsProps.tsx?raw'
+
+export const playgroundConfig: PlaygroundConfig = {
+    files: [
+        {
+            name: 'App.tsx',
+            language: 'tsx',
+            code: `import { useState, ReactNode } from 'react'
+
+function Greeting({ name, age }: { name: string; age: number }) {
+    return (
+        <div style={{ marginBottom: 12 }}>
+            <h3 style={{ margin: 0 }}>Hello, {name}!</h3>
+            <p style={{ margin: 0, color: '#666' }}>Age: {age}</p>
+        </div>
+    )
+}
+
+function Card({ title, children }: { title: string; children: ReactNode }) {
+    return (
+        <div style={{
+            border: '1px solid #ddd',
+            borderRadius: 8,
+            padding: 16,
+            marginBottom: 12,
+        }}>
+            <h3 style={{ marginTop: 0 }}>{title}</h3>
+            <div>{children}</div>
+        </div>
+    )
+}
+
+function Badge({ label }: { label: string }) {
+    return (
+        <span style={{
+            padding: '4px 10px',
+            background: '#e0e7ff',
+            color: '#3730a3',
+            borderRadius: 6,
+            fontSize: 13,
+            marginRight: 6,
+        }}>
+            {label}
+        </span>
+    )
+}
+
+export default function App() {
+    const [name, setName] = useState('React')
+
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Components and Props</h2>
+
+            {/* Props demo */}
+            <section style={{ marginBottom: 16 }}>
+                <h3>Props</h3>
+                <Greeting name="Alice" age={25} />
+                <Greeting name="Bob" age={30} />
+            </section>
+
+            {/* Children demo */}
+            <section style={{ marginBottom: 16 }}>
+                <h3>Children Prop</h3>
+                <Card title="Welcome">
+                    <p>This content is passed as children.</p>
+                    <div style={{ display: 'flex', gap: 4 }}>
+                        <Badge label="React" />
+                        <Badge label="TypeScript" />
+                        <Badge label="Props" />
+                    </div>
+                </Card>
+            </section>
+
+            {/* Composition demo */}
+            <section>
+                <h3>Composition</h3>
+                <input
+                    value={name}
+                    onChange={e => setName(e.target.value)}
+                    placeholder="Enter a name..."
+                    style={{ padding: 8, fontSize: 14, marginBottom: 8, width: '100%' }}
+                />
+                <Card title="Dynamic Card">
+                    <Greeting name={name || 'World'} age={0} />
+                </Card>
+            </section>
+        </div>
+    )
+}
+`,
+        },
+    ],
+    entryFile: 'App.tsx',
+    height: 450,
+}
 
 export default function ComponentsProps() {
     return (
-        <div>
-            <h1>Components & Props</h1>
+        <LessonLayout title="Components & Props" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+            <div>
             <p>
                 Components are the building blocks of React applications. They let you split the UI into
                 independent, reusable pieces.
@@ -231,7 +329,8 @@ function UserProfile({ name, role, bio, skills }) {
                     <li>Props are read-only - never modify them inside a component</li>
                 </ul>
             </section>
-        </div>
+            </div>
+        </LessonLayout>
     )
 }
 
