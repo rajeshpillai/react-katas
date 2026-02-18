@@ -1,6 +1,6 @@
 # React Katas — Progress Tracker
 
-## Katas (42 total)
+## Katas (43 total)
 
 ### Section 1: Fundamentals (6 katas)
 
@@ -38,46 +38,47 @@
 | 20 | React 19 Compiler | Done | `src/lessons/03-performance/React19Compiler.tsx` |
 | 21 | Virtualization (Windowing) | Done | `src/lessons/03-performance/Virtualization.tsx` |
 
-### Section 4: Advanced Patterns (8 katas)
+### Section 4: Advanced Patterns (9 katas)
 
 | # | Kata | Status | File |
 |---|------|--------|------|
 | 22 | Compound Components | Done | `src/lessons/04-patterns/CompoundComponents.tsx` |
-| 23 | Render Props | Done | `src/lessons/04-patterns/RenderProps.tsx` |
-| 24 | Higher-Order Components | Done | `src/lessons/04-patterns/HigherOrderComponents.tsx` |
-| 25 | Controlled vs Uncontrolled | Done | `src/lessons/04-patterns/ControlledUncontrolled.tsx` |
-| 26 | Portal Pattern | Done | `src/lessons/04-patterns/PortalPattern.tsx` |
-| 27 | asChild Pattern | Done | `src/lessons/04-patterns/AsChildPattern.tsx` |
-| 28 | Children as Data | Done | `src/lessons/04-patterns/ChildrenAsData.tsx` |
-| 29 | Slots Pattern | Done | `src/lessons/04-patterns/SlotsPattern.tsx` |
+| 23 | Compound Components: Tabs | Done | `src/lessons/04-patterns/CompoundComponentsTabs.tsx` |
+| 24 | Render Props | Done | `src/lessons/04-patterns/RenderProps.tsx` |
+| 25 | Higher-Order Components | Done | `src/lessons/04-patterns/HigherOrderComponents.tsx` |
+| 26 | Controlled vs Uncontrolled | Done | `src/lessons/04-patterns/ControlledUncontrolled.tsx` |
+| 27 | Portal Pattern | Done | `src/lessons/04-patterns/PortalPattern.tsx` |
+| 28 | asChild Pattern | Done | `src/lessons/04-patterns/AsChildPattern.tsx` |
+| 29 | Children as Data | Done | `src/lessons/04-patterns/ChildrenAsData.tsx` |
+| 30 | Slots Pattern | Done | `src/lessons/04-patterns/SlotsPattern.tsx` |
 
 ### Section 5: State Management (4 katas)
 
 | # | Kata | Status | File |
 |---|------|--------|------|
-| 30 | Context API Deep Dive | Done | `src/lessons/05-state/ContextDeepDive.tsx` |
-| 31 | Context Selectors | Done | `src/lessons/05-state/ContextSelectors.tsx` |
-| 32 | State Machines | Done | `src/lessons/05-state/StateMachines.tsx` |
-| 33 | Global State Patterns | Done | `src/lessons/05-state/GlobalStatePatterns.tsx` |
+| 31 | Context API Deep Dive | Done | `src/lessons/05-state/ContextDeepDive.tsx` |
+| 32 | Context Selectors | Done | `src/lessons/05-state/ContextSelectors.tsx` |
+| 33 | State Machines | Done | `src/lessons/05-state/StateMachines.tsx` |
+| 34 | Global State Patterns | Done | `src/lessons/05-state/GlobalStatePatterns.tsx` |
 
 ### Section 6: Accessibility & Production (4 katas)
 
 | # | Kata | Status | File |
 |---|------|--------|------|
-| 34 | ARIA Fundamentals | Done | `src/lessons/06-accessibility/ARIAFundamentals.tsx` |
-| 35 | Keyboard Navigation | Done | `src/lessons/06-accessibility/KeyboardNavigation.tsx` |
-| 36 | Accessible Forms | Done | `src/lessons/06-accessibility/AccessibleForms.tsx` |
-| 37 | Testing Accessibility | Done | `src/lessons/06-accessibility/TestingAccessibility.tsx` |
+| 35 | ARIA Fundamentals | Done | `src/lessons/06-accessibility/ARIAFundamentals.tsx` |
+| 36 | Keyboard Navigation | Done | `src/lessons/06-accessibility/KeyboardNavigation.tsx` |
+| 37 | Accessible Forms | Done | `src/lessons/06-accessibility/AccessibleForms.tsx` |
+| 38 | Testing Accessibility | Done | `src/lessons/06-accessibility/TestingAccessibility.tsx` |
 
 ### Section 7: Machine Coding Challenges (5 katas)
 
 | # | Kata | Status | File |
 |---|------|--------|------|
-| 38 | File Explorer (Recursive) | Done | `src/lessons/07-machine-coding/FileExplorer.tsx` |
-| 39 | Auto-complete (Typeahead) | Done | `src/lessons/07-machine-coding/AutoComplete.tsx` |
-| 40 | Toast / Notification System | Done | `src/lessons/07-machine-coding/ToastSystem.tsx` |
-| 41 | Drag & Drop (Kanban) | Done | `src/lessons/07-machine-coding/DragAndDrop.tsx` |
-| 42 | Infinite Scroll | Done | `src/lessons/07-machine-coding/InfiniteScroll.tsx` |
+| 39 | File Explorer (Recursive) | Done | `src/lessons/07-machine-coding/FileExplorer.tsx` |
+| 40 | Auto-complete (Typeahead) | Done | `src/lessons/07-machine-coding/AutoComplete.tsx` |
+| 41 | Toast / Notification System | Done | `src/lessons/07-machine-coding/ToastSystem.tsx` |
+| 42 | Drag & Drop (Kanban) | Done | `src/lessons/07-machine-coding/DragAndDrop.tsx` |
+| 43 | Infinite Scroll | Done | `src/lessons/07-machine-coding/InfiniteScroll.tsx` |
 
 ---
 
@@ -92,7 +93,7 @@
 | Lesson layout (3 tabs) | Done | Lesson / Playground / Source Code |
 | Progress tracking | Done | localStorage-based, scroll + time requirements |
 | Previous/Next navigation | Done | Bottom of each lesson |
-| Lazy-loaded lessons | Done | React.lazy() for all 42 lessons |
+| Lazy-loaded lessons | Done | React.lazy() for all 43 lessons |
 | Custom router | Done | History API, no React Router dependency |
 
 ## Teaching Depth Gaps (Pending)
@@ -103,7 +104,7 @@ These are areas where existing katas could be deepened:
 |-----|------|----------------|
 | Before/After flow | Most katas | Explicit broken-then-fixed implementations |
 | "Why naive React fails" | Most katas | Section showing the problem before the solution |
-| Tradeoffs discussion | Compound Components | When NOT to use compound pattern |
+| Tradeoffs discussion | Compound Components | Addressed in kata #23 (Compound Components: Tabs) |
 | Hooks comparison depth | Render Props | "When render props beat hooks" section |
 | Progressive control | Controlled/Uncontrolled | Hybrid controlled + uncontrolled pattern |
 | Children as data | JSX Basics | Could cross-reference Children as Data kata |
