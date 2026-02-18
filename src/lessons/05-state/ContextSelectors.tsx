@@ -1,626 +1,864 @@
-import { createContext, useContext, useState, useRef, useCallback, useSyncExternalStore, useEffect, memo, useMemo } from 'react'
+import { createContext, useContext, useState, useRef, useCallback, useSyncExternalStore, memo, useMemo, ReactNode } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
 import type { PlaygroundConfig } from '@components/playground'
 // @ts-ignore
 import sourceCode from './ContextSelectors.tsx?raw'
 
-// Simple context selector implementation
-function createContextSelector<T>() {
-  const Context = createContext<T | null>(null)
-
-  function Provider({ value, children }: { value: T; children: React.ReactNode }) {
-    const storeRef = useRef(value)
-    const subscribersRef = useRef(new Set<() => void>())
-
-    storeRef.current = value
-
-    const subscribe = useCallback((callback: () => void) => {
-      subscribersRef.current.add(callback)
-      return () => subscribersRef.current.delete(callback)
-    }, [])
-
-    useEffect(() => {
-      subscribersRef.current.forEach((callback) => callback())
-    }, [value])
-
-    const getSnapshot = useCallback(() => storeRef.current, [])
-
-    const contextValue = useMemo(() => ({ subscribe, getSnapshot }), [subscribe, getSnapshot])
-
-    return (
-      <Context.Provider value={contextValue as any}>
-        {children}
-      </Context.Provider>
-    )
-  }
-
-  function useSelector<S>(selector: (state: T) => S): S {
-    const context = useContext(Context)
-    if (!context) throw new Error('useSelector must be within Provider')
-
-    return useSyncExternalStore(
-      (context as any).subscribe,
-      () => selector((context as any).getSnapshot())
-    )
-  }
-
-  return { Provider, useSelector }
-}
-
-export const playgroundConfig: PlaygroundConfig = {
-    files: [
-        {
-            name: 'App.tsx',
-            language: 'tsx',
-            code: `import { useState, useRef, useCallback, useEffect, useMemo, useSyncExternalStore } from 'react'
-
-// --- External store pattern using useSyncExternalStore ---
+// ============================================================
+// Part 1: Production-grade createStore (external store pattern)
+// ============================================================
 
 type Listener = () => void
+type EqualityFn<T> = (a: T, b: T) => boolean
 
 function createStore<T>(initialState: T) {
     let state = initialState
     const listeners = new Set<Listener>()
 
     return {
-        getSnapshot: () => state,
+        getState: () => state,
+        setState: (updater: T | ((prev: T) => T)) => {
+            const next = typeof updater === 'function'
+                ? (updater as (prev: T) => T)(state)
+                : updater
+            if (Object.is(state, next)) return
+            state = next
+            listeners.forEach((l) => l())
+        },
         subscribe: (listener: Listener) => {
             listeners.add(listener)
             return () => listeners.delete(listener)
         },
-        setState: (updater: (prev: T) => T) => {
-            state = updater(state)
+    }
+}
+
+type Store<T> = ReturnType<typeof createStore<T>>
+
+// ============================================================
+// Part 2: useSelector with equality function support
+// ============================================================
+
+function useStoreSelector<T, S>(
+    store: Store<T>,
+    selector: (state: T) => S,
+    equalityFn: EqualityFn<S> = Object.is
+): S {
+    const prevRef = useRef<S | undefined>(undefined)
+    const selectorRef = useRef(selector)
+    const equalityRef = useRef(equalityFn)
+    selectorRef.current = selector
+    equalityRef.current = equalityFn
+
+    const getSnapshot = useCallback(() => {
+        const next = selectorRef.current(store.getState())
+        if (prevRef.current !== undefined && equalityRef.current(prevRef.current, next)) {
+            return prevRef.current
+        }
+        prevRef.current = next
+        return next
+    }, [store])
+
+    return useSyncExternalStore(store.subscribe, getSnapshot)
+}
+
+// Shallow equality helper
+function shallowEqual<T>(a: T, b: T): boolean {
+    if (Object.is(a, b)) return true
+    if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) return false
+    const keysA = Object.keys(a)
+    const keysB = Object.keys(b)
+    if (keysA.length !== keysB.length) return false
+    for (const key of keysA) {
+        if (!Object.is((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key])) return false
+    }
+    return true
+}
+
+// ============================================================
+// Part 3: Context-based store (for DI / component tree scoping)
+// ============================================================
+
+// Exported for use in other lessons / consumer code
+export function createStoreContext<T>(initialState: T) {
+    const store = createStore(initialState)
+    const StoreContext = createContext(store)
+
+    function Provider({ initialValue, children }: { initialValue?: T; children: ReactNode }) {
+        const storeInstance = useMemo((): Store<T> => {
+            if (initialValue !== undefined) return createStore(initialValue as T)
+            return store
+        }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+        return <StoreContext.Provider value={storeInstance}>{children}</StoreContext.Provider>
+    }
+
+    function useSelector<S>(selector: (state: T) => S, equalityFn?: EqualityFn<S>): S {
+        const storeInstance = useContext(StoreContext)
+        return useStoreSelector(storeInstance, selector, equalityFn)
+    }
+
+    function useDispatch() {
+        const storeInstance = useContext(StoreContext)
+        return storeInstance.setState
+    }
+
+    return { Provider, useSelector, useDispatch, store }
+}
+
+// ============================================================
+// Playground config
+// ============================================================
+
+export const playgroundConfig: PlaygroundConfig = {
+    files: [
+        {
+            name: 'App.tsx',
+            language: 'tsx',
+            code: `import { useRef, useCallback, useMemo, useSyncExternalStore, createContext, useContext } from 'react'
+import type { ReactNode } from 'react'
+
+// --- Production-grade external store ---
+
+type Listener = () => void
+type EqualityFn<T> = (a: T, b: T) => boolean
+
+function createStore<T>(initialState: T) {
+    let state = initialState
+    const listeners = new Set<Listener>()
+    return {
+        getState: () => state,
+        setState: (updater: T | ((prev: T) => T)) => {
+            const next = typeof updater === 'function'
+                ? (updater as (prev: T) => T)(state) : updater
+            if (Object.is(state, next)) return
+            state = next
             listeners.forEach((l) => l())
+        },
+        subscribe: (listener: Listener) => {
+            listeners.add(listener)
+            return () => listeners.delete(listener)
         },
     }
 }
 
+type Store<T> = ReturnType<typeof createStore<T>>
+
+// --- useSelector with equality function ---
+
+function useStoreSelector<T, S>(
+    store: Store<T>,
+    selector: (state: T) => S,
+    equalityFn: EqualityFn<S> = Object.is
+): S {
+    const prevRef = useRef<S | undefined>(undefined)
+    const selectorRef = useRef(selector)
+    const equalityRef = useRef(equalityFn)
+    selectorRef.current = selector
+    equalityRef.current = equalityFn
+
+    const getSnapshot = useCallback(() => {
+        const next = selectorRef.current(store.getState())
+        if (prevRef.current !== undefined && equalityRef.current(prevRef.current, next)) {
+            return prevRef.current
+        }
+        prevRef.current = next
+        return next
+    }, [store])
+
+    return useSyncExternalStore(store.subscribe, getSnapshot)
+}
+
+function shallowEqual<T>(a: T, b: T): boolean {
+    if (Object.is(a, b)) return true
+    if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) return false
+    const keysA = Object.keys(a)
+    const keysB = Object.keys(b)
+    if (keysA.length !== keysB.length) return false
+    for (const key of keysA) {
+        if (!Object.is((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key])) return false
+    }
+    return true
+}
+
+// --- Context-based store for DI ---
+
+function createStoreContext<T>(init: T) {
+    const defaultStore = createStore(init)
+    const Ctx = createContext(defaultStore)
+
+    function Provider({ initialValue, children }: { initialValue?: T; children: ReactNode }) {
+        const inst = useMemo(() => initialValue !== undefined ? createStore(initialValue) : defaultStore, [])
+        return <Ctx.Provider value={inst}>{children}</Ctx.Provider>
+    }
+
+    function useSelector<S>(sel: (s: T) => S, eq?: EqualityFn<S>): S {
+        return useStoreSelector(useContext(Ctx), sel, eq)
+    }
+
+    function useDispatch() { return useContext(Ctx).setState }
+    return { Provider, useSelector, useDispatch }
+}
+
+// --- App demo: 100-item todo list with filter ---
+
+interface Todo { id: number; text: string; done: boolean }
 interface AppState {
-    count: number
-    user: string
-    theme: string
+    todos: Todo[]
+    filter: 'all' | 'active' | 'done'
+    search: string
 }
 
-const store = createStore<AppState>({ count: 0, user: 'John', theme: 'light' })
-
-function useSelector<S>(selector: (state: AppState) => S): S {
-    return useSyncExternalStore(
-        store.subscribe,
-        () => selector(store.getSnapshot())
-    )
+const initial: AppState = {
+    todos: Array.from({ length: 100 }, (_, i) => ({
+        id: i, text: \`Task #\${i + 1} - \${['Build UI', 'Write tests', 'Deploy app', 'Fix bug', 'Review PR'][i % 5]}\`, done: i % 3 === 0,
+    })),
+    filter: 'all',
+    search: '',
 }
 
-function CountDisplay() {
-    const count = useSelector((s) => s.count)
-    const renderRef = useRef(0)
-    renderRef.current += 1
+const { Provider, useSelector, useDispatch } = createStoreContext(initial)
 
+// Derived selector: filtered + searched todos
+function useFilteredTodos() {
+    return useSelector((s) => {
+        let list = s.todos
+        if (s.filter === 'active') list = list.filter((t) => !t.done)
+        if (s.filter === 'done') list = list.filter((t) => t.done)
+        if (s.search) list = list.filter((t) => t.text.toLowerCase().includes(s.search.toLowerCase()))
+        return list
+    }, shallowEqual)
+}
+
+function Stats() {
+    const stats = useSelector((s) => ({
+        total: s.todos.length,
+        done: s.todos.filter((t) => t.done).length,
+    }), shallowEqual)
+    const renders = useRef(0); renders.current++
     return (
-        <div style={{ padding: 12, background: '#dbeafe', borderRadius: 6, marginBottom: 8 }}>
-            <strong>Count:</strong> {count}
-            <span style={{ marginLeft: 12, fontSize: 12, color: '#666' }}>Renders: {renderRef.current}</span>
+        <div style={{ padding: 8, background: '#dbeafe', borderRadius: 6, marginBottom: 8, fontSize: 13 }}>
+            <strong>Stats</strong>: {stats.done}/{stats.total} done
+            <span style={{ marginLeft: 8, color: '#666', fontSize: 11 }}>renders: {renders.current}</span>
         </div>
     )
 }
 
-function UserDisplay() {
-    const user = useSelector((s) => s.user)
-    const renderRef = useRef(0)
-    renderRef.current += 1
-
+function SearchBar() {
+    const search = useSelector((s) => s.search)
+    const dispatch = useDispatch()
+    const renders = useRef(0); renders.current++
     return (
-        <div style={{ padding: 12, background: '#fce7f3', borderRadius: 6, marginBottom: 8 }}>
-            <strong>User:</strong> {user}
-            <span style={{ marginLeft: 12, fontSize: 12, color: '#666' }}>Renders: {renderRef.current}</span>
+        <div style={{ marginBottom: 8, display: 'flex', gap: 6, alignItems: 'center' }}>
+            <input
+                value={search}
+                onChange={(e) => dispatch((s) => ({ ...s, search: e.target.value }))}
+                placeholder="Search todos..."
+                style={{ flex: 1, padding: '6px 10px', borderRadius: 4, border: '1px solid #ccc' }}
+            />
+            <span style={{ color: '#666', fontSize: 11 }}>renders: {renders.current}</span>
         </div>
     )
 }
 
-function ThemeDisplay() {
-    const theme = useSelector((s) => s.theme)
-    const renderRef = useRef(0)
-    renderRef.current += 1
-
+function FilterBar() {
+    const filter = useSelector((s) => s.filter)
+    const dispatch = useDispatch()
+    const renders = useRef(0); renders.current++
+    const btn = (f: AppState['filter'], label: string) => (
+        <button
+            onClick={() => dispatch((s) => ({ ...s, filter: f }))}
+            style={{
+                padding: '4px 12px', borderRadius: 4, border: 'none', cursor: 'pointer',
+                background: filter === f ? '#3b82f6' : '#e2e8f0', color: filter === f ? '#fff' : '#333',
+            }}
+        >{label}</button>
+    )
     return (
-        <div style={{ padding: 12, background: '#d1fae5', borderRadius: 6, marginBottom: 8 }}>
-            <strong>Theme:</strong> {theme}
-            <span style={{ marginLeft: 12, fontSize: 12, color: '#666' }}>Renders: {renderRef.current}</span>
+        <div style={{ display: 'flex', gap: 4, marginBottom: 8, alignItems: 'center' }}>
+            {btn('all', 'All')} {btn('active', 'Active')} {btn('done', 'Done')}
+            <span style={{ marginLeft: 'auto', color: '#666', fontSize: 11 }}>renders: {renders.current}</span>
+        </div>
+    )
+}
+
+function TodoList() {
+    const todos = useFilteredTodos()
+    const dispatch = useDispatch()
+    const renders = useRef(0); renders.current++
+    return (
+        <div>
+            <div style={{ fontSize: 11, color: '#666', marginBottom: 4 }}>
+                Showing {todos.length} items (list renders: {renders.current})
+            </div>
+            <div style={{ maxHeight: 250, overflowY: 'auto', border: '1px solid #e2e8f0', borderRadius: 6 }}>
+                {todos.slice(0, 30).map((t) => (
+                    <div key={t.id} style={{
+                        padding: '6px 10px', borderBottom: '1px solid #f1f5f9', display: 'flex',
+                        alignItems: 'center', gap: 8, fontSize: 13,
+                    }}>
+                        <input
+                            type="checkbox" checked={t.done}
+                            onChange={() => dispatch((s) => ({
+                                ...s, todos: s.todos.map((x) => x.id === t.id ? { ...x, done: !x.done } : x)
+                            }))}
+                        />
+                        <span style={{ textDecoration: t.done ? 'line-through' : 'none', color: t.done ? '#999' : '#333' }}>
+                            {t.text}
+                        </span>
+                    </div>
+                ))}
+            </div>
         </div>
     )
 }
 
 export default function App() {
     return (
-        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
-            <h2>Context Selector Pattern</h2>
-            <p style={{ marginBottom: 12 }}>
-                Each component subscribes to only one slice of state. Clicking a button
-                only re-renders the component that uses that value.
-            </p>
-            <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
-                <button onClick={() => store.setState((s) => ({ ...s, count: s.count + 1 }))}>
-                    Increment Count
-                </button>
-                <button onClick={() => store.setState((s) => ({ ...s, user: s.user === 'John' ? 'Jane' : 'John' }))}>
-                    Toggle User
-                </button>
-                <button onClick={() => store.setState((s) => ({ ...s, theme: s.theme === 'light' ? 'dark' : 'light' }))}>
-                    Toggle Theme
-                </button>
+        <Provider>
+            <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+                <h3 style={{ marginBottom: 8 }}>100-Item Todo App with Selectors</h3>
+                <p style={{ fontSize: 13, color: '#666', marginBottom: 12 }}>
+                    Each component only re-renders when its selected slice changes.
+                    Watch the render counts!
+                </p>
+                <Stats />
+                <SearchBar />
+                <FilterBar />
+                <TodoList />
             </div>
-            <CountDisplay />
-            <UserDisplay />
-            <ThemeDisplay />
-            <p style={{ fontSize: 12, color: '#888', marginTop: 12 }}>
-                Watch the render counts -- only the relevant component re-renders!
-            </p>
-        </div>
+        </Provider>
     )
 }
 `,
         },
     ],
     entryFile: 'App.tsx',
-    height: 450,
+    height: 550,
 }
+
+// ============================================================
+// Demo state for inline examples
+// ============================================================
+
+interface TodoItem { id: number; text: string; done: boolean }
+interface DemoState {
+    todos: TodoItem[]
+    filter: 'all' | 'active' | 'done'
+    search: string
+    user: string
+    count: number
+}
+
+const demoInitial: DemoState = {
+    todos: Array.from({ length: 50 }, (_, i) => ({
+        id: i,
+        text: `Task #${i + 1}`,
+        done: i % 3 === 0,
+    })),
+    filter: 'all',
+    search: '',
+    user: 'John',
+    count: 0,
+}
+
+// --- Problem Demo: Standard Context ---
+
+const NaiveContext = createContext<{ state: DemoState; setState: React.Dispatch<React.SetStateAction<DemoState>> } | null>(null)
+
+function NaiveCountDisplay() {
+    const ctx = useContext(NaiveContext)!
+    const renderRef = useRef(0)
+    renderRef.current++
+    return (
+        <div style={{ padding: 'var(--space-3)', background: 'var(--color-error-100)', borderRadius: 'var(--radius-md)' }}>
+            <strong>Count:</strong> {ctx.state.count}
+            <span style={{ float: 'right', fontSize: 'var(--font-size-xs)', color: 'var(--text-tertiary)' }}>renders: {renderRef.current}</span>
+        </div>
+    )
+}
+
+function NaiveUserDisplay() {
+    const ctx = useContext(NaiveContext)!
+    const renderRef = useRef(0)
+    renderRef.current++
+    return (
+        <div style={{ padding: 'var(--space-3)', background: 'var(--color-error-100)', borderRadius: 'var(--radius-md)' }}>
+            <strong>User:</strong> {ctx.state.user}
+            <span style={{ float: 'right', fontSize: 'var(--font-size-xs)', color: 'var(--text-tertiary)' }}>renders: {renderRef.current}</span>
+        </div>
+    )
+}
+
+function NaiveFilterDisplay() {
+    const ctx = useContext(NaiveContext)!
+    const renderRef = useRef(0)
+    renderRef.current++
+    return (
+        <div style={{ padding: 'var(--space-3)', background: 'var(--color-error-100)', borderRadius: 'var(--radius-md)' }}>
+            <strong>Filter:</strong> {ctx.state.filter}
+            <span style={{ float: 'right', fontSize: 'var(--font-size-xs)', color: 'var(--text-tertiary)' }}>renders: {renderRef.current}</span>
+        </div>
+    )
+}
+
+function ProblemDemo() {
+    const [state, setState] = useState(demoInitial)
+    return (
+        <NaiveContext.Provider value={{ state, setState }}>
+            <div style={{ display: 'flex', gap: 'var(--space-2)', marginBottom: 'var(--space-4)', flexWrap: 'wrap' }}>
+                <button
+                    onClick={() => setState((s) => ({ ...s, count: s.count + 1 }))}
+                    style={{ padding: 'var(--space-2) var(--space-4)', background: 'var(--color-error)', color: 'white', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer' }}
+                >+1 Count</button>
+                <button
+                    onClick={() => setState((s) => ({ ...s, user: s.user === 'John' ? 'Jane' : 'John' }))}
+                    style={{ padding: 'var(--space-2) var(--space-4)', background: 'var(--color-error)', color: 'white', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer' }}
+                >Toggle User</button>
+                <button
+                    onClick={() => setState((s) => ({ ...s, filter: s.filter === 'all' ? 'done' : 'all' }))}
+                    style={{ padding: 'var(--space-2) var(--space-4)', background: 'var(--color-error)', color: 'white', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer' }}
+                >Toggle Filter</button>
+            </div>
+            <div style={{ display: 'grid', gap: 'var(--space-3)' }}>
+                <NaiveCountDisplay />
+                <NaiveUserDisplay />
+                <NaiveFilterDisplay />
+            </div>
+            <p style={{ color: 'var(--color-error)', fontSize: 'var(--font-size-sm)', marginTop: 'var(--space-3)' }}>
+                Click any button — ALL three components re-render every time!
+            </p>
+        </NaiveContext.Provider>
+    )
+}
+
+// --- Solution Demo: External store with selectors ---
+
+const demoStore = createStore(demoInitial)
+
+const SolutionCountDisplay = memo(function SolutionCountDisplay() {
+    const count = useStoreSelector(demoStore, (s) => s.count)
+    const renderRef = useRef(0)
+    renderRef.current++
+    return (
+        <div style={{ padding: 'var(--space-3)', background: 'var(--color-primary-100)', borderRadius: 'var(--radius-md)' }}>
+            <strong>Count:</strong> {count}
+            <span style={{ float: 'right', fontSize: 'var(--font-size-xs)', color: 'var(--text-tertiary)' }}>renders: {renderRef.current}</span>
+        </div>
+    )
+})
+
+const SolutionUserDisplay = memo(function SolutionUserDisplay() {
+    const user = useStoreSelector(demoStore, (s) => s.user)
+    const renderRef = useRef(0)
+    renderRef.current++
+    return (
+        <div style={{ padding: 'var(--space-3)', background: 'var(--color-accent-100)', borderRadius: 'var(--radius-md)' }}>
+            <strong>User:</strong> {user}
+            <span style={{ float: 'right', fontSize: 'var(--font-size-xs)', color: 'var(--text-tertiary)' }}>renders: {renderRef.current}</span>
+        </div>
+    )
+})
+
+const SolutionFilterDisplay = memo(function SolutionFilterDisplay() {
+    const filter = useStoreSelector(demoStore, (s) => s.filter)
+    const renderRef = useRef(0)
+    renderRef.current++
+    return (
+        <div style={{ padding: 'var(--space-3)', background: 'var(--color-success-100, #d1fae5)', borderRadius: 'var(--radius-md)' }}>
+            <strong>Filter:</strong> {filter}
+            <span style={{ float: 'right', fontSize: 'var(--font-size-xs)', color: 'var(--text-tertiary)' }}>renders: {renderRef.current}</span>
+        </div>
+    )
+})
+
+function SolutionDemo() {
+    return (
+        <div>
+            <div style={{ display: 'flex', gap: 'var(--space-2)', marginBottom: 'var(--space-4)', flexWrap: 'wrap' }}>
+                <button
+                    onClick={() => demoStore.setState((s) => ({ ...s, count: s.count + 1 }))}
+                    style={{ padding: 'var(--space-2) var(--space-4)', background: 'var(--color-primary-500)', color: 'white', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer' }}
+                >+1 Count</button>
+                <button
+                    onClick={() => demoStore.setState((s) => ({ ...s, user: s.user === 'John' ? 'Jane' : 'John' }))}
+                    style={{ padding: 'var(--space-2) var(--space-4)', background: 'var(--color-accent-500)', color: 'white', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer' }}
+                >Toggle User</button>
+                <button
+                    onClick={() => demoStore.setState((s) => ({ ...s, filter: s.filter === 'all' ? 'done' : 'all' }))}
+                    style={{ padding: 'var(--space-2) var(--space-4)', background: 'var(--color-success)', color: 'white', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer' }}
+                >Toggle Filter</button>
+            </div>
+            <div style={{ display: 'grid', gap: 'var(--space-3)' }}>
+                <SolutionCountDisplay />
+                <SolutionUserDisplay />
+                <SolutionFilterDisplay />
+            </div>
+            <p style={{ color: 'var(--color-success)', fontSize: 'var(--font-size-sm)', marginTop: 'var(--space-3)' }}>
+                Only the component whose slice changed re-renders!
+            </p>
+        </div>
+    )
+}
+
+// --- Shallow Equality Demo ---
+
+const shallowStore = createStore({ items: [1, 2, 3], label: 'test' })
+
+const WithoutShallowEqual = memo(function WithoutShallowEqual() {
+    const data = useStoreSelector(shallowStore, (s) => ({ count: s.items.length, label: s.label }))
+    const renderRef = useRef(0)
+    renderRef.current++
+    return (
+        <div style={{ padding: 'var(--space-3)', background: 'var(--color-error-100)', borderRadius: 'var(--radius-md)' }}>
+            <strong>Without shallowEqual:</strong> {data.count} items, label={data.label}
+            <span style={{ float: 'right', fontSize: 'var(--font-size-xs)', color: 'var(--text-tertiary)' }}>renders: {renderRef.current}</span>
+        </div>
+    )
+})
+
+const WithShallowEqual = memo(function WithShallowEqual() {
+    const data = useStoreSelector(shallowStore, (s) => ({ count: s.items.length, label: s.label }), shallowEqual)
+    const renderRef = useRef(0)
+    renderRef.current++
+    return (
+        <div style={{ padding: 'var(--space-3)', background: 'var(--color-primary-100)', borderRadius: 'var(--radius-md)' }}>
+            <strong>With shallowEqual:</strong> {data.count} items, label={data.label}
+            <span style={{ float: 'right', fontSize: 'var(--font-size-xs)', color: 'var(--text-tertiary)' }}>renders: {renderRef.current}</span>
+        </div>
+    )
+})
+
+function ShallowEqualDemo() {
+    return (
+        <div>
+            <div style={{ display: 'flex', gap: 'var(--space-2)', marginBottom: 'var(--space-4)' }}>
+                <button
+                    onClick={() => shallowStore.setState((s) => ({ ...s, label: s.label }))}
+                    style={{ padding: 'var(--space-2) var(--space-4)', background: 'var(--color-warning, #f59e0b)', color: 'white', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer' }}
+                >Set same label (no-op update)</button>
+            </div>
+            <div style={{ display: 'grid', gap: 'var(--space-3)' }}>
+                <WithoutShallowEqual />
+                <WithShallowEqual />
+            </div>
+            <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-tertiary)', marginTop: 'var(--space-3)' }}>
+                The selector returns a new object each time. Without shallowEqual, it re-renders on every store update.
+                With shallowEqual, it compares values and skips if unchanged.
+            </p>
+        </div>
+    )
+}
+
+// ============================================================
+// Main Lesson Component
+// ============================================================
 
 export default function ContextSelectors() {
-  return (
-    <LessonLayout title="Context Selectors" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
-      <div>
-      <p>
-        Learn how to optimize Context performance by selecting only the data you need. Prevent
-        unnecessary re-renders with context selectors!
-      </p>
+    return (
+        <LessonLayout title="Context Selectors" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+            <div>
+                <p>
+                    React Context re-renders <em>every</em> consumer when the context value changes — even if a component
+                    only uses one field. At scale (dozens of consumers, frequent updates), this becomes a real performance
+                    bottleneck. Context selectors solve this by letting each component subscribe to only the slice of state it needs.
+                </p>
 
-      {/* Section 1: The Problem */}
-      <section style={{ marginBottom: 'var(--space-8)' }}>
-        <h2>The Problem with Context</h2>
-        <p>
-          When any part of context changes, ALL consumers re-render, even if they don't use the
-          changed value.
-        </p>
+                {/* Section 1: The Problem */}
+                <section style={{ marginBottom: 'var(--space-8)' }}>
+                    <h2>The Problem: Context Re-renders Everything</h2>
+                    <p>
+                        When you put multiple values into one context, updating <em>any</em> value re-renders <em>all</em> consumers:
+                    </p>
 
-        <div
-          style={{
-            background: 'var(--color-error)',
-            color: 'white',
-            padding: 'var(--space-4)',
-            borderRadius: 'var(--radius-lg)',
-            marginTop: 'var(--space-4)',
-          }}
-        >
-          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>Problem:</h3>
-          <pre style={{ background: 'transparent' }}>
-            <code style={{ color: 'white' }}>{`const state = { user, theme, settings };
+                    <pre><code>{`const AppContext = createContext({ user, theme, count, todos });
 
-// Component only uses theme
-function Component() {
-  const { theme } = useContext(AppContext);
-  return <div className={theme}>...</div>;
+// This component only reads "count"...
+function Counter() {
+  const { count } = useContext(AppContext);
+  return <span>{count}</span>;
 }
 
-// But re-renders when user or settings change!`}</code>
-          </pre>
-        </div>
+// ...but re-renders when user, theme, or todos change too!`}</code></pre>
 
-        <div
-          style={{
-            background: 'var(--bg-secondary)',
-            padding: 'var(--space-6)',
-            borderRadius: 'var(--radius-lg)',
-            marginTop: 'var(--space-4)',
-            border: '2px solid var(--color-error)'
-          }}
-        >
-          <h3 style={{ marginBottom: 'var(--space-4)', color: 'var(--color-error)' }}>Interactive Problem Demo</h3>
-          <StandardContextDemo />
-        </div>
-      </section>
+                    <div style={{
+                        background: 'var(--bg-secondary)',
+                        padding: 'var(--space-6)',
+                        borderRadius: 'var(--radius-lg)',
+                        marginTop: 'var(--space-4)',
+                        border: '2px solid var(--color-error)',
+                    }}>
+                        <h3 style={{ marginBottom: 'var(--space-4)', color: 'var(--color-error)' }}>Problem Demo</h3>
+                        <ProblemDemo />
+                    </div>
+                </section>
 
-      {/* Section 2: Solution - Selectors */}
-      <section style={{ marginBottom: 'var(--space-8)' }}>
-        <h2>Solution: Context Selectors</h2>
-        <p>
-          Selectors let you subscribe to only the part of context you need.
-        </p>
+                {/* Section 2: The Solution */}
+                <section style={{ marginBottom: 'var(--space-8)' }}>
+                    <h2>The Solution: External Store + Selectors</h2>
+                    <p>
+                        The key insight: <strong>move state outside React</strong> into an external store, then use
+                        {' '}<code>useSyncExternalStore</code> to subscribe each component to only its slice. React will only
+                        re-render a component when the selected value actually changes.
+                    </p>
 
-        <div
-          style={{
-            background: 'var(--color-success)',
-            color: 'white',
-            padding: 'var(--space-4)',
-            borderRadius: 'var(--radius-lg)',
-            marginTop: 'var(--space-4)',
-          }}
-        >
-          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>Solution:</h3>
-          <pre style={{ background: 'transparent' }}>
-            <code style={{ color: 'white' }}>{`// Only re-renders when theme changes!
-function Component() {
-  const theme = useSelector(state => state.theme);
-  return <div className={theme}>...</div>;
-}`}</code>
-          </pre>
-        </div>
-      </section>
+                    <h3 style={{ marginTop: 'var(--space-6)' }}>Step 1: Create the store</h3>
+                    <p>
+                        The store holds state in a plain variable (not React state), notifies listeners on change,
+                        and skips updates when state hasn't changed (<code>Object.is</code> check):
+                    </p>
+                    <pre><code>{`function createStore<T>(initialState: T) {
+  let state = initialState;
+  const listeners = new Set<() => void>();
 
-      {/* Section 3: Implementation */}
-      <section style={{ marginBottom: 'var(--space-8)' }}>
-        <h2>Implementation with useSyncExternalStore</h2>
-        <p>
-          React 18+ provides <code>useSyncExternalStore</code> for building selectors.
-        </p>
+  return {
+    getState: () => state,
+    setState: (updater: T | ((prev: T) => T)) => {
+      const next = typeof updater === 'function'
+        ? (updater as Function)(state) : updater;
+      if (Object.is(state, next)) return; // bail if same reference
+      state = next;
+      listeners.forEach((l) => l());
+    },
+    subscribe: (listener: () => void) => {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
+    },
+  };
+}`}</code></pre>
 
-        <pre style={{ background: 'transparent' }}>
-          <code>{`function useContextSelector(context, selector) {
-  const value = useContext(context);
+                    <h3 style={{ marginTop: 'var(--space-6)' }}>Step 2: Build useSelector</h3>
+                    <p>
+                        <code>useSyncExternalStore</code> handles the subscription. React calls <code>getSnapshot</code> on
+                        every store update — if the result is referentially equal to the previous one, React skips the re-render:
+                    </p>
+                    <pre><code>{`function useSelector<T, S>(
+  store: Store<T>,
+  selector: (state: T) => S,
+  equalityFn: (a: S, b: S) => boolean = Object.is
+): S {
+  const prevRef = useRef<S>();
+  const selectorRef = useRef(selector);
+  selectorRef.current = selector;
 
-  return useSyncExternalStore(
-    value.subscribe, // React subscribes to changes
-    () => selector(value.getSnapshot()) // Selects only the data needed
-  );
-}`}</code>
-        </pre>
+  const getSnapshot = useCallback(() => {
+    const next = selectorRef.current(store.getState());
+    // Custom equality check (default: Object.is)
+    if (prevRef.current !== undefined && equalityFn(prevRef.current, next)) {
+      return prevRef.current; // same value → same reference → no re-render
+    }
+    prevRef.current = next;
+    return next;
+  }, [store]);
 
-        <h3 style={{ marginTop: 'var(--space-6)', marginBottom: 'var(--space-3)' }}>
-          How it Works:
-        </h3>
-        <p>
-          We rely on <code>useSyncExternalStore</code> which is designed for subscribing to external state.
-        </p>
+  return useSyncExternalStore(store.subscribe, getSnapshot);
+}`}</code></pre>
 
-        <h4 style={{ marginTop: 'var(--space-4)' }}>1. The Store (Provider)</h4>
-        <pre style={{ background: 'transparent' }}>
-          <code>{`// We store the state in a ref so updating it doesn't trigger a Provider re-render
-const storeRef = useRef(value);
-const subscribers = useRef(new Set());
+                    <div style={{
+                        background: 'var(--bg-secondary)',
+                        padding: 'var(--space-6)',
+                        borderRadius: 'var(--radius-lg)',
+                        marginTop: 'var(--space-4)',
+                        border: '2px solid var(--color-success)',
+                    }}>
+                        <h3 style={{ marginBottom: 'var(--space-4)', color: 'var(--color-success)' }}>Solution Demo</h3>
+                        <SolutionDemo />
+                    </div>
+                </section>
 
-// When value changes, we notify subscribers manually
-useEffect(() => {
-  subscribers.current.forEach(callback => callback());
-}, [value]);`}</code>
-        </pre>
+                {/* Section 3: The Equality Function Trap */}
+                <section style={{ marginBottom: 'var(--space-8)' }}>
+                    <h2>The Equality Function Trap</h2>
+                    <p>
+                        When your selector returns a <strong>new object</strong> (even with the same values), <code>Object.is</code> sees
+                        it as different and triggers a re-render. This is the most common mistake:
+                    </p>
 
-        <h4 style={{ marginTop: 'var(--space-4)' }}>2. The Selector Hook</h4>
-        <pre style={{ background: 'transparent' }}>
-          <code>{`// Component subscribes ONLY to the result of the selector
-useSyncExternalStore(
-  subscribe, // Function to register a listener
-  () => selector(storeRef.current) // Snapshots the slice of state
-);
+                    <pre><code>{`// BAD: Creates a new object every time → always re-renders
+const data = useSelector(s => ({ count: s.items.length, label: s.label }));
 
-// React only re-renders if the *result* of selector(storeRef.current) changes!`}</code>
-        </pre>
-      </section>
+// GOOD: Pass shallowEqual as the third argument
+const data = useSelector(
+  s => ({ count: s.items.length, label: s.label }),
+  shallowEqual  // compares each key with Object.is
+);`}</code></pre>
 
-      {/* Section 4: Demo */}
-      <section style={{ marginBottom: 'var(--space-8)' }}>
-        <h2>Interactive Demo</h2>
+                    <pre><code>{`function shallowEqual<T>(a: T, b: T): boolean {
+  if (Object.is(a, b)) return true;
+  if (typeof a !== 'object' || typeof b !== 'object') return false;
+  const keysA = Object.keys(a);
+  const keysB = Object.keys(b);
+  if (keysA.length !== keysB.length) return false;
+  return keysA.every(key => Object.is(a[key], b[key]));
+}`}</code></pre>
 
-        <div
-          style={{
-            background: 'var(--bg-secondary)',
-            padding: 'var(--space-6)',
-            borderRadius: 'var(--radius-lg)',
-            marginTop: 'var(--space-4)',
-            border: '2px solid var(--color-success)'
-          }}
-        >
-          <h3 style={{ marginBottom: 'var(--space-4)', color: 'var(--color-success)' }}>Interactive Solution Demo</h3>
-          <AppDemo />
-        </div>
-      </section>
+                    <div style={{
+                        background: 'var(--bg-secondary)',
+                        padding: 'var(--space-6)',
+                        borderRadius: 'var(--radius-lg)',
+                        marginTop: 'var(--space-4)',
+                        border: '2px solid var(--color-warning, #f59e0b)',
+                    }}>
+                        <h3 style={{ marginBottom: 'var(--space-4)', color: 'var(--color-warning, #f59e0b)' }}>shallowEqual Demo</h3>
+                        <ShallowEqualDemo />
+                    </div>
+                </section>
 
-      {/* Section 5: Libraries */}
-      <section style={{ marginBottom: 'var(--space-8)' }}>
-        <h2>Context Selector Libraries</h2>
+                {/* Section 4: Derived Selectors */}
+                <section style={{ marginBottom: 'var(--space-8)' }}>
+                    <h2>Derived Selectors (Computed Values)</h2>
+                    <p>
+                        Real apps need computed values — filtered lists, aggregates, formatted data. Compose selectors
+                        into custom hooks that compute derived state:
+                    </p>
 
-        <div
-          style={{
-            background: 'var(--color-info)',
-            color: 'white',
-            padding: 'var(--space-4)',
-            borderRadius: 'var(--radius-lg)',
-            marginTop: 'var(--space-4)',
-          }}
-        >
-          <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>Popular Libraries:</h3>
-          <ul style={{ paddingLeft: 'var(--space-6)' }}>
-            <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
-              <strong>use-context-selector</strong> - Lightweight selector hook
-            </li>
-            <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
-              <strong>zustand</strong> - Modern state management with selectors
-            </li>
-            <li style={{ color: 'white', marginBottom: 'var(--space-2)' }}>
-              <strong>jotai</strong> - Atomic state management
-            </li>
-            <li style={{ color: 'white' }}>
-              <strong>valtio</strong> - Proxy-based state
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      {/* Key Takeaways */}
-      <section>
-        <h2>Key Takeaways</h2>
-        <ul>
-          <li>Context re-renders all consumers on any change</li>
-          <li>Selectors subscribe to specific parts of state</li>
-          <li>
-            Use <code>useSyncExternalStore</code> for custom selectors
-          </li>
-          <li>Libraries like use-context-selector simplify this</li>
-          <li>Great for large context objects</li>
-          <li>Consider state management libraries for complex apps</li>
-        </ul>
-      </section>
-      </div>
-    </LessonLayout>
-  )
+                    <pre><code>{`// Derived selector: filtered + searched todos
+function useFilteredTodos() {
+  return useSelector((s) => {
+    let list = s.todos;
+    if (s.filter === 'active') list = list.filter(t => !t.done);
+    if (s.filter === 'done')   list = list.filter(t => t.done);
+    if (s.search) list = list.filter(t =>
+      t.text.toLowerCase().includes(s.search.toLowerCase())
+    );
+    return list;
+  }, shallowEqual); // shallowEqual on the array
 }
 
-// --- Standard Context (The Problem) ---
-const StandardContext = createContext<AppState | null>(null)
+// Stats selector: aggregated values
+function useStats() {
+  return useSelector((s) => ({
+    total: s.todos.length,
+    done: s.todos.filter(t => t.done).length,
+    active: s.todos.filter(t => !t.done).length,
+  }), shallowEqual);
+}`}</code></pre>
 
-function StandardContextDemo() {
-  const [state, setState] = useState<AppState>({
-    count: 0,
-    user: 'John',
-    theme: 'light',
-  })
+                    <p>
+                        The <code>shallowEqual</code> here is critical — the filter/map creates a new array reference each time,
+                        but if the contents haven't changed (same items in same order), we avoid re-rendering.
+                    </p>
 
-  return (
-    <StandardContext.Provider value={state}>
-      <div>
-        <div style={{ display: 'flex', gap: 'var(--space-2)', marginBottom: 'var(--space-4)', flexWrap: 'wrap' }}>
-          <button
-            onClick={() => setState((s) => ({ ...s, count: s.count + 1 }))}
-            style={{
-              padding: 'var(--space-2) var(--space-4)',
-              background: 'var(--color-error)',
-              color: 'white',
-              border: 'none',
-              borderRadius: 'var(--radius-md)',
-              cursor: 'pointer',
-            }}
-          >
-            Increment Count
-          </button>
-          <button
-            onClick={() => setState((s) => ({ ...s, user: s.user === 'John' ? 'Jane' : 'John' }))}
-            style={{
-              padding: 'var(--space-2) var(--space-4)',
-              background: 'var(--color-error)',
-              color: 'white',
-              border: 'none',
-              borderRadius: 'var(--radius-md)',
-              cursor: 'pointer',
-            }}
-          >
-            Toggle User
-          </button>
-          <button
-            onClick={() => setState((s) => ({ ...s, theme: s.theme === 'light' ? 'dark' : 'light' }))}
-            style={{
-              padding: 'var(--space-2) var(--space-4)',
-              background: 'var(--color-error)',
-              color: 'white',
-              border: 'none',
-              borderRadius: 'var(--radius-md)',
-              cursor: 'pointer',
-            }}
-          >
-            Toggle Theme
-          </button>
-        </div>
+                    <div style={{
+                        background: 'var(--color-info)',
+                        color: 'white',
+                        padding: 'var(--space-4)',
+                        borderRadius: 'var(--radius-lg)',
+                        marginTop: 'var(--space-4)',
+                    }}>
+                        <h3 style={{ color: 'white', marginBottom: 'var(--space-3)' }}>For truly expensive derivations:</h3>
+                        <p style={{ color: 'white' }}>
+                            Use a memoization layer (like Reselect's <code>createSelector</code>) that caches the result
+                            and only recomputes when inputs change. Our <code>shallowEqual</code> approach is sufficient
+                            for most cases, but memoized selectors add input-level caching on top.
+                        </p>
+                    </div>
+                </section>
 
-        <div style={{ display: 'grid', gap: 'var(--space-3)' }}>
-          <ProblemCountDisplay />
-          <ProblemUserDisplay />
-          <ProblemThemeDisplay />
-        </div>
-        <p style={{ color: 'var(--color-error)', fontSize: 'var(--font-size-sm)', marginTop: 'var(--space-4)' }}>
-          Notice: Clicking ANY button re-renders ALL components below!
-        </p>
-      </div>
-    </StandardContext.Provider>
-  )
+                {/* Section 5: Context-based Store */}
+                <section style={{ marginBottom: 'var(--space-8)' }}>
+                    <h2>Scoping with Context (Dependency Injection)</h2>
+                    <p>
+                        A global store works, but sometimes you need multiple instances (e.g., two independent form stores).
+                        Wrap the store in Context for component-tree scoping:
+                    </p>
+
+                    <pre><code>{`function createStoreContext<T>(initialState: T) {
+  const defaultStore = createStore(initialState);
+  const StoreContext = createContext(defaultStore);
+
+  function Provider({ initialValue, children }) {
+    // Create a new store instance per Provider
+    const store = useMemo(() =>
+      initialValue ? createStore(initialValue) : defaultStore, []);
+    return (
+      <StoreContext.Provider value={store}>
+        {children}
+      </StoreContext.Provider>
+    );
+  }
+
+  function useSelector<S>(selector: (s: T) => S, eq?) {
+    const store = useContext(StoreContext);
+    return useStoreSelector(store, selector, eq);
+  }
+
+  return { Provider, useSelector, useDispatch };
+}`}</code></pre>
+
+                    <p>
+                        This gives you the best of both worlds: selector-based performance <em>and</em> React's
+                        component tree scoping. Each <code>{'<Provider>'}</code> creates an isolated store instance.
+                    </p>
+                </section>
+
+                {/* Section 6: Context Splitting vs Selectors */}
+                <section style={{ marginBottom: 'var(--space-8)' }}>
+                    <h2>When to Use What</h2>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)', marginTop: 'var(--space-4)' }}>
+                        <div style={{
+                            padding: 'var(--space-4)',
+                            background: 'var(--bg-secondary)',
+                            borderRadius: 'var(--radius-lg)',
+                            border: '1px solid var(--border-color)',
+                        }}>
+                            <h3>Context Splitting</h3>
+                            <p style={{ fontSize: 'var(--font-size-sm)' }}>
+                                Split state across multiple small contexts (UserContext, ThemeContext, etc.)
+                            </p>
+                            <ul style={{ fontSize: 'var(--font-size-sm)', paddingLeft: 'var(--space-5)' }}>
+                                <li>Simple to implement</li>
+                                <li>No extra libraries</li>
+                                <li>Good for 2-5 independent values</li>
+                                <li>Doesn't scale to many slices</li>
+                                <li>Can't derive across contexts</li>
+                            </ul>
+                        </div>
+                        <div style={{
+                            padding: 'var(--space-4)',
+                            background: 'var(--bg-secondary)',
+                            borderRadius: 'var(--radius-lg)',
+                            border: '1px solid var(--border-color)',
+                        }}>
+                            <h3>External Store + Selectors</h3>
+                            <p style={{ fontSize: 'var(--font-size-sm)' }}>
+                                Single store with fine-grained subscriptions via <code>useSyncExternalStore</code>
+                            </p>
+                            <ul style={{ fontSize: 'var(--font-size-sm)', paddingLeft: 'var(--space-5)' }}>
+                                <li>Scales to any number of slices</li>
+                                <li>Derived/computed selectors</li>
+                                <li>Equality function control</li>
+                                <li>More implementation complexity</li>
+                                <li>This is how zustand/jotai work</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div style={{
+                        marginTop: 'var(--space-4)',
+                        padding: 'var(--space-4)',
+                        background: 'var(--color-info)',
+                        color: 'white',
+                        borderRadius: 'var(--radius-lg)',
+                    }}>
+                        <strong>Rule of thumb:</strong> Start with context splitting. When you find yourself creating
+                        6+ contexts or needing derived values across contexts, switch to the selector pattern.
+                    </div>
+                </section>
+
+                {/* Key Takeaways */}
+                <section>
+                    <h2>Key Takeaways</h2>
+                    <ul>
+                        <li><strong>The root cause:</strong> React Context notifies all consumers on any value change — there's no built-in selector mechanism</li>
+                        <li><strong>External store pattern:</strong> Move state outside React, use <code>useSyncExternalStore</code> to subscribe selectively</li>
+                        <li><strong>Equality matters:</strong> Selectors returning objects need <code>shallowEqual</code>, otherwise a new reference triggers re-render</li>
+                        <li><strong>Derived selectors:</strong> Compose selectors into custom hooks for filtered/computed values</li>
+                        <li><strong>Context for scoping:</strong> Wrap the external store in Context for dependency injection and multiple instances</li>
+                        <li><strong>This is how libraries work:</strong> Zustand, Jotai, and Valtio all use this exact <code>useSyncExternalStore</code> pattern under the hood</li>
+                    </ul>
+                </section>
+            </div>
+        </LessonLayout>
+    )
 }
-
-function ProblemCountDisplay() {
-  const context = useContext(StandardContext)
-  if (!context) throw new Error('Missing Provider')
-
-  const renderCountRef = useRef(0)
-  renderCountRef.current += 1
-
-  return (
-    <div style={{ padding: 'var(--space-3)', background: 'var(--color-error-100)', borderRadius: 'var(--radius-md)' }}>
-      <p><strong>Count:</strong> {context.count}</p>
-      <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-tertiary)' }}>Renders: {renderCountRef.current}</p>
-    </div>
-  )
-}
-
-function ProblemUserDisplay() {
-  const context = useContext(StandardContext)
-  if (!context) throw new Error('Missing Provider')
-
-  const renderCountRef = useRef(0)
-  renderCountRef.current += 1
-
-  return (
-    <div style={{ padding: 'var(--space-3)', background: 'var(--color-error-100)', borderRadius: 'var(--radius-md)' }}>
-      <p><strong>User:</strong> {context.user}</p>
-      <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-tertiary)' }}>Renders: {renderCountRef.current}</p>
-    </div>
-  )
-}
-
-function ProblemThemeDisplay() {
-  const context = useContext(StandardContext)
-  if (!context) throw new Error('Missing Provider')
-
-  const renderCountRef = useRef(0)
-  renderCountRef.current += 1
-
-  return (
-    <div style={{ padding: 'var(--space-3)', background: 'var(--color-error-100)', borderRadius: 'var(--radius-md)' }}>
-      <p><strong>Theme:</strong> {context.theme}</p>
-      <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-tertiary)' }}>Renders: {renderCountRef.current}</p>
-    </div>
-  )
-}
-
-
-// --- Context Selectors (The Solution) ---
-
-// Demo
-
-interface AppState {
-  count: number
-  user: string
-  theme: string
-}
-
-const { Provider: AppProvider, useSelector } = createContextSelector<AppState>()
-
-function AppDemo() {
-  const [state, setState] = useState<AppState>({
-    count: 0,
-    user: 'John',
-    theme: 'light',
-  })
-
-  return (
-    <AppProvider value={state}>
-      <div>
-        <div style={{ display: 'flex', gap: 'var(--space-2)', marginBottom: 'var(--space-4)', flexWrap: 'wrap' }}>
-          <button
-            onClick={() => setState((s) => ({ ...s, count: s.count + 1 }))}
-            style={{
-              padding: 'var(--space-2) var(--space-4)',
-              background: 'var(--color-primary-500)',
-              color: 'white',
-              border: 'none',
-              borderRadius: 'var(--radius-md)',
-              cursor: 'pointer',
-            }}
-          >
-            Increment Count
-          </button>
-          <button
-            onClick={() => setState((s) => ({ ...s, user: s.user === 'John' ? 'Jane' : 'John' }))}
-            style={{
-              padding: 'var(--space-2) var(--space-4)',
-              background: 'var(--color-accent-500)',
-              color: 'white',
-              border: 'none',
-              borderRadius: 'var(--radius-md)',
-              cursor: 'pointer',
-            }}
-          >
-            Toggle User
-          </button>
-          <button
-            onClick={() => setState((s) => ({ ...s, theme: s.theme === 'light' ? 'dark' : 'light' }))}
-            style={{
-              padding: 'var(--space-2) var(--space-4)',
-              background: 'var(--color-success)',
-              color: 'white',
-              border: 'none',
-              borderRadius: 'var(--radius-md)',
-              cursor: 'pointer',
-            }}
-          >
-            Toggle Theme
-          </button>
-        </div>
-
-        <div style={{ display: 'grid', gap: 'var(--space-3)' }}>
-          <CountDisplay />
-          <UserDisplay />
-          <ThemeDisplay />
-        </div>
-
-        <p style={{ color: 'var(--text-tertiary)', fontSize: 'var(--font-size-sm)', marginTop: 'var(--space-4)' }}>
-          Check console: Each component only re-renders when its selected value changes!
-        </p>
-      </div>
-    </AppProvider>
-  )
-}
-
-const CountDisplay = memo(function CountDisplay() {
-  const count = useSelector((state) => state.count)
-  const renderCountRef = useRef(0)
-  renderCountRef.current += 1
-  console.log('CountDisplay rendered')
-
-  return (
-    <div
-      style={{
-        padding: 'var(--space-3)',
-        background: 'var(--color-primary-100)',
-        borderRadius: 'var(--radius-md)',
-      }}
-    >
-      <p>
-        <strong>Count:</strong> {count}
-      </p>
-      <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-tertiary)' }}>
-        Renders: {renderCountRef.current}
-      </p>
-    </div>
-  )
-})
-
-const UserDisplay = memo(function UserDisplay() {
-  const user = useSelector((state) => state.user)
-  const renderCountRef = useRef(0)
-  renderCountRef.current += 1
-  console.log('UserDisplay rendered')
-
-  return (
-    <div
-      style={{
-        padding: 'var(--space-3)',
-        background: 'var(--color-accent-100)',
-        borderRadius: 'var(--radius-md)',
-      }}
-    >
-      <p>
-        <strong>User:</strong> {user}
-      </p>
-      <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-tertiary)' }}>
-        Renders: {renderCountRef.current}
-      </p>
-    </div>
-  )
-})
-
-const ThemeDisplay = memo(function ThemeDisplay() {
-  const theme = useSelector((state) => state.theme)
-  const renderCountRef = useRef(0)
-  renderCountRef.current += 1
-  console.log('ThemeDisplay rendered')
-
-  return (
-    <div
-      style={{
-        padding: 'var(--space-3)',
-        background: 'var(--color-success)',
-        color: 'white',
-        borderRadius: 'var(--radius-md)',
-      }}
-    >
-      <p style={{ color: 'white' }}>
-        <strong>Theme:</strong> {theme}
-      </p>
-      <p style={{ fontSize: 'var(--font-size-sm)', color: 'white' }}>Renders: {renderCountRef.current}</p>
-    </div>
-  )
-})
