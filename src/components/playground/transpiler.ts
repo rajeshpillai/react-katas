@@ -16,7 +16,7 @@ export function transpileFile(
         const result = transform(code, {
             transforms,
             jsxRuntime: 'automatic',
-            production: false,
+            production: true,
             filePath: fileName,
         })
         const protected_ = injectLoopProtection(result.code)

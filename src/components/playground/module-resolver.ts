@@ -12,8 +12,11 @@ var __modules = {};
 var __moduleCache = {};
 
 function require(name) {
-    if (name === 'react' || name === 'react/jsx-runtime' || name === 'react/jsx-dev-runtime') {
+    if (name === 'react') {
         return window.parent.__PLAYGROUND_REACT__;
+    }
+    if (name === 'react/jsx-runtime' || name === 'react/jsx-dev-runtime') {
+        return window.parent.__PLAYGROUND_JSX_RUNTIME__;
     }
     if (name === 'react-dom' || name === 'react-dom/client') {
         return window.parent.__PLAYGROUND_REACT_DOM__;
