@@ -22,6 +22,39 @@ function ensureReactGlobals() {
 
 type MaximizedPane = 'editor' | 'preview' | null
 
+function useSplitter(initialPercent = 50) {
+    const [splitPercent, setSplitPercent] = useState(initialPercent)
+    const layoutRef = useRef<HTMLDivElement>(null)
+    const dragging = useRef(false)
+
+    const onMouseDown = useCallback((e: React.MouseEvent) => {
+        e.preventDefault()
+        dragging.current = true
+        document.body.style.cursor = 'col-resize'
+        document.body.style.userSelect = 'none'
+
+        const onMouseMove = (ev: MouseEvent) => {
+            if (!dragging.current || !layoutRef.current) return
+            const rect = layoutRef.current.getBoundingClientRect()
+            const pct = ((ev.clientX - rect.left) / rect.width) * 100
+            setSplitPercent(Math.min(80, Math.max(20, pct)))
+        }
+
+        const onMouseUp = () => {
+            dragging.current = false
+            document.body.style.cursor = ''
+            document.body.style.userSelect = ''
+            document.removeEventListener('mousemove', onMouseMove)
+            document.removeEventListener('mouseup', onMouseUp)
+        }
+
+        document.addEventListener('mousemove', onMouseMove)
+        document.addEventListener('mouseup', onMouseUp)
+    }, [])
+
+    return { splitPercent, setSplitPercent, layoutRef, onMouseDown }
+}
+
 export function PlaygroundLayout({ config }: { config: PlaygroundConfig }) {
     const entryFile = config.entryFile || 'App.tsx'
     const height = config.height || 400
@@ -33,10 +66,15 @@ export function PlaygroundLayout({ config }: { config: PlaygroundConfig }) {
     const [activeFile, setActiveFile] = useState(entryFile)
     const [runtimeErrors, setRuntimeErrors] = useState<PlaygroundError[]>([])
     const [maximized, setMaximized] = useState<MaximizedPane>(null)
+    const { splitPercent, setSplitPercent, layoutRef, onMouseDown } = useSplitter(50)
 
     const toggleMaximize = useCallback((pane: 'editor' | 'preview') => {
-        setMaximized((prev) => (prev === pane ? null : pane))
-    }, [])
+        setMaximized((prev) => {
+            const next = prev === pane ? null : pane
+            if (next === null) setSplitPercent(50)
+            return next
+        })
+    }, [setSplitPercent])
 
     // Expose React globals for iframe
     useEffect(ensureReactGlobals, [])
@@ -84,16 +122,26 @@ export function PlaygroundLayout({ config }: { config: PlaygroundConfig }) {
         config.files.find((f) => f.name === activeFile)?.language || 'tsx'
     const fileNames = config.files.map((f) => f.name)
 
-    const layoutClass = [
-        styles.layout,
-        maximized === 'editor' ? styles.editorMaximized : '',
-        maximized === 'preview' ? styles.previewMaximized : '',
-    ].filter(Boolean).join(' ')
+    const showEditor = maximized !== 'preview'
+    const showPreview = maximized !== 'editor'
+    const showSplitter = showEditor && showPreview
+
+    const editorStyle = maximized === 'editor'
+        ? { flex: 1 }
+        : showSplitter
+            ? { width: `${splitPercent}%`, flexShrink: 0 }
+            : {}
+
+    const previewStyle = maximized === 'preview'
+        ? { flex: 1 }
+        : showSplitter
+            ? { width: `${100 - splitPercent}%`, flexShrink: 0 }
+            : {}
 
     return (
-        <div className={layoutClass}>
-            {maximized !== 'preview' && (
-                <div className={styles.editorPane}>
+        <div className={styles.layout} ref={layoutRef}>
+            {showEditor && (
+                <div className={styles.editorPane} style={editorStyle}>
                     <FileTabBar
                         files={fileNames}
                         activeFile={activeFile}
@@ -111,8 +159,17 @@ export function PlaygroundLayout({ config }: { config: PlaygroundConfig }) {
                     </div>
                 </div>
             )}
-            {maximized !== 'editor' && (
-                <div className={styles.previewPane}>
+            {showSplitter && (
+                <div
+                    className={styles.splitter}
+                    onMouseDown={onMouseDown}
+                    role="separator"
+                    aria-orientation="vertical"
+                    aria-label="Resize code and preview panels"
+                />
+            )}
+            {showPreview && (
+                <div className={styles.previewPane} style={previewStyle}>
                     <div className={styles.previewHeader}>
                         <span>Preview</span>
                         <button
