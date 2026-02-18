@@ -204,6 +204,37 @@ This tutorial emphasizes **modern best practices**:
 4. **Accessibility First** - Build components that work for everyone
 5. **Testing** - Ensure components work as expected
 
+## 🚢 Publishing to OSS
+
+The public version of this project is hosted at [github.com/algorisys-oss/react-katas](https://github.com/algorisys-oss/react-katas).
+
+A publish script strips internal files (listed in `.ossignore`) and pushes a clean snapshot:
+
+```bash
+# Dry run — shows what will be published, pushes nothing
+./scripts/publish-oss.sh
+
+# Actually push to the OSS remote
+./scripts/publish-oss.sh --push
+```
+
+**What the script does:**
+
+1. Creates a clean copy from `git archive HEAD`
+2. Removes paths listed in `.ossignore` (e.g. `CLAUDE.md`, `history.md`, `scripts/`)
+3. Patches `package.json` (removes `private` flag, keeps client scripts)
+4. Commits the snapshot to `algorisys-oss/react-katas` main branch
+
+**Configuration:**
+
+| Variable | Default | Description |
+|---|---|---|
+| `OSS_REMOTE` | `git@github.com:algorisys-oss/react-katas.git` | SSH URL of the OSS repo |
+| `OSS_BRANCH` | `main` | Branch to push to |
+| `OSS_MESSAGE` | auto-generated | Custom commit message |
+
+Override via environment: `OSS_BRANCH=release ./scripts/publish-oss.sh --push`
+
 ## 🤝 Contributing
 
 This is a learning project. Feel free to:
