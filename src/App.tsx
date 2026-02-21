@@ -30,21 +30,7 @@ function AppContent() {
 
     const appClass = `${styles.app} ${collapsed ? styles.sidebarCollapsed : ''}`
 
-    // Render home page if no lesson is selected
-    if (!currentLesson || currentPath === '/') {
-        return (
-            <div className={appClass}>
-                <aside className={styles.sidebar}>
-                    <Sidebar completedLessons={completedLessons} collapsed={collapsed} onToggleCollapse={toggleSidebar} />
-                </aside>
-                <main className={styles.mainContent}>
-                    <HomePage />
-                </main>
-            </div>
-        )
-    }
-
-    // Lesson Completion Logic
+    // All hooks must be called unconditionally (Rules of Hooks)
     const [timeSpent, setTimeSpent] = useState(0)
     const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false)
     const [isShortContent, setIsShortContent] = useState(false)
@@ -72,13 +58,14 @@ function AppContent() {
         }
     }, [currentPath])
 
-    // Timer
+    // Timer — only run when viewing a lesson
     useEffect(() => {
+        if (!currentLesson) return
         const timer = setInterval(() => {
             setTimeSpent(prev => prev + 1)
         }, 1000)
         return () => clearInterval(timer)
-    }, [currentPath]) // Reset timer on path change implicitly by dependency but state reset handles logic
+    }, [currentPath, currentLesson])
 
     // Scroll Listener
     useEffect(() => {
@@ -96,6 +83,20 @@ function AppContent() {
         window.addEventListener('scroll', handleScroll)
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
+
+    // Render home page if no lesson is selected
+    if (!currentLesson || currentPath === '/') {
+        return (
+            <div className={appClass}>
+                <aside className={styles.sidebar}>
+                    <Sidebar completedLessons={completedLessons} collapsed={collapsed} onToggleCollapse={toggleSidebar} />
+                </aside>
+                <main className={styles.mainContent}>
+                    <HomePage />
+                </main>
+            </div>
+        )
+    }
 
     const MIN_TIME_SECONDS = 30 // 30 seconds reading time requirement
     const canComplete = isLessonCompleted(currentLesson.id) || ((hasScrolledToBottom || isShortContent) && timeSpent >= MIN_TIME_SECONDS)
