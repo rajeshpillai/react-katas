@@ -46,6 +46,7 @@ export function RouterProvider({ children }: RouterProviderProps) {
         // Update browser history
         window.history.pushState({}, '', path)
         setCurrentPath(path)
+        window.scrollTo(0, 0)
     }
 
     const value: RouterContextValue = {

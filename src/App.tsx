@@ -1,10 +1,55 @@
-import { Suspense, useState, useEffect, useCallback } from 'react'
+import { Component, Suspense, useState, useEffect, useCallback, ReactNode } from 'react'
 import { RouterProvider, useRouter, Link } from '@router/router'
 import { getLessonByPath, getAdjacentLessons } from '@router/routes'
 import Sidebar from '@components/navigation/sidebar'
 import styles from './App.module.css'
 import { useProgress } from '@hooks/use-progress'
 import '@hooks/use-theme' // Initializes theme from localStorage on load
+
+// Error Boundary to catch lazy-load failures and render errors
+class LessonErrorBoundary extends Component<
+    { children: ReactNode; resetKey: string },
+    { error: Error | null }
+> {
+    state: { error: Error | null } = { error: null }
+
+    static getDerivedStateFromError(error: Error) {
+        return { error }
+    }
+
+    componentDidUpdate(prevProps: { resetKey: string }) {
+        if (prevProps.resetKey !== this.props.resetKey && this.state.error) {
+            this.setState({ error: null })
+        }
+    }
+
+    render() {
+        if (this.state.error) {
+            return (
+                <div style={{ padding: 'var(--space-8)', textAlign: 'center' }}>
+                    <h2>Failed to load lesson</h2>
+                    <p style={{ color: 'var(--text-secondary)', margin: 'var(--space-4) 0' }}>
+                        {this.state.error.message}
+                    </p>
+                    <button
+                        onClick={() => this.setState({ error: null })}
+                        style={{
+                            padding: 'var(--space-2) var(--space-4)',
+                            background: 'var(--color-primary-500)',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: 'var(--radius-md)',
+                            cursor: 'pointer',
+                        }}
+                    >
+                        Retry
+                    </button>
+                </div>
+            )
+        }
+        return this.props.children
+    }
+}
 
 function useSidebarCollapse() {
     const [collapsed, setCollapsed] = useState(() => {
@@ -112,9 +157,11 @@ function AppContent() {
                 <Sidebar completedLessons={completedLessons} collapsed={collapsed} onToggleCollapse={toggleSidebar} />
             </aside>
             <main className={styles.mainContent}>
-                <Suspense fallback={<div className={styles.loading} />}>
-                    <LessonComponent />
-                </Suspense>
+                <LessonErrorBoundary resetKey={currentPath}>
+                    <Suspense fallback={<div className={styles.loading} />}>
+                        <LessonComponent />
+                    </Suspense>
+                </LessonErrorBoundary>
 
                 <div style={{
                     marginTop: 'var(--space-8)',
