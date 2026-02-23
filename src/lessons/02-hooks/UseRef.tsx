@@ -393,11 +393,11 @@ ref.current = newValue;`}</code>
           <div
             style={{
               padding: 'var(--space-4)',
-              background: 'var(--color-primary-100)',
+              background: 'var(--surface-primary)',
               borderRadius: 'var(--radius-lg)',
             }}
           >
-            <h3 style={{ color: 'var(--color-primary-700)' }}>useState</h3>
+            <h3 style={{ color: 'var(--on-surface-primary)' }}>useState</h3>
             <ul>
               <li>Triggers re-render when updated</li>
               <li>Use for UI data</li>
@@ -413,11 +413,11 @@ setCount(count + 1); // Re-renders`}</code>
           <div
             style={{
               padding: 'var(--space-4)',
-              background: 'var(--color-accent-100)',
+              background: 'var(--surface-accent)',
               borderRadius: 'var(--radius-lg)',
             }}
           >
-            <h3 style={{ color: 'var(--color-accent-700)' }}>useRef</h3>
+            <h3 style={{ color: 'var(--on-surface-accent)' }}>useRef</h3>
             <ul>
               <li>No re-render when updated</li>
               <li>Use for non-UI data</li>
@@ -773,7 +773,7 @@ function ScrollToElement() {
           ref={topRef}
           style={{
             padding: 'var(--space-4)',
-            background: 'var(--color-primary-100)',
+            background: 'var(--surface-primary)',
             borderRadius: 'var(--radius-md)',
             marginBottom: 'var(--space-4)',
           }}
@@ -790,7 +790,7 @@ function ScrollToElement() {
           ref={middleRef}
           style={{
             padding: 'var(--space-4)',
-            background: 'var(--color-accent-100)',
+            background: 'var(--surface-accent)',
             borderRadius: 'var(--radius-md)',
             marginBottom: 'var(--space-4)',
           }}

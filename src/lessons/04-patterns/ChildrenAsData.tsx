@@ -272,11 +272,11 @@ export default function ChildrenAsData() {
                     <div
                         style={{
                             padding: 'var(--space-4)',
-                            background: 'var(--color-primary-100)',
+                            background: 'var(--surface-primary)',
                             borderRadius: 'var(--radius-lg)',
                         }}
                     >
-                        <h3 style={{ color: 'var(--color-primary-700)' }}>Consumer API</h3>
+                        <h3 style={{ color: 'var(--on-surface-primary)' }}>Consumer API</h3>
                         <pre style={{ background: 'transparent', fontSize: 'var(--font-size-sm)' }}>
                             <code>{`<Tabs>
   <Tab.Panel label="Profile">
@@ -294,11 +294,11 @@ export default function ChildrenAsData() {
                     <div
                         style={{
                             padding: 'var(--space-4)',
-                            background: 'var(--color-accent-100)',
+                            background: 'var(--surface-accent)',
                             borderRadius: 'var(--radius-lg)',
                         }}
                     >
-                        <h3 style={{ color: 'var(--color-accent-700)' }}>Alternative (Config Array)</h3>
+                        <h3 style={{ color: 'var(--on-surface-accent)' }}>Alternative (Config Array)</h3>
                         <pre style={{ background: 'transparent', fontSize: 'var(--font-size-sm)' }}>
                             <code>{`<Tabs tabs={[
   {
@@ -494,7 +494,7 @@ function Tabs({ children, defaultIndex = 0 }) {
 
                 <div
                     style={{
-                        background: 'var(--color-accent-100)',
+                        background: 'var(--surface-accent)',
                         padding: 'var(--space-4)',
                         borderRadius: 'var(--radius-lg)',
                         marginTop: 'var(--space-4)',
@@ -523,7 +523,7 @@ function Tabs({ children, defaultIndex = 0 }) {
 
                 <div
                     style={{
-                        background: 'var(--color-primary-100)',
+                        background: 'var(--surface-primary)',
                         padding: 'var(--space-4)',
                         borderRadius: 'var(--radius-lg)',
                         marginTop: 'var(--space-4)',

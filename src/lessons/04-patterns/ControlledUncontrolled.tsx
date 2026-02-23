@@ -179,7 +179,7 @@ export default function ControlledUncontrolled() {
             <div
               style={{
                 padding: 'var(--space-4)',
-                background: 'var(--color-primary-100)',
+                background: 'var(--surface-primary)',
                 borderRadius: 'var(--radius-lg)',
               }}
             >
@@ -203,7 +203,7 @@ export default function ControlledUncontrolled() {
             <div
               style={{
                 padding: 'var(--space-4)',
-                background: 'var(--color-accent-100)',
+                background: 'var(--surface-accent)',
                 borderRadius: 'var(--radius-lg)',
               }}
             >

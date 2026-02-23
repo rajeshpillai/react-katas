@@ -209,7 +209,7 @@ export default function React19Compiler() {
           <div
             style={{
               padding: 'var(--space-4)',
-              background: 'var(--color-primary-100)',
+              background: 'var(--surface-primary)',
               borderRadius: 'var(--radius-lg)',
             }}
           >

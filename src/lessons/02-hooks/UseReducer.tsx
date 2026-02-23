@@ -377,11 +377,11 @@ function todoReducer(state: Todo[], action: Action): Todo[] {
           <div
             style={{
               padding: 'var(--space-4)',
-              background: 'var(--color-primary-100)',
+              background: 'var(--surface-primary)',
               borderRadius: 'var(--radius-lg)',
             }}
           >
-            <h3 style={{ color: 'var(--color-primary-700)' }}>useState</h3>
+            <h3 style={{ color: 'var(--on-surface-primary)' }}>useState</h3>
             <p style={{ marginBottom: 'var(--space-3)' }}>Best for:</p>
             <ul>
               <li>Simple state (strings, numbers, booleans)</li>
@@ -398,11 +398,11 @@ setCount(count + 1);`}</code>
           <div
             style={{
               padding: 'var(--space-4)',
-              background: 'var(--color-accent-100)',
+              background: 'var(--surface-accent)',
               borderRadius: 'var(--radius-lg)',
             }}
           >
-            <h3 style={{ color: 'var(--color-accent-700)' }}>useReducer</h3>
+            <h3 style={{ color: 'var(--on-surface-accent)' }}>useReducer</h3>
             <p style={{ marginBottom: 'var(--space-3)' }}>Best for:</p>
             <ul>
               <li>Complex state objects</li>

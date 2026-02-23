@@ -548,12 +548,12 @@ function TimerComponent() {
     <div
       style={{
         padding: 'var(--space-4)',
-        background: 'var(--color-primary-100)',
+        background: 'var(--surface-primary)',
         borderRadius: 'var(--radius-md)',
         marginBottom: 'var(--space-4)',
       }}
     >
-      <p style={{ color: 'var(--color-primary-700)', fontWeight: 'bold' }}>
+      <p style={{ color: 'var(--on-surface-primary)', fontWeight: 'bold' }}>
         Timer: {seconds} seconds
       </p>
       <p style={{ color: 'var(--color-primary-600)', fontSize: 'var(--font-size-sm)' }}>
@@ -584,12 +584,12 @@ function MouseTracker() {
     <div
       style={{
         padding: 'var(--space-4)',
-        background: 'var(--color-accent-100)',
+        background: 'var(--surface-accent)',
         borderRadius: 'var(--radius-md)',
         marginBottom: 'var(--space-4)',
       }}
     >
-      <p style={{ color: 'var(--color-accent-700)', fontWeight: 'bold' }}>
+      <p style={{ color: 'var(--on-surface-accent)', fontWeight: 'bold' }}>
         Mouse Position: X: {position.x}, Y: {position.y}
       </p>
       <p style={{ color: 'var(--color-accent-600)', fontSize: 'var(--font-size-sm)' }}>

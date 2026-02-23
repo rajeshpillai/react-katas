@@ -417,8 +417,8 @@ function SkillsList({ skills }: { skills: string[] }) {
                         key={skill}
                         style={{
                             padding: 'var(--space-2) var(--space-3)',
-                            background: 'var(--color-primary-100)',
-                            color: 'var(--color-primary-700)',
+                            background: 'var(--surface-primary)',
+                            color: 'var(--on-surface-primary)',
                             borderRadius: 'var(--radius-md)',
                             fontSize: 'var(--font-size-sm)',
                         }}

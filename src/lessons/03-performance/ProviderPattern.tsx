@@ -357,7 +357,7 @@ function ThemeDisplay() {
     <div
       style={{
         padding: 'var(--space-3)',
-        background: 'var(--color-primary-100)',
+        background: 'var(--surface-primary)',
         borderRadius: 'var(--radius-md)',
         marginBottom: 'var(--space-3)',
       }}

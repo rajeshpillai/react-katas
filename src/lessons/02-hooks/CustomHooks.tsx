@@ -619,12 +619,12 @@ function WindowSizeDemo() {
     <div
       style={{
         padding: 'var(--space-4)',
-        background: 'var(--color-primary-100)',
+        background: 'var(--surface-primary)',
         borderRadius: 'var(--radius-md)',
         textAlign: 'center',
       }}
     >
-      <p style={{ color: 'var(--color-primary-700)', fontWeight: 'bold', fontSize: 'var(--font-size-2xl)' }}>
+      <p style={{ color: 'var(--on-surface-primary)', fontWeight: 'bold', fontSize: 'var(--font-size-2xl)' }}>
         {width} x {height}
       </p>
       <p style={{ color: 'var(--color-primary-600)', fontSize: 'var(--font-size-sm)' }}>

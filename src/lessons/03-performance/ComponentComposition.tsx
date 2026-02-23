@@ -547,7 +547,7 @@ function Header() {
   renderCount.current += 1
   console.log('Header rendered')
   return (
-    <div style={{ padding: 'var(--space-3)', background: 'var(--color-primary-100)', borderRadius: 'var(--radius-md)' }}>
+    <div style={{ padding: 'var(--space-3)', background: 'var(--surface-primary)', borderRadius: 'var(--radius-md)' }}>
       Header (renders: {renderCount.current})
     </div>
   )
@@ -558,7 +558,7 @@ function Sidebar() {
   renderCount.current += 1
   console.log('Sidebar rendered')
   return (
-    <div style={{ padding: 'var(--space-3)', background: 'var(--color-accent-100)', borderRadius: 'var(--radius-md)' }}>
+    <div style={{ padding: 'var(--space-3)', background: 'var(--surface-accent)', borderRadius: 'var(--radius-md)' }}>
       Sidebar (renders: {renderCount.current})
     </div>
   )

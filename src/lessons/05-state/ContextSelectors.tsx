@@ -471,7 +471,7 @@ const SolutionCountDisplay = memo(function SolutionCountDisplay() {
     const renderRef = useRef(0)
     renderRef.current++
     return (
-        <div style={{ padding: 'var(--space-3)', background: 'var(--color-primary-100)', borderRadius: 'var(--radius-md)' }}>
+        <div style={{ padding: 'var(--space-3)', background: 'var(--surface-primary)', borderRadius: 'var(--radius-md)' }}>
             <strong>Count:</strong> {count}
             <span style={{ float: 'right', fontSize: 'var(--font-size-xs)', color: 'var(--text-tertiary)' }}>renders: {renderRef.current}</span>
         </div>
@@ -483,7 +483,7 @@ const SolutionUserDisplay = memo(function SolutionUserDisplay() {
     const renderRef = useRef(0)
     renderRef.current++
     return (
-        <div style={{ padding: 'var(--space-3)', background: 'var(--color-accent-100)', borderRadius: 'var(--radius-md)' }}>
+        <div style={{ padding: 'var(--space-3)', background: 'var(--surface-accent)', borderRadius: 'var(--radius-md)' }}>
             <strong>User:</strong> {user}
             <span style={{ float: 'right', fontSize: 'var(--font-size-xs)', color: 'var(--text-tertiary)' }}>renders: {renderRef.current}</span>
         </div>
@@ -552,7 +552,7 @@ const WithShallowEqual = memo(function WithShallowEqual() {
     const renderRef = useRef(0)
     renderRef.current++
     return (
-        <div style={{ padding: 'var(--space-3)', background: 'var(--color-primary-100)', borderRadius: 'var(--radius-md)' }}>
+        <div style={{ padding: 'var(--space-3)', background: 'var(--surface-primary)', borderRadius: 'var(--radius-md)' }}>
             <strong>With shallowEqual:</strong> {data.count} items, label={data.label}
             <span style={{ float: 'right', fontSize: 'var(--font-size-xs)', color: 'var(--text-tertiary)' }}>renders: {renderRef.current}</span>
         </div>

@@ -272,7 +272,7 @@ function Button<T extends React.ElementType = 'button'>({
 
                 <div
                     style={{
-                        background: 'var(--color-accent-100)',
+                        background: 'var(--surface-accent)',
                         padding: 'var(--space-4)',
                         borderRadius: 'var(--radius-lg)',
                         marginTop: 'var(--space-4)',
@@ -321,7 +321,7 @@ function Button<T extends React.ElementType = 'button'>({
 
                 <div
                     style={{
-                        background: 'var(--color-primary-100)',
+                        background: 'var(--surface-primary)',
                         padding: 'var(--space-4)',
                         borderRadius: 'var(--radius-lg)',
                         marginTop: 'var(--space-4)',
@@ -508,11 +508,11 @@ function Button({ asChild, variant, children, ...props }) {
                     <div
                         style={{
                             padding: 'var(--space-4)',
-                            background: 'var(--color-primary-100)',
+                            background: 'var(--surface-primary)',
                             borderRadius: 'var(--radius-lg)',
                         }}
                     >
-                        <h3 style={{ color: 'var(--color-primary-700)' }}>Use asChild When</h3>
+                        <h3 style={{ color: 'var(--on-surface-primary)' }}>Use asChild When</h3>
                         <ul>
                             <li>Building a design system or component library</li>
                             <li>TypeScript strictness matters</li>
@@ -523,11 +523,11 @@ function Button({ asChild, variant, children, ...props }) {
                     <div
                         style={{
                             padding: 'var(--space-4)',
-                            background: 'var(--color-accent-100)',
+                            background: 'var(--surface-accent)',
                             borderRadius: 'var(--radius-lg)',
                         }}
                     >
-                        <h3 style={{ color: 'var(--color-accent-700)' }}>Use "as" Prop When</h3>
+                        <h3 style={{ color: 'var(--on-surface-accent)' }}>Use "as" Prop When</h3>
                         <ul>
                             <li>You only switch between a few known elements</li>
                             <li>Your team is familiar with the polymorphic pattern</li>

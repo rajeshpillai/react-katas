@@ -191,33 +191,31 @@ const [count, setCount] = useState(0);
                     <div
                         style={{
                             padding: 'var(--space-4)',
-                            background: 'var(--color-primary-100)',
+                            background: 'var(--surface-primary)',
                             borderRadius: 'var(--radius-lg)',
-                            color: 'var(--color-gray-800)',
                         }}
                     >
-                        <h3 style={{ color: 'var(--color-primary-700)' }}>State</h3>
+                        <h3 style={{ color: 'var(--on-surface-primary)' }}>State</h3>
                         <ul>
-                            <li style={{ color: 'var(--color-gray-700)' }}>Owned by the component</li>
-                            <li style={{ color: 'var(--color-gray-700)' }}>Can be changed by the component</li>
-                            <li style={{ color: 'var(--color-gray-700)' }}>Triggers re-renders when updated</li>
-                            <li style={{ color: 'var(--color-gray-700)' }}>Private and local</li>
+                            <li>Owned by the component</li>
+                            <li>Can be changed by the component</li>
+                            <li>Triggers re-renders when updated</li>
+                            <li>Private and local</li>
                         </ul>
                     </div>
                     <div
                         style={{
                             padding: 'var(--space-4)',
-                            background: 'var(--color-accent-100)',
+                            background: 'var(--surface-accent)',
                             borderRadius: 'var(--radius-lg)',
-                            color: 'var(--color-gray-800)',
                         }}
                     >
-                        <h3 style={{ color: 'var(--color-accent-700)' }}>Props</h3>
+                        <h3 style={{ color: 'var(--on-surface-accent)' }}>Props</h3>
                         <ul>
-                            <li style={{ color: 'var(--color-gray-700)' }}>Passed from parent</li>
-                            <li style={{ color: 'var(--color-gray-700)' }}>Read-only (immutable)</li>
-                            <li style={{ color: 'var(--color-gray-700)' }}>Can be passed down</li>
-                            <li style={{ color: 'var(--color-gray-700)' }}>Configuration for component</li>
+                            <li>Passed from parent</li>
+                            <li>Read-only (immutable)</li>
+                            <li>Can be passed down</li>
+                            <li>Configuration for component</li>
                         </ul>
                     </div>
                 </div>

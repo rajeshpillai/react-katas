@@ -201,7 +201,7 @@ function SlotCard({ header, body, footer }: SlotCardProps) {
                 <div
                     style={{
                         padding: 'var(--space-4) var(--space-5)',
-                        background: 'var(--color-primary-100)',
+                        background: 'var(--surface-primary)',
                         borderBottom: '1px solid var(--border-color)',
                         fontWeight: 600,
                     }}
@@ -295,7 +295,7 @@ function Card({ header, body, footer }: CardProps) {
                     <div
                         style={{
                             padding: 'var(--space-4)',
-                            background: 'var(--color-accent-100)',
+                            background: 'var(--surface-accent)',
                             borderRadius: 'var(--radius-lg)',
                         }}
                     >
@@ -317,7 +317,7 @@ function Card({ header, body, footer }: CardProps) {
                     <div
                         style={{
                             padding: 'var(--space-4)',
-                            background: 'var(--color-primary-100)',
+                            background: 'var(--surface-primary)',
                             borderRadius: 'var(--radius-lg)',
                         }}
                     >
@@ -520,11 +520,11 @@ function Card({ header, body, footer }: CardProps) {
                     <div
                         style={{
                             padding: 'var(--space-4)',
-                            background: 'var(--color-primary-100)',
+                            background: 'var(--surface-primary)',
                             borderRadius: 'var(--radius-lg)',
                         }}
                     >
-                        <h3 style={{ color: 'var(--color-primary-700)' }}>Slots (Named Props)</h3>
+                        <h3 style={{ color: 'var(--on-surface-primary)' }}>Slots (Named Props)</h3>
                         <pre style={{ background: 'transparent', fontSize: 'var(--font-size-sm)' }}>
                             <code>{`<Card
   header={...}
@@ -542,11 +542,11 @@ function Card({ header, body, footer }: CardProps) {
                     <div
                         style={{
                             padding: 'var(--space-4)',
-                            background: 'var(--color-accent-100)',
+                            background: 'var(--surface-accent)',
                             borderRadius: 'var(--radius-lg)',
                         }}
                     >
-                        <h3 style={{ color: 'var(--color-accent-700)' }}>Children</h3>
+                        <h3 style={{ color: 'var(--on-surface-accent)' }}>Children</h3>
                         <pre style={{ background: 'transparent', fontSize: 'var(--font-size-sm)' }}>
                             <code>{`<Card>
   <p>All content

@@ -221,7 +221,7 @@ const handleClick = () => {
                     <div
                         onMouseMove={handleMouseMove}
                         style={{
-                            background: 'var(--color-primary-100)',
+                            background: 'var(--surface-primary)',
                             padding: 'var(--space-8)',
                             borderRadius: 'var(--radius-md)',
                             textAlign: 'center',
@@ -229,7 +229,7 @@ const handleClick = () => {
                             marginBottom: 'var(--space-4)',
                         }}
                     >
-                        <p style={{ color: 'var(--color-primary-700)', fontWeight: 'bold' }}>
+                        <p style={{ color: 'var(--on-surface-primary)', fontWeight: 'bold' }}>
                             Move your mouse here!
                         </p>
                         <p style={{ color: 'var(--color-primary-600)' }}>
