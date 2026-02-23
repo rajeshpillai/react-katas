@@ -103,7 +103,11 @@ export function buildIframeDoc(jsBundle: string, cssCode: string): string {
 <style>
 *,*::before,*::after{box-sizing:border-box}
 body{margin:0;padding:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;color:#1a1a2e;background:#fff;color-scheme:light}
+pre{background:#f3f4f6;color:#1f2937;padding:12px;border-radius:6px;overflow-x:auto;margin-bottom:8px;font-size:13px}
+code{font-size:13px}
 body.dark{color:#e2e8f0;background:#1a1a2e;color-scheme:dark}
+body.dark pre{background:#1e293b;color:#e2e8f0}
+body.dark code{color:#e2e8f0}
 ${cssCode}
 </style>
 </head>

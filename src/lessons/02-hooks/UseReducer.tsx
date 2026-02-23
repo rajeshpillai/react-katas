@@ -89,6 +89,7 @@ export default function App() {
                 alignItems: 'center',
                 padding: 8,
                 background: '#f9fafb',
+                color: '#1f2937',
                 borderRadius: 4,
                 marginBottom: 4,
               }}

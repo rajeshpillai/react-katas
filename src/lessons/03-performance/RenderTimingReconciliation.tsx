@@ -24,7 +24,7 @@ function ListItem({ item }: { item: Item }) {
     renderCount.current += 1
 
     return (
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center', padding: 8, background: '#f9fafb', borderRadius: 6, marginBottom: 4 }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', padding: 8, background: '#f9fafb', color: '#1f2937', borderRadius: 6, marginBottom: 4 }}>
             <span style={{ flex: 1 }}>{item.text}</span>
             <input
                 type="text"

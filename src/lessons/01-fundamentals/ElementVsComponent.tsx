@@ -20,7 +20,7 @@ function RenderCounter({ label }: { label: string }) {
     const count = useRef(0)
     count.current += 1
     return (
-        <div style={{ padding: 8, background: '#f3f4f6', borderRadius: 6, marginBottom: 8 }}>
+        <div style={{ padding: 8, background: '#f3f4f6', color: '#1f2937', borderRadius: 6, marginBottom: 8 }}>
             <strong>{label}</strong> rendered <strong>{count.current}</strong> time(s)
         </div>
     )
@@ -53,7 +53,7 @@ export default function App() {
                 <h3>1. typeof Checks</h3>
                 <p><code>typeof Greeting</code> = <strong>{typeof Greeting}</strong> (it is a function)</p>
                 <p><code>typeof &lt;Greeting /&gt;</code> = <strong>{typeof element}</strong> (it is an object)</p>
-                <pre style={{ background: '#f9fafb', padding: 12, borderRadius: 6 }}>
+                <pre style={{ padding: 12, borderRadius: 6 }}>
 {describeElement(element)}
                 </pre>
             </section>
@@ -61,7 +61,7 @@ export default function App() {
             <section style={{ marginBottom: 24 }}>
                 <h3>2. createElement Output</h3>
                 <p>JSX and createElement produce the same result:</p>
-                <pre style={{ background: '#f9fafb', padding: 12, borderRadius: 6 }}>
+                <pre style={{ padding: 12, borderRadius: 6 }}>
 {describeElement(elementViaCreateElement)}
                 </pre>
             </section>

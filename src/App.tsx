@@ -129,18 +129,9 @@ function AppContent() {
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
 
-    // Render home page if no lesson is selected
+    // Render home page if no lesson is selected (no sidebar)
     if (!currentLesson || currentPath === '/') {
-        return (
-            <div className={appClass}>
-                <aside className={styles.sidebar}>
-                    <Sidebar completedLessons={completedLessons} collapsed={collapsed} onToggleCollapse={toggleSidebar} />
-                </aside>
-                <main className={styles.mainContent}>
-                    <HomePage />
-                </main>
-            </div>
-        )
+        return <HomePage />
     }
 
     const MIN_TIME_SECONDS = 30 // 30 seconds reading time requirement
@@ -291,92 +282,83 @@ function AppContent() {
 
 // Home page component
 function HomePage() {
+    const cardBase: React.CSSProperties = {
+        flex: '1 1 280px',
+        maxWidth: 400,
+        padding: 'var(--space-8)',
+        borderRadius: 'var(--radius-xl)',
+        textDecoration: 'none',
+        transition: 'transform 0.2s, box-shadow 0.2s',
+    }
+
     return (
-        <div>
-            <h1>React Katas</h1>
-            <p style={{ fontSize: 'var(--font-size-lg)', marginBottom: 'var(--space-6)' }}>
-                Master React 19 from fundamentals to advanced patterns
-            </p>
+        <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '70vh',
+            gap: 'var(--space-8)',
+        }}>
+            <h1 style={{ textAlign: 'center', marginBottom: 0 }}>React Tutorial Katas</h1>
 
-            <section style={{ marginBottom: 'var(--space-8)' }}>
-                <h2>Welcome to React Katas! 👋</h2>
-                <p>
-                    This is a comprehensive, hands-on tutorial designed to take you from React basics to
-                    building production-ready, performant, and accessible UI components.
-                </p>
-                <p>
-                    Each lesson includes interactive examples, detailed explanations, and real-world use
-                    cases. You'll learn modern React 19 patterns, performance optimization techniques, and
-                    accessibility best practices.
-                </p>
-            </section>
+            <div style={{
+                display: 'flex',
+                gap: 'var(--space-6)',
+                flexWrap: 'wrap',
+                justifyContent: 'center',
+            }}>
+                {/* React Katas card */}
+                <Link
+                    to="/lessons/jsx-basics"
+                    style={{
+                        ...cardBase,
+                        background: 'var(--surface-primary)',
+                        color: 'var(--on-surface-primary)',
+                        boxShadow: 'var(--shadow-md)',
+                    }}
+                >
+                    <h2 style={{ color: 'var(--on-surface-primary)', marginBottom: 'var(--space-3)' }}>
+                        React Katas
+                    </h2>
+                    <p style={{ color: 'var(--on-surface-primary)', opacity: 0.8, margin: 0 }}>
+                        Master React 19 from fundamentals to advanced patterns
+                    </p>
+                </Link>
 
-            <section style={{ marginBottom: 'var(--space-8)' }}>
-                <h3>What You'll Learn</h3>
-                <ul>
-                    <li>
-                        <strong>Fundamentals:</strong> JSX, components, props, state, and event handling
-                    </li>
-                    <li>
-                        <strong>Hooks:</strong> useState, useEffect, useRef, custom hooks, and useReducer
-                    </li>
-                    <li>
-                        <strong>Performance:</strong> Component composition, React.memo, code splitting, and
-                        React 19 compiler
-                    </li>
-                    <li>
-                        <strong>Advanced Patterns:</strong> Compound components, render props, HOCs, and
-                        portals
-                    </li>
-                    <li>
-                        <strong>State Management:</strong> Context API, context selectors, and state machines
-                    </li>
-                    <li>
-                        <strong>Accessibility:</strong> ARIA, keyboard navigation, and accessible forms
-                    </li>
-                </ul>
-            </section>
-
-            <section style={{ marginBottom: 'var(--space-8)' }}>
-                <h3>Modern React 19 Approach</h3>
-                <p>
-                    This tutorial emphasizes <strong>modern best practices</strong> for React 19:
-                </p>
-                <ul>
-                    <li>
-                        <strong>Composition over memoization:</strong> Learn why component composition is the
-                        primary performance optimization technique
-                    </li>
-                    <li>
-                        <strong>React Compiler:</strong> Understand how React 19's automatic optimizations
-                        reduce the need for manual memoization
-                    </li>
-                    <li>
-                        <strong>TypeScript:</strong> All examples include TypeScript for type safety and better
-                        developer experience
-                    </li>
-                    <li>
-                        <strong>Testing:</strong> Learn to test your components with Vitest and React Testing
-                        Library
-                    </li>
-                    <li>
-                        <strong>Accessibility First:</strong> Build components that work for everyone
-                    </li>
-                </ul>
-            </section>
-
-            <section>
-                <h3>Getting Started</h3>
-                <p>
-                    Choose a lesson from the sidebar to begin your journey. We recommend starting with{' '}
-                    <strong>JSX Basics</strong> if you're new to React, or jumping to{' '}
-                    <strong>Performance Optimization</strong> if you're already familiar with the
-                    fundamentals.
-                </p>
-                <p style={{ marginTop: 'var(--space-4)', color: 'var(--text-tertiary)' }}>
-                    💡 <em>Tip: Use keyboard shortcuts to navigate between lessons quickly!</em>
-                </p>
-            </section>
+                {/* Applications card — coming soon */}
+                <div
+                    style={{
+                        ...cardBase,
+                        background: 'var(--surface-accent)',
+                        color: 'var(--on-surface-accent)',
+                        boxShadow: 'var(--shadow-md)',
+                        opacity: 0.6,
+                        cursor: 'default',
+                        position: 'relative',
+                    }}
+                >
+                    <span style={{
+                        position: 'absolute',
+                        top: 'var(--space-3)',
+                        right: 'var(--space-3)',
+                        fontSize: 'var(--font-size-xs)',
+                        background: 'var(--on-surface-accent)',
+                        color: 'var(--surface-accent)',
+                        padding: '2px 8px',
+                        borderRadius: 'var(--radius-full)',
+                        fontWeight: 600,
+                    }}>
+                        Coming Soon
+                    </span>
+                    <h2 style={{ color: 'var(--on-surface-accent)', marginBottom: 'var(--space-3)' }}>
+                        Applications
+                    </h2>
+                    <p style={{ color: 'var(--on-surface-accent)', opacity: 0.8, margin: 0 }}>
+                        Build real-world projects with guided walkthroughs
+                    </p>
+                </div>
+            </div>
         </div>
     )
 }
