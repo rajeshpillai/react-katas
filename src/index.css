@@ -43,6 +43,9 @@
   --color-gray-800: #1f2937;
   --color-gray-900: #111827;
 
+  /* Prevent browser auto-dark-mode from overriding our colors */
+  color-scheme: light;
+
   /* Semantic colors - Light mode */
   --bg-primary: #ffffff;
   --bg-secondary: var(--color-gray-50);
@@ -122,6 +125,8 @@
 
 /* Dark mode — controlled via data-theme attribute set by useTheme hook */
 :root[data-theme="dark"] {
+    color-scheme: dark;
+
     --bg-primary: var(--color-gray-900);
     --bg-secondary: var(--color-gray-800);
     --bg-tertiary: var(--color-gray-700);

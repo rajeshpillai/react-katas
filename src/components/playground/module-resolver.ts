@@ -99,17 +99,18 @@ export function buildIframeDoc(jsBundle: string, cssCode: string): string {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
 <style>
 *,*::before,*::after{box-sizing:border-box}
-body{margin:0;padding:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;color:#1a1a2e;background:#fff}
-body.dark{color:#e2e8f0;background:#1a1a2e}
+body{margin:0;padding:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;color:#1a1a2e;background:#fff;color-scheme:light}
+body.dark{color:#e2e8f0;background:#1a1a2e;color-scheme:dark}
 ${cssCode}
 </style>
 </head>
 <body>
 <div id="root"></div>
 <script>
-if(window.parent.document.documentElement.dataset.theme==='dark')document.body.classList.add('dark');
+if(window.parent.document.documentElement.dataset.theme==='dark'){document.body.classList.add('dark');document.querySelector('meta[name=color-scheme]').content='dark'}
 window.onerror = function(msg, source, line, col, error) {
     window.parent.postMessage({
         type: 'PLAYGROUND_RUNTIME_ERROR',
