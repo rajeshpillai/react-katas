@@ -10,7 +10,7 @@ export const playgroundConfig: PlaygroundConfig = {
     {
       name: 'App.tsx',
       language: 'tsx',
-      code: `import { useState, createElement, useRef, useEffect } from 'react'
+      code: `import { useState, createElement, useRef } from 'react'
 
 function Greeting({ name }: { name: string }) {
     return <h2>Hello, {name}!</h2>
@@ -24,6 +24,20 @@ function RenderCounter({ label }: { label: string }) {
             <strong>{label}</strong> rendered <strong>{count.current}</strong> time(s)
         </div>
     )
+}
+
+// Safe serializer: handles symbols, functions, and circular refs
+function safeStringify(obj) {
+    const seen = new WeakSet()
+    return JSON.stringify(obj, (_key, value) => {
+        if (typeof value === 'symbol') return value.toString()
+        if (typeof value === 'function') return '[Function: ' + (value.name || 'anonymous') + ']'
+        if (typeof value === 'object' && value !== null) {
+            if (seen.has(value)) return '[Circular]'
+            seen.add(value)
+        }
+        return value
+    }, 2)
 }
 
 export default function App() {
@@ -45,7 +59,7 @@ export default function App() {
                 <p><code>typeof Greeting</code> = <strong>{typeof Greeting}</strong> (it is a function)</p>
                 <p><code>typeof &lt;Greeting /&gt;</code> = <strong>{typeof element}</strong> (it is an object)</p>
                 <pre style={{ background: '#f9fafb', padding: 12, borderRadius: 6 }}>
-{JSON.stringify(element, null, 2)}
+{safeStringify(element)}
                 </pre>
             </section>
 
@@ -53,7 +67,7 @@ export default function App() {
                 <h3>2. createElement Output</h3>
                 <p>JSX and createElement produce the same result:</p>
                 <pre style={{ background: '#f9fafb', padding: 12, borderRadius: 6 }}>
-{JSON.stringify(elementViaCreateElement, null, 2)}
+{safeStringify(elementViaCreateElement)}
                 </pre>
             </section>
 
@@ -173,13 +187,18 @@ function CreateElementDemo() {
   const jsxElement = <Greeting name="World" />
   const ceElement = createElement(Greeting, { name: 'World' })
 
-  // Safe serialization that handles symbols
+  // Safe serialization that handles symbols, functions, and circular refs
   const serialize = (obj: unknown): string => {
+    const seen = new WeakSet()
     return JSON.stringify(
       obj,
       (_key, value) => {
         if (typeof value === 'symbol') return value.toString()
         if (typeof value === 'function') return `[Function: ${value.name || 'anonymous'}]`
+        if (typeof value === 'object' && value !== null) {
+          if (seen.has(value)) return '[Circular]'
+          seen.add(value)
+        }
         return value
       },
       2

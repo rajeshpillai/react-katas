@@ -102,23 +102,21 @@
     color: var(--text-primary, #1e293b);
 }
 
-@media (prefers-color-scheme: dark) {
-    .bar {
-        background: #1e293b;
-        border-color: #334155;
-    }
+:root[data-theme="dark"] .bar {
+    background: #1e293b;
+    border-color: #334155;
+}
 
-    .ext {
-        background: #334155;
-        color: #94a3b8;
-    }
+:root[data-theme="dark"] .ext {
+    background: #334155;
+    color: #94a3b8;
+}
 
-    .tab.active .ext {
-        background: #1e3a5f;
-        color: #93c5fd;
-    }
+:root[data-theme="dark"] .tab.active .ext {
+    background: #1e3a5f;
+    color: #93c5fd;
+}
 
-    .reset {
-        border-color: #475569;
-    }
+:root[data-theme="dark"] .reset {
+    border-color: #475569;
 }

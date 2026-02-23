@@ -75,38 +75,36 @@
     word-break: break-word;
 }
 
-@media (prefers-color-scheme: dark) {
-    .container {
-        background: #450a0a;
-        border-color: #991b1b;
-    }
+:root[data-theme="dark"] .container {
+    background: #450a0a;
+    border-color: #991b1b;
+}
 
-    .header {
-        background: #7f1d1d;
-        border-color: #991b1b;
-    }
+:root[data-theme="dark"] .header {
+    background: #7f1d1d;
+    border-color: #991b1b;
+}
 
-    .title {
-        color: #fecaca;
-    }
+:root[data-theme="dark"] .title {
+    color: #fecaca;
+}
 
-    .dismiss {
-        color: #fecaca;
-    }
+:root[data-theme="dark"] .dismiss {
+    color: #fecaca;
+}
 
-    .dismiss:hover {
-        background: #991b1b;
-    }
+:root[data-theme="dark"] .dismiss:hover {
+    background: #991b1b;
+}
 
-    .error {
-        border-color: #7f1d1d;
-    }
+:root[data-theme="dark"] .error {
+    border-color: #7f1d1d;
+}
 
-    .location {
-        color: #fca5a5;
-    }
+:root[data-theme="dark"] .location {
+    color: #fca5a5;
+}
 
-    .message {
-        color: #fecaca;
-    }
+:root[data-theme="dark"] .message {
+    color: #fecaca;
 }

@@ -6,8 +6,6 @@
     border-top: none;
 }
 
-@media (prefers-color-scheme: dark) {
-    .editor {
-        border-color: #334155;
-    }
+:root[data-theme="dark"] .editor {
+    border-color: #334155;
 }

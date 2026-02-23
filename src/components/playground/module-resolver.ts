@@ -110,7 +110,12 @@ ${cssCode}
 <body>
 <div id="root"></div>
 <script>
-if(window.parent.document.documentElement.dataset.theme==='dark'){document.body.classList.add('dark');document.querySelector('meta[name=color-scheme]').content='dark'}
+function __applyTheme(dark){
+if(dark){document.body.classList.add('dark');document.querySelector('meta[name=color-scheme]').content='dark'}
+else{document.body.classList.remove('dark');document.querySelector('meta[name=color-scheme]').content='light'}
+}
+__applyTheme(window.parent.document.documentElement.dataset.theme==='dark');
+new MutationObserver(function(){__applyTheme(window.parent.document.documentElement.dataset.theme==='dark')}).observe(window.parent.document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 window.onerror = function(msg, source, line, col, error) {
     window.parent.postMessage({
         type: 'PLAYGROUND_RUNTIME_ERROR',

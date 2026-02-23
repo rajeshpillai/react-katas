@@ -12,9 +12,7 @@
     display: block;
 }
 
-@media (prefers-color-scheme: dark) {
-    .container {
-        border-color: #334155;
-        background: #1a1a2e;
-    }
+:root[data-theme="dark"] .container {
+    border-color: #334155;
+    background: #1a1a2e;
 }
