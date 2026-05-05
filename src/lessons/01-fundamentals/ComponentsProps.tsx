@@ -1,14 +1,80 @@
 import { ReactNode } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
-import type { PlaygroundConfig } from '@components/playground'
+import type { PlaygroundVariant } from '@components/playground'
 import sourceCode from './ComponentsProps.tsx?raw'
 
-export const playgroundConfig: PlaygroundConfig = {
-    files: [
-        {
-            name: 'App.tsx',
-            language: 'tsx',
-            code: `import { useState, ReactNode } from 'react'
+export const playgroundVariants: PlaygroundVariant[] = [
+    {
+        id: 'lowercase-bug',
+        label: 'Before — lowercase component name',
+        description:
+            "JSX uses lowercase for HTML tags and capitalized names for components. Naming the function 'greeting' makes <greeting> render as an unknown HTML element — React never calls the function, the props become DOM attributes, and a console warning appears.",
+        files: [
+            {
+                name: 'App.tsx',
+                language: 'tsx',
+                code: `// Lowercase: React treats this as an unknown HTML element.
+function greeting({ name }: { name: string }) {
+    return <h3>Hello, {name}!</h3>
+}
+
+export default function App() {
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Lowercase mistake</h2>
+            {/* Renders as <greeting name="Ada" /> in the DOM — the function never runs. */}
+            <greeting name="Ada" />
+            <p style={{ fontSize: 12, color: '#888' }}>
+                Open the console — React warns about an unknown element.
+                The "Hello" text is missing because React never invokes the function.
+            </p>
+        </div>
+    )
+}
+`,
+            },
+        ],
+        entryFile: 'App.tsx',
+        height: 240,
+    },
+    {
+        id: 'capitalized',
+        label: 'After — capitalize',
+        description:
+            'Capitalize the function name and React recognizes it as a component, calls it, and passes props as the first argument.',
+        files: [
+            {
+                name: 'App.tsx',
+                language: 'tsx',
+                code: `function Greeting({ name }: { name: string }) {
+    return <h3>Hello, {name}!</h3>
+}
+
+export default function App() {
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Capitalized — works</h2>
+            <Greeting name="Ada" />
+            <Greeting name="Grace" />
+        </div>
+    )
+}
+`,
+            },
+        ],
+        entryFile: 'App.tsx',
+        height: 240,
+    },
+    {
+        id: 'props-tour',
+        label: 'Props patterns',
+        description:
+            'A wider tour of prop patterns: required props, defaults, children, and composition.',
+        files: [
+            {
+                name: 'App.tsx',
+                language: 'tsx',
+                code: `import { useState, ReactNode } from 'react'
 
 function Greeting({ name, age }: { name: string; age: number }) {
     return (
@@ -92,15 +158,16 @@ export default function App() {
     )
 }
 `,
-        },
-    ],
-    entryFile: 'App.tsx',
-    height: 450,
-}
+            },
+        ],
+        entryFile: 'App.tsx',
+        height: 450,
+    },
+]
 
 export default function ComponentsProps() {
     return (
-        <LessonLayout title="Components & Props" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+        <LessonLayout title="Components & Props" playgroundVariants={playgroundVariants} sourceCode={sourceCode}>
             <div>
             <p>
                 Components are the building blocks of React applications. They let you split the UI into

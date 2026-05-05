@@ -2,7 +2,6 @@ import { Link, useRouter } from '@router/router'
 import type { Tier } from '@router/interview-tiers'
 import { getSequence } from '@router/interview-tiers'
 import { lessons } from '@router/routes'
-import { useTheme } from '@hooks/use-theme'
 import styles from './interview-sidebar.module.css'
 
 interface InterviewSidebarProps {
@@ -12,16 +11,12 @@ interface InterviewSidebarProps {
     onToggleCollapse?: () => void
 }
 
-const THEME_ICONS = { light: '☀', dark: '☽', system: '◑' } as const
-const THEME_LABELS = { light: 'Light', dark: 'Dark', system: 'System' } as const
-
 export function InterviewSidebar({
     tier,
     completedLessons = [],
     collapsed = false,
     onToggleCollapse,
 }: InterviewSidebarProps) {
-    const { theme, cycleTheme } = useTheme()
     const { currentPath } = useRouter()
     const sequence = getSequence(tier.id)
     const lessonsById = new Map(lessons.map((l) => [l.id, l]))
@@ -47,16 +42,6 @@ export function InterviewSidebar({
                     </div>
                 )}
                 <div className={styles['logo-actions']}>
-                    {!collapsed && (
-                        <button
-                            className={styles['theme-toggle']}
-                            onClick={cycleTheme}
-                            title={`Theme: ${THEME_LABELS[theme]}`}
-                            aria-label={`Switch theme (currently ${THEME_LABELS[theme]})`}
-                        >
-                            {THEME_ICONS[theme]}
-                        </button>
-                    )}
                     {onToggleCollapse && (
                         <button
                             className={styles['collapse-toggle']}

@@ -1,14 +1,83 @@
 import { useState } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
-import type { PlaygroundConfig } from '@components/playground'
+import type { PlaygroundVariant } from '@components/playground'
 import sourceCode from './ConditionalRendering.tsx?raw'
 
-export const playgroundConfig: PlaygroundConfig = {
-    files: [
-        {
-            name: 'App.tsx',
-            language: 'tsx',
-            code: `import { useState } from 'react'
+export const playgroundVariants: PlaygroundVariant[] = [
+    {
+        id: 'and-zero-bug',
+        label: 'Before — `count && <List />`',
+        description:
+            "The classic React gotcha: `0 && <X />` evaluates to `0`, and React renders the number 0 instead of nothing. Open the preview — when count is 0 you'll see a stray '0' on screen.",
+        files: [
+            {
+                name: 'App.tsx',
+                language: 'tsx',
+                code: `import { useState } from 'react'
+
+export default function App() {
+    const [count, setCount] = useState(0)
+
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Notification Badge</h2>
+            <button onClick={() => setCount(c => c + 1)}>Add notification</button>
+            <button onClick={() => setCount(0)} style={{ marginLeft: 8 }}>Clear</button>
+
+            <p>You have:</p>
+            {/* BUG: count is a number — when 0, React renders the literal "0" */}
+            {count && <strong>{count} unread message{count > 1 ? 's' : ''}</strong>}
+        </div>
+    )
+}
+`,
+            },
+        ],
+        entryFile: 'App.tsx',
+        height: 240,
+    },
+    {
+        id: 'comparison-fix',
+        label: 'After — explicit comparison',
+        description:
+            'Cast to a boolean with an explicit comparison or a ternary. Both make the intent obvious and avoid leaking falsy values into the DOM.',
+        files: [
+            {
+                name: 'App.tsx',
+                language: 'tsx',
+                code: `import { useState } from 'react'
+
+export default function App() {
+    const [count, setCount] = useState(0)
+
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Notification Badge</h2>
+            <button onClick={() => setCount(c => c + 1)}>Add notification</button>
+            <button onClick={() => setCount(0)} style={{ marginLeft: 8 }}>Clear</button>
+
+            <p>You have:</p>
+            {count > 0 && <strong>{count} unread message{count > 1 ? 's' : ''}</strong>}
+            {count === 0 && <em>No new messages</em>}
+        </div>
+    )
+}
+`,
+            },
+        ],
+        entryFile: 'App.tsx',
+        height: 240,
+    },
+    {
+        id: 'patterns',
+        label: 'Patterns showcase',
+        description:
+            'A broader tour of conditional patterns: ternary, switch-via-component, guarded fragments. Keep this one open while reading the lesson.',
+        files: [
+            {
+                name: 'App.tsx',
+                language: 'tsx',
+                code: `import { useState } from 'react'
 
 type Status = 'idle' | 'loading' | 'success' | 'error'
 
@@ -95,11 +164,12 @@ export default function App() {
     )
 }
 `,
-        },
-    ],
-    entryFile: 'App.tsx',
-    height: 400,
-}
+            },
+        ],
+        entryFile: 'App.tsx',
+        height: 400,
+    },
+]
 
 export default function ConditionalRendering() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -122,7 +192,7 @@ export default function ConditionalRendering() {
   }
 
   return (
-    <LessonLayout title="Conditional Rendering" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+    <LessonLayout title="Conditional Rendering" playgroundVariants={playgroundVariants} sourceCode={sourceCode}>
       <div>
       <p>
         In React, you can render different UI based on conditions. There are several patterns for

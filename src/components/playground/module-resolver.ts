@@ -102,12 +102,32 @@ export function buildIframeDoc(jsBundle: string, cssCode: string): string {
 <meta name="color-scheme" content="light">
 <style>
 *,*::before,*::after{box-sizing:border-box}
+:root{
+  --pg-card:#fafafa;
+  --pg-card-border:#ddd;
+  --pg-card-text:#1f2937;
+  --pg-muted:#6b7280;
+  --pg-input-bg:#fff;
+  --pg-input-border:#d1d5db;
+}
 body{margin:0;padding:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;color:#1a1a2e;background:#fff;color-scheme:light}
 pre{background:#f3f4f6;color:#1f2937;padding:12px;border-radius:6px;overflow-x:auto;margin-bottom:8px;font-size:13px}
 code{font-size:13px}
-body.dark{color:#e2e8f0;background:#1a1a2e;color-scheme:dark}
+input,textarea,select{color-scheme:inherit}
+body.dark{
+  color:#e2e8f0;
+  background:#1a1a2e;
+  color-scheme:dark;
+  --pg-card:#1f2937;
+  --pg-card-border:#374151;
+  --pg-card-text:#e2e8f0;
+  --pg-muted:#9ca3af;
+  --pg-input-bg:#0f172a;
+  --pg-input-border:#374151;
+}
 body.dark pre{background:#1e293b;color:#e2e8f0}
 body.dark code{color:#e2e8f0}
+body.dark input,body.dark textarea,body.dark select{background:var(--pg-input-bg);color:var(--pg-card-text);border-color:var(--pg-input-border)}
 ${cssCode}
 </style>
 </head>

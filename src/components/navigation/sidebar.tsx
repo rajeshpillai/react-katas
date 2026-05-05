@@ -1,6 +1,5 @@
 import { Link } from '@router/router'
 import { lessons, SECTIONS, getLessonsBySection } from '@router/routes'
-import { useTheme } from '@hooks/use-theme'
 import styles from './sidebar.module.css'
 
 interface SidebarProps {
@@ -9,12 +8,7 @@ interface SidebarProps {
     onToggleCollapse?: () => void
 }
 
-const THEME_ICONS = { light: '\u2600', dark: '\u263D', system: '\u25D1' } as const
-const THEME_LABELS = { light: 'Light', dark: 'Dark', system: 'System' } as const
-
 export default function Sidebar({ completedLessons = [], collapsed = false, onToggleCollapse }: SidebarProps) {
-    const { theme, cycleTheme } = useTheme()
-
     // Group lessons by section
     const sections = Object.values(SECTIONS)
 
@@ -28,16 +22,6 @@ export default function Sidebar({ completedLessons = [], collapsed = false, onTo
             <div className={styles['logo-row']}>
                 {!collapsed && <div className={styles.logo}><Link to="/">React Katas</Link></div>}
                 <div className={styles['logo-actions']}>
-                    {!collapsed && (
-                        <button
-                            className={styles['theme-toggle']}
-                            onClick={cycleTheme}
-                            title={`Theme: ${THEME_LABELS[theme]}`}
-                            aria-label={`Switch theme (currently ${THEME_LABELS[theme]})`}
-                        >
-                            {THEME_ICONS[theme]}
-                        </button>
-                    )}
                     {onToggleCollapse && (
                         <button
                             className={styles['collapse-toggle']}

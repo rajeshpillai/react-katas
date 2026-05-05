@@ -1,16 +1,150 @@
 import { useState, useEffect, useRef, useCallback, RefObject } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
-import type { PlaygroundConfig } from '@components/playground'
+import type { PlaygroundVariant } from '@components/playground'
 
 // @ts-ignore
 import sourceCode from './BehavioralHooks.tsx?raw'
 
-export const playgroundConfig: PlaygroundConfig = {
-  files: [
-    {
-      name: 'App.tsx',
-      language: 'tsx',
-      code: `import { useState, useEffect, useRef, useCallback } from 'react'
+export const playgroundVariants: PlaygroundVariant[] = [
+  {
+    id: 'inline',
+    label: 'Before — behavior tangled in component',
+    description:
+      "The Dropdown component carries open-state, click-outside detection, ref management, AND its own UI. The behavior is not reusable — to add another popover or menu we'd copy-paste the effect.",
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState, useEffect, useRef } from 'react'
+
+function Dropdown() {
+    const [open, setOpen] = useState(false)
+    const ref = useRef<HTMLDivElement>(null)
+
+    // Click-outside logic baked into the component.
+    useEffect(() => {
+        if (!open) return
+        function onPointerDown(e: PointerEvent) {
+            if (ref.current && !ref.current.contains(e.target as Node)) {
+                setOpen(false)
+            }
+        }
+        document.addEventListener('pointerdown', onPointerDown)
+        return () => document.removeEventListener('pointerdown', onPointerDown)
+    }, [open])
+
+    return (
+        <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
+            <button onClick={() => setOpen(o => !o)}>Open menu</button>
+            {open && (
+                <div style={{ position: 'absolute', top: '100%', background: '#fff', border: '1px solid #ddd', padding: 8, marginTop: 4 }}>
+                    <button onClick={() => setOpen(false)}>Item 1</button>
+                </div>
+            )}
+        </div>
+    )
+}
+
+export default function App() {
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Click-outside logic embedded in the component</h2>
+            <Dropdown />
+            <p style={{ fontSize: 12, color: '#888', marginTop: 12 }}>
+                Need the same behavior on a tooltip? You'd copy 12 lines.
+            </p>
+        </div>
+    )
+}
+`,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 280,
+  },
+  {
+    id: 'extracted',
+    label: 'After — useClickOutside',
+    description:
+      "Extract the behavior into a hook that takes a ref and a callback. Dropdown becomes a UI component again; the behavior is now reusable on Tooltip, Popover, Modal — anywhere.",
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState, useEffect, useRef, RefObject } from 'react'
+
+function useClickOutside<T extends HTMLElement>(
+    ref: RefObject<T | null>,
+    onOutside: () => void,
+    enabled = true,
+) {
+    useEffect(() => {
+        if (!enabled) return
+        function onPointerDown(e: PointerEvent) {
+            if (ref.current && !ref.current.contains(e.target as Node)) {
+                onOutside()
+            }
+        }
+        document.addEventListener('pointerdown', onPointerDown)
+        return () => document.removeEventListener('pointerdown', onPointerDown)
+    }, [ref, onOutside, enabled])
+}
+
+function Dropdown() {
+    const [open, setOpen] = useState(false)
+    const ref = useRef<HTMLDivElement>(null)
+    useClickOutside(ref, () => setOpen(false), open)
+
+    return (
+        <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
+            <button onClick={() => setOpen(o => !o)}>Open menu</button>
+            {open && (
+                <div style={{ position: 'absolute', top: '100%', background: '#fff', border: '1px solid #ddd', padding: 8, marginTop: 4 }}>
+                    <button onClick={() => setOpen(false)}>Item 1</button>
+                </div>
+            )}
+        </div>
+    )
+}
+
+function Tooltip() {
+    const [open, setOpen] = useState(false)
+    const ref = useRef<HTMLDivElement>(null)
+    useClickOutside(ref, () => setOpen(false), open)
+
+    return (
+        <div ref={ref} style={{ display: 'inline-block', marginLeft: 16 }}>
+            <button onClick={() => setOpen(true)}>Show tooltip</button>
+            {open && <span style={{ marginLeft: 8, padding: 4, background: '#1f2937', color: '#fff', borderRadius: 4 }}>tip!</span>}
+        </div>
+    )
+}
+
+export default function App() {
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>One hook, two consumers</h2>
+            <Dropdown />
+            <Tooltip />
+        </div>
+    )
+}
+`,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 280,
+  },
+  {
+    id: 'rich',
+    label: 'Full demo',
+    description:
+      'The richer version with the original Dropdown UI and useClickOutside extracted.',
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState, useEffect, useRef, useCallback } from 'react'
 
 // --- useClickOutside hook ---
 function useClickOutside<T extends HTMLElement>(
@@ -107,11 +241,12 @@ export default function App() {
     )
 }
 `,
-    },
-  ],
-  entryFile: 'App.tsx',
-  height: 400,
-}
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 400,
+  },
+]
 
 // --- Custom Hooks ---
 
@@ -442,7 +577,7 @@ function KeyboardShortcutDemo() {
 
 export default function BehavioralHooks() {
   return (
-    <LessonLayout title="Behavioral Hooks" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+    <LessonLayout title="Behavioral Hooks" playgroundVariants={playgroundVariants} sourceCode={sourceCode}>
       <div>
         <p>
           Behavioral hooks encapsulate complex DOM interactions and event handling into reusable

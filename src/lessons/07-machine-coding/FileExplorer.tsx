@@ -246,10 +246,10 @@ export default function App() {
             <div style={{ display: 'flex', gap: 16 }}>
                 <div style={{
                     width: 260,
-                    border: '1px solid #ddd',
+                    border: '1px solid var(--pg-card-border)',
                     borderRadius: 8,
                     padding: 10,
-                    background: '#fafafa',
+                    background: 'var(--pg-card)',
                     minHeight: 300,
                 }}>
                     {INITIAL_DATA.items.map((item) => (
@@ -263,15 +263,15 @@ export default function App() {
                 </div>
                 <div style={{
                     flex: 1,
-                    border: '1px solid #ddd',
+                    border: '1px solid var(--pg-card-border)',
                     borderRadius: 8,
                     padding: 16,
-                    background: '#fafafa',
+                    background: 'var(--pg-card)',
                     minHeight: 300,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#888',
+                    color: 'var(--pg-muted)',
                 }}>
                     {selectedNode
                         ? <div><strong>Selected:</strong> {selectedNode.name}</div>

@@ -1,14 +1,82 @@
 import { useState, FormEvent, ChangeEvent, MouseEvent, KeyboardEvent } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
-import type { PlaygroundConfig } from '@components/playground'
+import type { PlaygroundVariant } from '@components/playground'
 import sourceCode from './EventHandling.tsx?raw'
 
-export const playgroundConfig: PlaygroundConfig = {
-    files: [
-        {
-            name: 'App.tsx',
-            language: 'tsx',
-            code: `import { useState } from 'react'
+export const playgroundVariants: PlaygroundVariant[] = [
+    {
+        id: 'invoking-handler',
+        label: 'Before — onClick={fn()}',
+        description:
+            "onClick={alert('hi')} calls alert *during render* and passes its return value (undefined) as the handler. The dialog fires on mount and every re-render — the actual click does nothing.",
+        files: [
+            {
+                name: 'App.tsx',
+                language: 'tsx',
+                code: `import { useState } from 'react'
+
+export default function App() {
+    const [count, setCount] = useState(0)
+
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Wrong: invoking on render</h2>
+            <p>Re-renders: {count}</p>
+            {/* WRONG: alert is invoked NOW, not on click. */}
+            <button onClick={alert('clicked!')}>Click me</button>
+            <button onClick={() => setCount(c => c + 1)} style={{ marginLeft: 8 }}>
+                Force a re-render
+            </button>
+        </div>
+    )
+}
+`,
+            },
+        ],
+        entryFile: 'App.tsx',
+        height: 240,
+    },
+    {
+        id: 'pass-handler',
+        label: 'After — pass the function',
+        description:
+            'Pass the function (or wrap it in an arrow): React invokes it when the event fires and hands the SyntheticEvent in as the argument.',
+        files: [
+            {
+                name: 'App.tsx',
+                language: 'tsx',
+                code: `import { useState } from 'react'
+
+export default function App() {
+    const [count, setCount] = useState(0)
+
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Right: pass the function</h2>
+            <p>Clicks: {count}</p>
+            <button onClick={() => alert('clicked!')}>Show alert</button>
+            <button onClick={() => setCount(c => c + 1)} style={{ marginLeft: 8 }}>
+                Increment
+            </button>
+        </div>
+    )
+}
+`,
+            },
+        ],
+        entryFile: 'App.tsx',
+        height: 240,
+    },
+    {
+        id: 'broad-demo',
+        label: 'Click + key + form',
+        description:
+            'A wider tour of synthetic events: click handlers, keyDown on inputs, and form submission with preventDefault.',
+        files: [
+            {
+                name: 'App.tsx',
+                language: 'tsx',
+                code: `import { useState } from 'react'
 
 export default function App() {
     const [clicks, setClicks] = useState(0)
@@ -97,11 +165,12 @@ export default function App() {
     )
 }
 `,
-        },
-    ],
-    entryFile: 'App.tsx',
-    height: 450,
-}
+            },
+        ],
+        entryFile: 'App.tsx',
+        height: 450,
+    },
+]
 
 export default function EventHandling() {
     const [clickCount, setClickCount] = useState(0)
@@ -139,7 +208,7 @@ export default function EventHandling() {
     }
 
     return (
-        <LessonLayout title="Event Handling" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+        <LessonLayout title="Event Handling" playgroundVariants={playgroundVariants} sourceCode={sourceCode}>
             <div>
             <p>
                 React uses <strong>synthetic events</strong> - a cross-browser wrapper around the browser's

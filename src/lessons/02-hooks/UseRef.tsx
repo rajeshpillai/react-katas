@@ -1,15 +1,94 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
-import type { PlaygroundConfig } from '@components/playground'
+import type { PlaygroundVariant } from '@components/playground'
 // @ts-ignore
 import sourceCode from './UseRef.tsx?raw'
 
-export const playgroundConfig: PlaygroundConfig = {
-  files: [
-    {
-      name: 'App.tsx',
-      language: 'tsx',
-      code: `import { useState, useRef, useEffect } from 'react'
+export const playgroundVariants: PlaygroundVariant[] = [
+  {
+    id: 'state-loop',
+    label: 'Before — useState for non-render value',
+    description:
+      'Trying to count renders with useState causes an infinite loop: the increment triggers a re-render, which re-runs the effect, which increments again. React aborts with "Too many re-renders".',
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState, useEffect } from 'react'
+
+export default function App() {
+    const [text, setText] = useState('')
+    const [renderCount, setRenderCount] = useState(0)
+
+    // Bug: setting state on every render → infinite loop
+    useEffect(() => {
+        setRenderCount(c => c + 1)
+    })
+
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Counting renders with useState (broken)</h2>
+            <p>Renders: {renderCount}</p>
+            <input
+                value={text}
+                onChange={e => setText(e.target.value)}
+                placeholder="Type to trigger renders..."
+                style={{ padding: 8, width: '100%' }}
+            />
+        </div>
+    )
+}
+`,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 240,
+  },
+  {
+    id: 'ref-counter',
+    label: 'After — useRef',
+    description:
+      "useRef stores a mutable value that survives renders without triggering one. Perfect for values you need to read but don't want to drive UI updates.",
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState, useRef } from 'react'
+
+export default function App() {
+    const [text, setText] = useState('')
+    const renderCount = useRef(0)
+    renderCount.current += 1
+
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Counting renders with useRef</h2>
+            <p>Renders: {renderCount.current}</p>
+            <input
+                value={text}
+                onChange={e => setText(e.target.value)}
+                placeholder="Type — renders count, no loops..."
+                style={{ padding: 8, width: '100%' }}
+            />
+        </div>
+    )
+}
+`,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 240,
+  },
+  {
+    id: 'use-cases-tour',
+    label: 'DOM access + stopwatch',
+    description:
+      'Two canonical useRef use cases: focusing an input via a ref to the DOM node, and a stopwatch where the interval handle lives in a ref so it can be cleared later.',
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState, useRef, useEffect } from 'react'
 
 function FocusDemo() {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -125,15 +204,16 @@ export default function App() {
   )
 }
 `,
-    },
-  ],
-  entryFile: 'App.tsx',
-  height: 500,
-}
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 500,
+  },
+]
 
 export default function UseRef() {
   return (
-    <LessonLayout title="useRef Hook" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+    <LessonLayout title="useRef Hook" playgroundVariants={playgroundVariants} sourceCode={sourceCode}>
       <p>
         The <code>useRef</code> hook lets you reference values that don't trigger re-renders when
         changed. It's perfect for accessing DOM elements and storing mutable values.

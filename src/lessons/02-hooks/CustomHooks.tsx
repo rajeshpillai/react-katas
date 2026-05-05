@@ -1,15 +1,146 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
-import type { PlaygroundConfig } from '@components/playground'
+import type { PlaygroundVariant } from '@components/playground'
 // @ts-ignore
 import sourceCode from './CustomHooks.tsx?raw'
 
-export const playgroundConfig: PlaygroundConfig = {
-  files: [
-    {
-      name: 'App.tsx',
-      language: 'tsx',
-      code: `import { useState, useEffect, useCallback } from 'react'
+export const playgroundVariants: PlaygroundVariant[] = [
+  {
+    id: 'duplicated',
+    label: 'Before — duplicated logic',
+    description:
+      'Two components, both reading from localStorage. Same boilerplate copy-pasted: load on mount, listen for changes, parse JSON. A bug fixed in one will get missed in the other.',
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState, useEffect } from 'react'
+
+function ThemePicker() {
+    const [theme, setTheme] = useState(() => {
+        try { return localStorage.getItem('theme') ?? 'light' } catch { return 'light' }
+    })
+    useEffect(() => {
+        try { localStorage.setItem('theme', theme) } catch {}
+    }, [theme])
+    return (
+        <div style={{ marginBottom: 12 }}>
+            <strong>Theme:</strong>
+            <button onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')} style={{ marginLeft: 8 }}>
+                Toggle ({theme})
+            </button>
+        </div>
+    )
+}
+
+function FontSizePicker() {
+    // Same pattern, copy-pasted, with a different key.
+    const [size, setSize] = useState(() => {
+        try { return Number(localStorage.getItem('font-size')) || 14 } catch { return 14 }
+    })
+    useEffect(() => {
+        try { localStorage.setItem('font-size', String(size)) } catch {}
+    }, [size])
+    return (
+        <div>
+            <strong>Font size:</strong>
+            <button onClick={() => setSize(s => s + 1)} style={{ marginLeft: 8 }}>+</button>
+            <button onClick={() => setSize(s => Math.max(8, s - 1))} style={{ marginLeft: 4 }}>-</button>
+            <span style={{ marginLeft: 8 }}>{size}px</span>
+        </div>
+    )
+}
+
+export default function App() {
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Two components, identical localStorage boilerplate</h2>
+            <ThemePicker />
+            <FontSizePicker />
+        </div>
+    )
+}
+`,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 280,
+  },
+  {
+    id: 'extracted',
+    label: 'After — useLocalStorage hook',
+    description:
+      "Extract the pattern into a hook that takes a key and a default. The two components now read like 'plain useState' — the persistence detail is centralized and testable in one place.",
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState, useEffect } from 'react'
+
+function useLocalStorage<T>(key: string, fallback: T) {
+    const [value, setValue] = useState<T>(() => {
+        try {
+            const raw = localStorage.getItem(key)
+            return raw === null ? fallback : JSON.parse(raw)
+        } catch {
+            return fallback
+        }
+    })
+    useEffect(() => {
+        try { localStorage.setItem(key, JSON.stringify(value)) } catch {}
+    }, [key, value])
+    return [value, setValue] as const
+}
+
+function ThemePicker() {
+    const [theme, setTheme] = useLocalStorage('theme', 'light')
+    return (
+        <div style={{ marginBottom: 12 }}>
+            <strong>Theme:</strong>
+            <button onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')} style={{ marginLeft: 8 }}>
+                Toggle ({theme})
+            </button>
+        </div>
+    )
+}
+
+function FontSizePicker() {
+    const [size, setSize] = useLocalStorage('font-size', 14)
+    return (
+        <div>
+            <strong>Font size:</strong>
+            <button onClick={() => setSize(s => s + 1)} style={{ marginLeft: 8 }}>+</button>
+            <button onClick={() => setSize(s => Math.max(8, s - 1))} style={{ marginLeft: 4 }}>-</button>
+            <span style={{ marginLeft: 8 }}>{size}px</span>
+        </div>
+    )
+}
+
+export default function App() {
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>One reusable useLocalStorage hook</h2>
+            <ThemePicker />
+            <FontSizePicker />
+        </div>
+    )
+}
+`,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 280,
+  },
+  {
+    id: 'extra',
+    label: 'More custom hooks',
+    description:
+      'Beyond useLocalStorage: useDebounce, useFetch, useToggle. Patterns for sharing logic without sharing UI.',
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState, useEffect, useCallback } from 'react'
 
 // Custom Hook: useLocalStorage
 function useLocalStorage<T>(key: string, initialValue: T) {
@@ -119,15 +250,16 @@ export default function App() {
   )
 }
 `,
-    },
-  ],
-  entryFile: 'App.tsx',
-  height: 450,
-}
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 450,
+  },
+]
 
 export default function CustomHooks() {
   return (
-    <LessonLayout title="Custom Hooks" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+    <LessonLayout title="Custom Hooks" playgroundVariants={playgroundVariants} sourceCode={sourceCode}>
       <p>
         Custom hooks let you extract component logic into reusable functions. They're just
         JavaScript functions that use other hooks!

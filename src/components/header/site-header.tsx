@@ -1,9 +1,15 @@
 import { Link } from '@router/router'
+import { useTheme } from '@hooks/use-theme'
 import styles from './site-header.module.css'
 
 const REPO_URL = 'https://github.com/rajeshpillai/react-katas'
 
+const THEME_ICONS = { light: '☀', dark: '☽', system: '◑' } as const
+const THEME_LABELS = { light: 'Light', dark: 'Dark', system: 'System' } as const
+
 export function SiteHeader() {
+    const { theme, cycleTheme } = useTheme()
+
     return (
         <header className={styles.header}>
             <Link to="/" className={styles.brand}>
@@ -13,6 +19,16 @@ export function SiteHeader() {
 
             <nav className={styles.nav}>
                 <Link to="/" className={styles['nav-link']}>Home</Link>
+                <button
+                    type="button"
+                    onClick={cycleTheme}
+                    className={styles['theme-toggle']}
+                    title={`Theme: ${THEME_LABELS[theme]} (click to cycle)`}
+                    aria-label={`Switch theme (currently ${THEME_LABELS[theme]})`}
+                >
+                    <span className={styles['theme-icon']} aria-hidden="true">{THEME_ICONS[theme]}</span>
+                    <span className={styles['theme-text']}>{THEME_LABELS[theme]}</span>
+                </button>
                 <a
                     href={REPO_URL}
                     target="_blank"
