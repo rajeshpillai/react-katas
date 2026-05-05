@@ -181,14 +181,27 @@ function AppContent() {
         )
     }
 
-    // Interview tier page
+    // Interview tier page — show interview sidebar so the question
+    // sequence is visible from the moment a tier is picked.
     const interviewTierId = getTierFromPath(pathOnly)
     if (interviewTierId) {
         const tier = getTier(interviewTierId)!
         return (
             <div className={styles.appShell}>
                 <SiteHeader />
-                <TierPage tier={tier} />
+                <div className={appClass}>
+                    <aside className={styles.sidebar}>
+                        <InterviewSidebar
+                            tier={tier}
+                            completedLessons={completedLessons}
+                            collapsed={collapsed}
+                            onToggleCollapse={toggleSidebar}
+                        />
+                    </aside>
+                    <main className={styles.mainContent}>
+                        <TierPage tier={tier} />
+                    </main>
+                </div>
             </div>
         )
     }
