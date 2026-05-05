@@ -12,20 +12,23 @@ type Tab = 'lesson' | 'playground' | 'code'
 
 interface LessonLayoutProps {
     title: string
-    playgroundConfig: PlaygroundConfig
+    playgroundConfig?: PlaygroundConfig
     sourceCode: string
     children: ReactNode
 }
 
 export function LessonLayout({ title, playgroundConfig, sourceCode, children }: LessonLayoutProps) {
     const [activeTab, setActiveTab] = useState<Tab>('lesson')
+    const tabs: Tab[] = playgroundConfig
+        ? ['lesson', 'playground', 'code']
+        : ['lesson', 'code']
 
     return (
         <div>
             <h1>{title}</h1>
 
             <div className={styles['tab-bar']}>
-                {(['lesson', 'playground', 'code'] as const).map((tab) => (
+                {tabs.map((tab) => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
@@ -38,7 +41,7 @@ export function LessonLayout({ title, playgroundConfig, sourceCode, children }: 
 
             {activeTab === 'lesson' && children}
 
-            {activeTab === 'playground' && (
+            {activeTab === 'playground' && playgroundConfig && (
                 <Suspense fallback={<div>Loading playground...</div>}>
                     <PlaygroundLayout config={playgroundConfig} />
                 </Suspense>

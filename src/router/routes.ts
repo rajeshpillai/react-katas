@@ -21,6 +21,7 @@ export const SECTIONS = {
     STATE: 'State Management',
     ACCESSIBILITY: 'Accessibility & Production',
     MACHINE_CODING: 'Machine Coding Challenges',
+    ARCHITECTURE: 'Architecture & Leadership',
 } as const
 
 // Route definitions with lazy-loaded components
@@ -467,6 +468,38 @@ export const lessons: LessonMetadata[] = [
         path: '/lessons/testing-accessibility',
         component: lazy(() => import('@lessons/06-accessibility/TestingAccessibility')),
         documentPath: '/lessons/06-accessibility/04-testing-accessibility.md',
+    },
+
+    // Section 8: Architecture & Leadership
+    {
+        id: 'migrating-legacy-react',
+        title: 'Migrating Legacy React to Modern',
+        description: 'Sequencing a multi-quarter modernization of a class-component monolith without freezing feature work',
+        section: SECTIONS.ARCHITECTURE,
+        order: 44,
+        path: '/lessons/migrating-legacy-react',
+        component: lazy(() => import('@lessons/08-architecture/MigratingLegacyReact')),
+        documentPath: '',
+    },
+    {
+        id: 'design-system-governance',
+        title: 'Design-System Governance at Scale',
+        description: 'Stakeholder management, RFC process, deprecation discipline, and the failure modes that fragment a system',
+        section: SECTIONS.ARCHITECTURE,
+        order: 45,
+        path: '/lessons/design-system-governance',
+        component: lazy(() => import('@lessons/08-architecture/DesignSystemGovernance')),
+        documentPath: '',
+    },
+    {
+        id: 'performance-budgets',
+        title: 'Long-Horizon Performance Budgets',
+        description: 'Layered budgets (bundle, field, synthetic) and the org process that defends them through team rotation',
+        section: SECTIONS.ARCHITECTURE,
+        order: 46,
+        path: '/lessons/performance-budgets',
+        component: lazy(() => import('@lessons/08-architecture/PerformanceBudgets')),
+        documentPath: '',
     },
 ]
 

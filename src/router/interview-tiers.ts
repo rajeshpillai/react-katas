@@ -59,7 +59,7 @@ export const TIERS: Tier[] = [
         years: '10+ yrs',
         accent: '#ef4444',
         accentSurface: 'rgba(239, 68, 68, 0.12)',
-        intro: 'You set direction across teams: framework choice, migration strategy, design-system governance, and long-horizon performance budgets. Content for this tier is in development.',
+        intro: 'You set direction across teams: framework choice, migration strategy, design-system governance, and long-horizon performance budgets. Questions probe org-level reasoning over years, not features over weeks.',
         targetCount: 3,
     },
 ]
@@ -126,9 +126,9 @@ export const INTERVIEW_SEQUENCES: Record<TierId, SequenceItem[]> = {
         { lessonId: 'infinite-scroll', question: 'Combine infinite scroll with windowing — design considerations.' },
     ],
     architect: [
-        { question: 'Migration strategy: take a 10-year-old class-component app to React 19. Stages?' },
-        { question: 'Design a design-system governance model across 50 product teams.' },
-        { question: 'Set a long-horizon performance budget and the org process to defend it.' },
+        { lessonId: 'migrating-legacy-react', question: 'Migration strategy: take a 10-year-old class-component app to React 19. Stages?' },
+        { lessonId: 'design-system-governance', question: 'Design a design-system governance model across 50 product teams.' },
+        { lessonId: 'performance-budgets', question: 'Set a long-horizon performance budget and the org process to defend it.' },
     ],
 }
 
