@@ -2,7 +2,6 @@ import { createContext, useContext, useState, ReactNode } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
 import type { PlaygroundVariant } from '@components/playground'
 
-// @ts-ignore
 import sourceCode from './CompoundComponents.tsx?raw'
 
 // Compound component pattern example

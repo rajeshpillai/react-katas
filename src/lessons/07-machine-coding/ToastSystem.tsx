@@ -2,7 +2,6 @@ import React, { useState, createContext, useContext, useCallback, useEffect } fr
 import { createPortal } from 'react-dom'
 import { LessonLayout } from '@components/lesson-layout'
 import type { PlaygroundConfig } from '@components/playground'
-// @ts-ignore
 import sourceCode from './ToastSystem.tsx?raw'
 
 // --- Types ---

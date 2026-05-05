@@ -10,7 +10,7 @@ export default defineConfig({
             // Enable React 19 features
             jsxRuntime: 'automatic',
         }),
-        // @ts-ignore
+        // @ts-expect-error vite ?raw import
         visualizer({
             open: true,
             gzipSize: true,

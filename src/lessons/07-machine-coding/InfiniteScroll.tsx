@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
 import type { PlaygroundConfig } from '@components/playground'
-// @ts-ignore
 import sourceCode from './InfiniteScroll.tsx?raw'
 
 // --- Mock API ---

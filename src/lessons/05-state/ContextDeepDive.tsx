@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, ReactNode, useMemo } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
 import type { PlaygroundConfig } from '@components/playground'
-// @ts-ignore
 import sourceCode from './ContextDeepDive.tsx?raw'
 
 // Example context

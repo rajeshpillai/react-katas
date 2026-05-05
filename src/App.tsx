@@ -88,7 +88,7 @@ function useSidebarCollapse() {
     const toggle = useCallback(() => {
         setCollapsed((prev) => {
             const next = !prev
-            try { localStorage.setItem('react-katas-sidebar', next ? 'collapsed' : 'expanded') } catch {}
+            try { localStorage.setItem('react-katas-sidebar', next ? 'collapsed' : 'expanded') } catch { /* localStorage unavailable */ }
             return next
         })
     }, [])
@@ -122,8 +122,12 @@ function AppContent() {
     const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false)
     const [isShortContent, setIsShortContent] = useState(false)
 
-    // Reset state on path change
+    // Reset state on path change. The set-state-in-effect pattern is
+    // load-bearing here: the page-level state needs to reset whenever
+    // the user navigates between lessons, and there's no convenient
+    // remount key to use instead.
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setTimeSpent(0)
         setHasScrolledToBottom(false)
         setIsShortContent(false)

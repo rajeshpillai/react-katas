@@ -2,7 +2,6 @@ import { useState, memo, useRef } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
 import type { PlaygroundVariant } from '@components/playground'
 
-// @ts-ignore
 import sourceCode from './ReactMemo.tsx?raw'
 
 const SHARED_PREAMBLE = `// Watch the "Renders" counter on Item.

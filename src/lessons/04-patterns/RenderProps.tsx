@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
 import type { PlaygroundVariant } from '@components/playground'
 
-// @ts-ignore
 import sourceCode from './RenderProps.tsx?raw'
 
 export const playgroundVariants: PlaygroundVariant[] = [

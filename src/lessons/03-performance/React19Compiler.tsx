@@ -1,7 +1,6 @@
 import { LessonLayout } from '@components/lesson-layout'
 import type { PlaygroundConfig } from '@components/playground'
 
-// @ts-ignore
 import sourceCode from './React19Compiler.tsx?raw'
 
 export const playgroundConfig: PlaygroundConfig = {

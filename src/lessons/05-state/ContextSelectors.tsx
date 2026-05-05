@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, useRef, useCallback, useSyncExternalStore, memo, useMemo, type ReactNode, type Dispatch, type SetStateAction } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
 import type { PlaygroundVariant } from '@components/playground'
-// @ts-ignore
 import sourceCode from './ContextSelectors.tsx?raw'
 
 // ============================================================
@@ -98,7 +97,6 @@ function shallowEqual<T>(a: T, b: T): boolean {
 // Part 3: Context-based store (for DI / component tree scoping)
 // ============================================================
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function createStoreContext<T>(initialState: T) {
     const store = createStore(initialState)
     const StoreContext = createContext(store)

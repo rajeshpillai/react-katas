@@ -2,7 +2,6 @@ import { useState, useEffect, useRef, KeyboardEvent } from 'react'
 import { useDebounce } from '@hooks/use-debounce'
 import { LessonLayout } from '@components/lesson-layout'
 import type { PlaygroundConfig } from '@components/playground'
-// @ts-ignore
 import sourceCode from './AutoComplete.tsx?raw'
 
 // --- Mock Data & API ---

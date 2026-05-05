@@ -6,7 +6,6 @@ import type { PlaygroundConfig } from '@components/playground'
 const HeavyComponent = lazy(() => import('./HeavyComponent'))
 const AnotherComponent = lazy(() => import('./AnotherComponent'))
 
-// @ts-ignore
 import sourceCode from './CodeSplitting.tsx?raw'
 
 export const playgroundConfig: PlaygroundConfig = {

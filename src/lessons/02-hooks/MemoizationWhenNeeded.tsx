@@ -1,7 +1,6 @@
 import { useState, useMemo, useCallback, memo, useRef } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
 import type { PlaygroundConfig } from '@components/playground'
-// @ts-ignore
 import sourceCode from './MemoizationWhenNeeded.tsx?raw'
 
 export const playgroundConfig: PlaygroundConfig = {

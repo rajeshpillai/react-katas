@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, useRef, useCallback, useId, type ReactNode, type KeyboardEvent } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
 import type { PlaygroundConfig } from '@components/playground'
-// @ts-ignore
 import sourceCode from './CompoundComponentsTabs.tsx?raw'
 
 // ============================================================

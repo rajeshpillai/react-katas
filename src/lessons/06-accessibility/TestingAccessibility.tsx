@@ -1,6 +1,5 @@
 import { LessonLayout } from '@components/lesson-layout'
 import type { PlaygroundConfig } from '@components/playground'
-// @ts-ignore
 import sourceCode from './TestingAccessibility.tsx?raw'
 
 export const playgroundConfig: PlaygroundConfig = {

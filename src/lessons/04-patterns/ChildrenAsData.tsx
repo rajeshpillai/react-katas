@@ -1,7 +1,6 @@
 import { useState, ReactNode, Children, isValidElement } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
 import type { PlaygroundConfig } from '@components/playground'
-// @ts-ignore
 import sourceCode from './ChildrenAsData.tsx?raw'
 
 export const playgroundConfig: PlaygroundConfig = {

@@ -6,7 +6,6 @@ import type { PlaygroundVariant } from '@components/playground'
 const ThemeContext = createContext<{ theme: string } | null>(null)
 const ThemeUpdateContext = createContext<Dispatch<SetStateAction<string>> | null>(null)
 
-// @ts-ignore
 import sourceCode from './ProviderPattern.tsx?raw'
 
 export const playgroundVariants: PlaygroundVariant[] = [

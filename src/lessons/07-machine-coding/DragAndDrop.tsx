@@ -1,7 +1,6 @@
 import { useState, DragEvent } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
 import type { PlaygroundConfig } from '@components/playground'
-// @ts-ignore
 import sourceCode from './DragAndDrop.tsx?raw'
 
 // --- Types ---
