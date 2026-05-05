@@ -49,7 +49,7 @@ export default function App() {
         {show ? 'Unmount' : 'Mount a new timer'}
       </button>
       {show && <Timer id={id} />}
-      <p style={{ fontSize: 12, color: '#888' }}>
+      <p style={{ fontSize: 12, color: 'var(--pg-muted)' }}>
         Unmount the timer. Old ticks keep firing. Mount again — now two are firing.
       </p>
     </div>
@@ -108,7 +108,7 @@ export default function App() {
         {show ? 'Unmount' : 'Mount a new timer'}
       </button>
       {show && <Timer id={id} />}
-      <p style={{ fontSize: 12, color: '#888' }}>
+      <p style={{ fontSize: 12, color: 'var(--pg-muted)' }}>
         Unmount fires "cleaning up". Each timer stops with its component.
       </p>
     </div>
@@ -144,7 +144,7 @@ export default function App() {
     <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
       <h2>Mouse Tracker</h2>
       <p>X: {pos.x} · Y: {pos.y}</p>
-      <p style={{ fontSize: 12, color: '#888' }}>
+      <p style={{ fontSize: 12, color: 'var(--pg-muted)' }}>
         Move your mouse over the preview. The listener is attached once and removed on unmount.
       </p>
     </div>

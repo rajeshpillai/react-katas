@@ -146,7 +146,7 @@ function Modal({ onClose }: { onClose: () => void }) {
         >
             <div
                 style={{
-                    background: 'white',
+                    background: 'var(--pg-card)',
                     padding: 24,
                     borderRadius: 8,
                     maxWidth: 400,
@@ -156,7 +156,7 @@ function Modal({ onClose }: { onClose: () => void }) {
             >
                 <h2 style={{ marginTop: 0 }}>Modal Dialog</h2>
                 <p>This modal is rendered using <code>createPortal</code>!</p>
-                <p style={{ color: '#6b7280', fontSize: 14 }}>
+                <p style={{ color: 'var(--pg-muted)', fontSize: 14 }}>
                     It is rendered at the document body, outside the normal component hierarchy.
                     Click the overlay or the button below to close.
                 </p>
@@ -187,7 +187,7 @@ export default function App() {
             <h2>Portal Pattern: Modal</h2>
             <p>Click the button to open a modal rendered via <code>createPortal</code>.</p>
             <div style={{ overflow: 'hidden', border: '2px dashed #d1d5db', padding: 16, borderRadius: 8 }}>
-                <p style={{ color: '#6b7280', fontSize: 14 }}>
+                <p style={{ color: 'var(--pg-muted)', fontSize: 14 }}>
                     This container has <code>overflow: hidden</code>, but the modal escapes it using a portal.
                 </p>
                 <button
@@ -453,7 +453,7 @@ function Modal({ onClose }: { onClose: () => void }) {
     >
       <div
         style={{
-          background: 'white',
+          background: 'var(--pg-card)',
           padding: 'var(--space-6)',
           borderRadius: 'var(--radius-lg)',
           maxWidth: '500px',

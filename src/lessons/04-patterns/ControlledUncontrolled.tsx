@@ -27,9 +27,9 @@ export default function App() {
                 type="text"
                 value={name}
                 placeholder="Try typing here..."
-                style={{ width: '100%', padding: 8, fontSize: 14, marginBottom: 8, border: '1px solid #d1d5db', borderRadius: 6 }}
+                style={{ width: '100%', padding: 8, fontSize: 14, marginBottom: 8, border: '1px solid var(--pg-card-border)', borderRadius: 6 }}
             />
-            <p style={{ fontSize: 12, color: '#888' }}>
+            <p style={{ fontSize: 12, color: 'var(--pg-muted)' }}>
                 React owns the value via the prop, but with no onChange we never tell React to update it.
                 Result: the input refuses keystrokes.
             </p>
@@ -67,7 +67,7 @@ export default function App() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Try typing here..."
-                style={{ width: '100%', padding: 8, fontSize: 14, marginBottom: 8, border: '1px solid #d1d5db', borderRadius: 6 }}
+                style={{ width: '100%', padding: 8, fontSize: 14, marginBottom: 8, border: '1px solid var(--pg-card-border)', borderRadius: 6 }}
             />
             <p>Current value: <strong>{name || '(empty)'}</strong></p>
             <button onClick={() => setName('')}>Reset</button>
@@ -103,13 +103,13 @@ export default function App() {
                 type="text"
                 defaultValue="Ada"
                 placeholder="Type freely..."
-                style={{ width: '100%', padding: 8, fontSize: 14, marginBottom: 8, border: '1px solid #d1d5db', borderRadius: 6 }}
+                style={{ width: '100%', padding: 8, fontSize: 14, marginBottom: 8, border: '1px solid var(--pg-card-border)', borderRadius: 6 }}
             />
             <button onClick={() => setSubmitted(inputRef.current?.value ?? '')}>
                 Read value
             </button>
             <p>Submitted: <strong>{submitted || '(none)'}</strong></p>
-            <p style={{ fontSize: 12, color: '#888' }}>
+            <p style={{ fontSize: 12, color: 'var(--pg-muted)' }}>
                 The DOM owns the value. React only reads it when we ask.
             </p>
         </div>

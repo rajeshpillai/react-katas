@@ -24,7 +24,7 @@ export default function App() {
             <h2>Lowercase mistake</h2>
             {/* Renders as <greeting name="Ada" /> in the DOM — the function never runs. */}
             <greeting name="Ada" />
-            <p style={{ fontSize: 12, color: '#888' }}>
+            <p style={{ fontSize: 12, color: 'var(--pg-muted)' }}>
                 Open the console — React warns about an unknown element.
                 The "Hello" text is missing because React never invokes the function.
             </p>
@@ -80,7 +80,7 @@ function Greeting({ name, age }: { name: string; age: number }) {
     return (
         <div style={{ marginBottom: 12 }}>
             <h3 style={{ margin: 0 }}>Hello, {name}!</h3>
-            <p style={{ margin: 0, color: '#666' }}>Age: {age}</p>
+            <p style={{ margin: 0, color: 'var(--pg-muted)' }}>Age: {age}</p>
         </div>
     )
 }
@@ -88,7 +88,7 @@ function Greeting({ name, age }: { name: string; age: number }) {
 function Card({ title, children }: { title: string; children: ReactNode }) {
     return (
         <div style={{
-            border: '1px solid #ddd',
+            border: '1px solid var(--pg-card-border)',
             borderRadius: 8,
             padding: 16,
             marginBottom: 12,

@@ -30,15 +30,15 @@ function BeforeCompiler() {
   return (
     <div style={{ padding: 12, border: '2px solid #e2e8f0', borderRadius: 8, marginBottom: 16 }}>
       <h3>Before: Manual Memoization</h3>
-      <p style={{ fontSize: 13, color: '#718096' }}>Requires useMemo, useCallback, memo</p>
+      <p style={{ fontSize: 13, color: 'var(--pg-muted)' }}>Requires useMemo, useCallback, memo</p>
       <input
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder="Type here..."
-        style={{ padding: 8, borderRadius: 6, border: '1px solid #cbd5e0', width: '100%', marginBottom: 8 }}
+        style={{ padding: 8, borderRadius: 6, border: '1px solid var(--pg-card-border)', width: '100%', marginBottom: 8 }}
       />
       <MemoizedChild items={expensiveList} onClick={handleClick} label="Memoized Child" />
-      <div style={{ fontSize: 12, color: '#a0aec0', marginTop: 4 }}>Count: {count}</div>
+      <div style={{ fontSize: 12, color: 'var(--pg-muted)', marginTop: 4 }}>Count: {count}</div>
     </div>
   )
 }
@@ -59,12 +59,12 @@ function AfterCompiler() {
   return (
     <div style={{ padding: 12, border: '2px solid #48bb78', borderRadius: 8 }}>
       <h3 style={{ color: '#276749' }}>After: Clean Code, Compiler Optimizes</h3>
-      <p style={{ fontSize: 13, color: '#718096' }}>No manual memoization needed!</p>
+      <p style={{ fontSize: 13, color: 'var(--pg-muted)' }}>No manual memoization needed!</p>
       <input
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder="Type here..."
-        style={{ padding: 8, borderRadius: 6, border: '1px solid #cbd5e0', width: '100%', marginBottom: 8 }}
+        style={{ padding: 8, borderRadius: 6, border: '1px solid var(--pg-card-border)', width: '100%', marginBottom: 8 }}
       />
       <div style={{ padding: 8, background: '#f0fff4', borderRadius: 6, marginBottom: 4 }}>
         {items.map((item, i) => (
@@ -72,7 +72,7 @@ function AfterCompiler() {
         ))}
       </div>
       <button onClick={handleClick} style={btnStyle}>Increment</button>
-      <div style={{ fontSize: 12, color: '#a0aec0', marginTop: 4 }}>
+      <div style={{ fontSize: 12, color: 'var(--pg-muted)', marginTop: 4 }}>
         Count: {count} | Parent renders: {renderCount.current}
       </div>
     </div>
@@ -97,7 +97,7 @@ const MemoizedChild = memo(function MemoizedChild({
         <div key={i} style={{ fontSize: 13 }}>{item}</div>
       ))}
       <button onClick={onClick} style={btnStyle}>Increment</button>
-      <span style={{ fontSize: 12, color: '#a0aec0', marginLeft: 8 }}>
+      <span style={{ fontSize: 12, color: 'var(--pg-muted)', marginLeft: 8 }}>
         {label} renders: {renderCount.current}
       </span>
     </div>

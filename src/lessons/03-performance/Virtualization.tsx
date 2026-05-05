@@ -100,8 +100,8 @@ export default function App() {
 
       <div style={{
         height: 350,
-        background: 'white',
-        border: '1px solid #e2e8f0',
+        background: 'var(--pg-card)',
+        border: '1px solid var(--pg-card-border)',
         borderRadius: 8,
         overflow: 'hidden',
       }}>
@@ -117,7 +117,7 @@ export default function App() {
                 display: 'flex',
                 alignItems: 'center',
                 padding: '0 16px',
-                borderBottom: '1px solid #e2e8f0',
+                borderBottom: '1px solid var(--pg-card-border)',
                 fontSize: 13,
                 boxSizing: 'border-box',
               }}
@@ -128,7 +128,7 @@ export default function App() {
         />
       </div>
 
-      <p style={{ fontSize: 12, color: '#718096', marginTop: 8 }}>
+      <p style={{ fontSize: 12, color: 'var(--pg-muted)', marginTop: 8 }}>
         Total items: {ITEMS.length} | Only visible items are in the DOM
       </p>
     </div>
@@ -226,7 +226,7 @@ function SlowListDemo() {
           style={{
             height: '400px',
             overflow: 'auto',
-            background: 'white',
+            background: 'var(--pg-card)',
             border: '1px solid var(--border-color)',
             borderRadius: 'var(--radius-md)',
           }}
@@ -272,7 +272,7 @@ function VirtualListDemo() {
       <div
         style={{
           height: '400px',
-          background: 'white',
+          background: 'var(--pg-card)',
           border: '1px solid var(--border-color)',
           borderRadius: 'var(--radius-md)',
           overflow: 'hidden',

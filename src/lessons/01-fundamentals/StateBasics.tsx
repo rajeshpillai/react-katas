@@ -24,7 +24,7 @@ export const playgroundVariants: PlaygroundVariant[] = [
     return (
         <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
             <h2>Counter: {count}</h2>
-            <p style={{ fontSize: 12, color: '#888' }}>
+            <p style={{ fontSize: 12, color: 'var(--pg-muted)' }}>
                 Open the console — the variable updates, but the UI doesn't.
             </p>
             <div style={{ display: 'flex', gap: 8 }}>

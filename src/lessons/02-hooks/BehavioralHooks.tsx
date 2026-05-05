@@ -37,7 +37,7 @@ function Dropdown() {
         <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
             <button onClick={() => setOpen(o => !o)}>Open menu</button>
             {open && (
-                <div style={{ position: 'absolute', top: '100%', background: '#fff', border: '1px solid #ddd', padding: 8, marginTop: 4 }}>
+                <div style={{ position: 'absolute', top: '100%', background: 'var(--pg-card)', border: '1px solid var(--pg-card-border)', padding: 8, marginTop: 4 }}>
                     <button onClick={() => setOpen(false)}>Item 1</button>
                 </div>
             )}
@@ -50,7 +50,7 @@ export default function App() {
         <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
             <h2>Click-outside logic embedded in the component</h2>
             <Dropdown />
-            <p style={{ fontSize: 12, color: '#888', marginTop: 12 }}>
+            <p style={{ fontSize: 12, color: 'var(--pg-muted)', marginTop: 12 }}>
                 Need the same behavior on a tooltip? You'd copy 12 lines.
             </p>
         </div>
@@ -99,7 +99,7 @@ function Dropdown() {
         <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
             <button onClick={() => setOpen(o => !o)}>Open menu</button>
             {open && (
-                <div style={{ position: 'absolute', top: '100%', background: '#fff', border: '1px solid #ddd', padding: 8, marginTop: 4 }}>
+                <div style={{ position: 'absolute', top: '100%', background: 'var(--pg-card)', border: '1px solid var(--pg-card-border)', padding: 8, marginTop: 4 }}>
                     <button onClick={() => setOpen(false)}>Item 1</button>
                 </div>
             )}
@@ -195,7 +195,7 @@ function Dropdown() {
                     top: '100%',
                     left: 0,
                     marginTop: 4,
-                    background: 'white',
+                    background: 'var(--pg-card)',
                     border: '1px solid #e5e7eb',
                     borderRadius: 6,
                     boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
@@ -234,7 +234,7 @@ export default function App() {
                 Click the button to open the dropdown, then click outside to close it.
             </p>
             <Dropdown />
-            <p style={{ marginTop: 24, color: '#6b7280', fontSize: 13 }}>
+            <p style={{ marginTop: 24, color: 'var(--pg-muted)', fontSize: 13 }}>
                 Try clicking anywhere outside the dropdown menu to see useClickOutside in action.
             </p>
         </div>

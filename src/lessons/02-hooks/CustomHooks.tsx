@@ -196,11 +196,11 @@ export default function App() {
         placeholder="Type your name (persists in localStorage)..."
         style={{
           padding: 8, fontSize: 14, width: '100%', marginBottom: 8,
-          border: '1px solid #ccc', borderRadius: 4,
+          border: '1px solid var(--pg-card-border)', borderRadius: 4,
         }}
       />
       <p>Stored value: <strong>{name || '(empty)'}</strong></p>
-      <p style={{ fontSize: 12, color: '#888' }}>
+      <p style={{ fontSize: 12, color: 'var(--pg-muted)' }}>
         This value persists across page reloads via localStorage.
       </p>
 
@@ -240,7 +240,7 @@ export default function App() {
           <p>Controlled by useToggle hook</p>
           <button
             onClick={modal.setFalse}
-            style={{ padding: '4px 12px', background: 'white', color: '#3b82f6', border: 'none', borderRadius: 4, cursor: 'pointer' }}
+            style={{ padding: '4px 12px', background: 'var(--pg-card)', color: '#3b82f6', border: 'none', borderRadius: 4, cursor: 'pointer' }}
           >
             Close
           </button>

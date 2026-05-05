@@ -103,7 +103,7 @@ interface CardProps {
 function Card({ header, body, footer }: CardProps) {
     return (
         <div style={{
-            border: '1px solid #ddd',
+            border: '1px solid var(--pg-card-border)',
             borderRadius: 12,
             overflow: 'hidden',
             fontFamily: 'sans-serif',
@@ -112,7 +112,7 @@ function Card({ header, body, footer }: CardProps) {
                 <div style={{
                     padding: '16px 20px',
                     background: '#f0f4ff',
-                    borderBottom: '1px solid #ddd',
+                    borderBottom: '1px solid var(--pg-card-border)',
                     fontWeight: 600,
                     fontSize: 16,
                 }}>
@@ -127,7 +127,7 @@ function Card({ header, body, footer }: CardProps) {
             {footer && (
                 <div style={{
                     padding: '12px 20px',
-                    background: '#fafafa',
+                    background: 'var(--pg-card)',
                     borderTop: '1px solid #ddd',
                     display: 'flex',
                     justifyContent: 'flex-end',
@@ -217,7 +217,7 @@ export default function App() {
                 body={
                     <div>
                         <p style={{ margin: '0 0 8px' }}><strong>Jane Doe</strong></p>
-                        <p style={{ margin: 0, color: '#666' }}>Software Engineer at Acme Corp</p>
+                        <p style={{ margin: 0, color: 'var(--pg-muted)' }}>Software Engineer at Acme Corp</p>
                     </div>
                 }
                 footer={cardVariant === 'full' ? (
@@ -240,8 +240,8 @@ export default function App() {
                 sidebar={
                     <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                         <li style={{ padding: '8px 0', fontWeight: 600 }}>Dashboard</li>
-                        <li style={{ padding: '8px 0', color: '#666' }}>Settings</li>
-                        <li style={{ padding: '8px 0', color: '#666' }}>Profile</li>
+                        <li style={{ padding: '8px 0', color: 'var(--pg-muted)' }}>Settings</li>
+                        <li style={{ padding: '8px 0', color: 'var(--pg-muted)' }}>Profile</li>
                     </ul>
                 }
                 content={

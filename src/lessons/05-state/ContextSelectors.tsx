@@ -418,7 +418,7 @@ function Stats() {
     return (
         <div style={{ padding: 8, background: '#dbeafe', borderRadius: 6, marginBottom: 8, fontSize: 13 }}>
             <strong>Stats</strong>: {stats.done}/{stats.total} done
-            <span style={{ marginLeft: 8, color: '#666', fontSize: 11 }}>renders: {renders.current}</span>
+            <span style={{ marginLeft: 8, color: 'var(--pg-muted)', fontSize: 11 }}>renders: {renders.current}</span>
         </div>
     )
 }
@@ -433,9 +433,9 @@ function SearchBar() {
                 value={search}
                 onChange={(e) => dispatch((s) => ({ ...s, search: e.target.value }))}
                 placeholder="Search todos..."
-                style={{ flex: 1, padding: '6px 10px', borderRadius: 4, border: '1px solid #ccc' }}
+                style={{ flex: 1, padding: '6px 10px', borderRadius: 4, border: '1px solid var(--pg-card-border)' }}
             />
-            <span style={{ color: '#666', fontSize: 11 }}>renders: {renders.current}</span>
+            <span style={{ color: 'var(--pg-muted)', fontSize: 11 }}>renders: {renders.current}</span>
         </div>
     )
 }
@@ -456,7 +456,7 @@ function FilterBar() {
     return (
         <div style={{ display: 'flex', gap: 4, marginBottom: 8, alignItems: 'center' }}>
             {btn('all', 'All')} {btn('active', 'Active')} {btn('done', 'Done')}
-            <span style={{ marginLeft: 'auto', color: '#666', fontSize: 11 }}>renders: {renders.current}</span>
+            <span style={{ marginLeft: 'auto', color: 'var(--pg-muted)', fontSize: 11 }}>renders: {renders.current}</span>
         </div>
     )
 }
@@ -467,10 +467,10 @@ function TodoList() {
     const renders = useRef(0); renders.current++
     return (
         <div>
-            <div style={{ fontSize: 11, color: '#666', marginBottom: 4 }}>
+            <div style={{ fontSize: 11, color: 'var(--pg-muted)', marginBottom: 4 }}>
                 Showing {todos.length} items (list renders: {renders.current})
             </div>
-            <div style={{ maxHeight: 250, overflowY: 'auto', border: '1px solid #e2e8f0', borderRadius: 6 }}>
+            <div style={{ maxHeight: 250, overflowY: 'auto', border: '1px solid var(--pg-card-border)', borderRadius: 6 }}>
                 {todos.slice(0, 30).map((t) => (
                     <div key={t.id} style={{
                         padding: '6px 10px', borderBottom: '1px solid #f1f5f9', display: 'flex',
@@ -497,7 +497,7 @@ export default function App() {
         <Provider>
             <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
                 <h3 style={{ marginBottom: 8 }}>100-Item Todo App with Selectors</h3>
-                <p style={{ fontSize: 13, color: '#666', marginBottom: 12 }}>
+                <p style={{ fontSize: 13, color: 'var(--pg-muted)', marginBottom: 12 }}>
                     Each component only re-renders when its selected slice changes.
                     Watch the render counts!
                 </p>

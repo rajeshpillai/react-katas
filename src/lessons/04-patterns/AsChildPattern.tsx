@@ -227,7 +227,7 @@ export default function App() {
                     </Button>
                 )}
 
-                <p style={{ marginTop: 16, fontSize: 13, color: '#666' }}>
+                <p style={{ marginTop: 16, fontSize: 13, color: 'var(--pg-muted)' }}>
                     Rendered as: <code>{useAsChild ? '<a>' : '<button>'}</code>
                     {' '}| Inspect the DOM to verify!
                 </p>

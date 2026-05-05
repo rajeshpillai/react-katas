@@ -52,7 +52,7 @@ export default function App() {
             </Tabs>
 
             <h3 style={{ marginTop: 24 }}>Controlled Tabs</h3>
-            <p style={{ fontSize: 13, color: '#666', marginBottom: 8 }}>
+            <p style={{ fontSize: 13, color: 'var(--pg-muted)', marginBottom: 8 }}>
                 External buttons control which tab is active:
             </p>
             <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>

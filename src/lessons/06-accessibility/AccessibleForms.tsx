@@ -216,7 +216,7 @@ export default function App() {
                         aria-describedby={errors.password ? 'password-error' : 'password-hint'}
                         style={fieldStyle(!!errors.password)}
                     />
-                    <div id="password-hint" style={{ color: '#666', fontSize: 12, marginTop: 4 }}>
+                    <div id="password-hint" style={{ color: 'var(--pg-muted)', fontSize: 12, marginTop: 4 }}>
                         Must be at least 8 characters
                     </div>
                     {errors.password && (

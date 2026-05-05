@@ -59,7 +59,7 @@ export default function App() {
     return (
         <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
             <h2>Accessibility Checklist</h2>
-            <p style={{ color: '#666', marginBottom: 16 }}>
+            <p style={{ color: 'var(--pg-muted)', marginBottom: 16 }}>
                 Toggle each check as pass/fail. {passedCount}/{total} passing.
             </p>
 
@@ -131,7 +131,7 @@ export default function App() {
                                     width: 20,
                                     height: 20,
                                     borderRadius: '50%',
-                                    background: '#fff',
+                                    background: 'var(--pg-card)',
                                     boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
                                     transition: 'left 0.2s',
                                 }}
@@ -153,7 +153,7 @@ export default function App() {
                                     {check.passed ? 'PASS' : 'FAIL'}
                                 </span>
                             </div>
-                            <div style={{ fontSize: 13, color: '#666' }}>{check.description}</div>
+                            <div style={{ fontSize: 13, color: 'var(--pg-muted)' }}>{check.description}</div>
                         </div>
                     </li>
                 ))}

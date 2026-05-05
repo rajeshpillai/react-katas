@@ -30,7 +30,7 @@ export default function App() {
   return (
     <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
       <h2>Hello, {fullName || '...'}!</h2>
-      <p style={{ fontSize: 12, color: '#888' }}>
+      <p style={{ fontSize: 12, color: 'var(--pg-muted)' }}>
         Every keystroke triggers an effect that schedules an extra render
         to update fullName. fullName can also be briefly stale.
       </p>
@@ -74,7 +74,7 @@ export default function App() {
   return (
     <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
       <h2>Hello, {fullName}!</h2>
-      <p style={{ fontSize: 12, color: '#888' }}>
+      <p style={{ fontSize: 12, color: 'var(--pg-muted)' }}>
         No state, no effect. Rendering is a function call —
         recomputing during render is fine.
       </p>
@@ -131,7 +131,7 @@ export default function App() {
     <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
       <h2>Document Title Updater</h2>
       <p>Count: <strong>{count}</strong></p>
-      <p style={{ fontSize: 12, color: '#888' }}>
+      <p style={{ fontSize: 12, color: 'var(--pg-muted)' }}>
         Check the browser tab title — it updates with the count.
       </p>
       <button onClick={() => setCount(c => c + 1)} style={{ marginRight: 8 }}>Increment</button>
@@ -147,7 +147,7 @@ export default function App() {
         </button>
         <button onClick={() => { setIsRunning(false); setSeconds(0) }}>Reset</button>
       </div>
-      <p style={{ fontSize: 12, color: '#888', marginTop: 8 }}>
+      <p style={{ fontSize: 12, color: 'var(--pg-muted)', marginTop: 8 }}>
         The interval is cleaned up when stopped or when the component unmounts.
       </p>
     </div>

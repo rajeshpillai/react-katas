@@ -90,7 +90,7 @@ function StatusMessage({ status }: { status: Status }) {
         case 'error':
             return <p style={{ color: '#dc2626' }}>Something went wrong.</p>
         default:
-            return <p style={{ color: '#666' }}>Click "Fetch" to load data.</p>
+            return <p style={{ color: 'var(--pg-muted)' }}>Click "Fetch" to load data.</p>
     }
 }
 
@@ -126,7 +126,7 @@ export default function App() {
                 {isLoggedIn ? (
                     <p style={{ color: '#16a34a' }}>Welcome back! You are logged in.</p>
                 ) : (
-                    <p style={{ color: '#666' }}>Please log in to continue.</p>
+                    <p style={{ color: 'var(--pg-muted)' }}>Please log in to continue.</p>
                 )}
             </section>
 

@@ -136,7 +136,7 @@ function Card({ task, onDragStart }: {
             draggable
             onDragStart={(e) => onDragStart(e, task.id)}
             style={{
-                background: 'white',
+                background: 'var(--pg-card)',
                 padding: 12,
                 borderRadius: 4,
                 boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
@@ -179,7 +179,7 @@ function Column({ title, status, tasks, onDragOver, onDrop, onDragStart }: {
                 fontSize: 14,
                 textTransform: 'uppercase',
                 letterSpacing: 1,
-                color: '#666',
+                color: 'var(--pg-muted)',
                 marginBottom: 10,
             }}>
                 {title} ({tasks.length})
@@ -241,7 +241,7 @@ export default function App() {
     return (
         <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
             <h2>Kanban Board</h2>
-            <p style={{ color: '#666', marginBottom: 16 }}>
+            <p style={{ color: 'var(--pg-muted)', marginBottom: 16 }}>
                 Drag cards between columns to change their status.
             </p>
             <div style={{ display: 'flex', gap: 16 }}>

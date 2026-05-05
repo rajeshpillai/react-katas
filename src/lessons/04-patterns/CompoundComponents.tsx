@@ -267,7 +267,7 @@ export function AccordionPanel({ children }: { children: ReactNode }) {
     if (context.openIndex !== index) return null
 
     return (
-        <div style={{ padding: 16, background: '#f3f4f6', color: '#1f2937', borderRadius: 6 }}>
+        <div style={{ padding: 16, background: 'var(--pg-card)', color: 'var(--pg-card-text)', borderRadius: 6 }}>
             {children}
         </div>
     )

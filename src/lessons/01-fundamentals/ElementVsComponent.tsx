@@ -109,7 +109,7 @@ function RenderCounter({ label }: { label: string }) {
     const count = useRef(0)
     count.current += 1
     return (
-        <div style={{ padding: 8, background: '#f3f4f6', color: '#1f2937', borderRadius: 6, marginBottom: 8 }}>
+        <div style={{ padding: 8, background: 'var(--pg-card)', color: 'var(--pg-card-text)', borderRadius: 6, marginBottom: 8 }}>
             <strong>{label}</strong> rendered <strong>{count.current}</strong> time(s)
         </div>
     )

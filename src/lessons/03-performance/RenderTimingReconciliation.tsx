@@ -24,14 +24,14 @@ function ListItem({ item }: { item: Item }) {
     renderCount.current += 1
 
     return (
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center', padding: 8, background: '#f9fafb', color: '#1f2937', borderRadius: 6, marginBottom: 4 }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', padding: 8, background: 'var(--pg-card)', color: 'var(--pg-card-text)', borderRadius: 6, marginBottom: 4 }}>
             <span style={{ flex: 1 }}>{item.text}</span>
             <input
                 type="text"
                 placeholder="Type here..."
-                style={{ padding: '4px 8px', border: '1px solid #d1d5db', borderRadius: 4, width: 140 }}
+                style={{ padding: '4px 8px', border: '1px solid var(--pg-card-border)', borderRadius: 4, width: 140 }}
             />
-            <span style={{ fontSize: 11, color: '#9ca3af' }}>Renders: {renderCount.current}</span>
+            <span style={{ fontSize: 11, color: 'var(--pg-muted)' }}>Renders: {renderCount.current}</span>
         </div>
     )
 }

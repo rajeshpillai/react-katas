@@ -160,7 +160,7 @@ export default function App() {
     return (
         <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
             <h2>Arrow Key List Navigation</h2>
-            <p style={{ color: '#666', marginBottom: 12 }}>
+            <p style={{ color: 'var(--pg-muted)', marginBottom: 12 }}>
                 Use Arrow Up/Down to move, Enter to select, Home/End to jump.
             </p>
 
@@ -169,7 +169,7 @@ export default function App() {
                 role="listbox"
                 aria-label="Navigation menu"
                 onKeyDown={handleKeyDown}
-                style={{ listStyle: 'none', padding: 0, margin: 0, border: '1px solid #ddd', borderRadius: 8 }}
+                style={{ listStyle: 'none', padding: 0, margin: 0, border: '1px solid var(--pg-card-border)', borderRadius: 8 }}
             >
                 {items.map((item, index) => (
                     <li

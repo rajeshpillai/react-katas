@@ -100,7 +100,7 @@ function FocusDemo() {
         ref={inputRef}
         type="text"
         placeholder="Click button to focus me"
-        style={{ padding: 8, fontSize: 14, marginRight: 8, border: '1px solid #ccc', borderRadius: 4 }}
+        style={{ padding: 8, fontSize: 14, marginRight: 8, border: '1px solid var(--pg-card-border)', borderRadius: 4 }}
       />
       <button
         onClick={() => inputRef.current?.focus()}
@@ -123,7 +123,7 @@ function RenderCounter() {
       <h3>Render Counter</h3>
       <p>State Count: <strong>{count}</strong></p>
       <p>Render Count: <strong>{renderCount.current}</strong></p>
-      <p style={{ fontSize: 12, color: '#888' }}>
+      <p style={{ fontSize: 12, color: 'var(--pg-muted)' }}>
         Render count increments without causing re-renders!
       </p>
       <button

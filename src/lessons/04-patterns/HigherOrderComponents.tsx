@@ -109,7 +109,7 @@ function withLogger<P extends object>(WrappedComponent: ComponentType<P>, compon
 
         return (
             <div style={{ border: '2px solid #e5e7eb', borderRadius: 8, padding: 12, marginBottom: 12 }}>
-                <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 8 }}>
+                <div style={{ fontSize: 12, color: 'var(--pg-muted)', marginBottom: 8 }}>
                     [{componentName}] Render count: {renderCount.current}
                 </div>
                 <WrappedComponent {...props} />
@@ -148,7 +148,7 @@ export default function App() {
     return (
         <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
             <h2>withLogger HOC Demo</h2>
-            <p style={{ color: '#6b7280', fontSize: 14 }}>
+            <p style={{ color: 'var(--pg-muted)', fontSize: 14 }}>
                 Each component is wrapped with withLogger, which tracks render counts.
                 Open the console to see mount/unmount logs.
             </p>

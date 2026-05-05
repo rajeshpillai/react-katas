@@ -92,7 +92,7 @@ export default function App() {
     return (
         <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
             <h2>Accessible Toggle Button</h2>
-            <p style={{ marginBottom: 16, color: '#666' }}>
+            <p style={{ marginBottom: 16, color: 'var(--pg-muted)' }}>
                 This toggle uses role="switch", aria-checked, and aria-label
                 for full screen reader support.
             </p>
@@ -122,7 +122,7 @@ export default function App() {
                         width: 24,
                         height: 24,
                         borderRadius: '50%',
-                        background: '#fff',
+                        background: 'var(--pg-card)',
                         boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
                         transform: isOn ? 'translateX(8px)' : 'translateX(-8px)',
                         transition: 'transform 0.2s',
@@ -139,7 +139,7 @@ export default function App() {
                     padding: 12,
                     background: isOn ? '#e8f5e9' : '#fafafa',
                     borderRadius: 8,
-                    border: '1px solid #ddd',
+                    border: '1px solid var(--pg-card-border)',
                 }}
             >
                 Dark mode is currently <strong>{isOn ? 'enabled' : 'disabled'}</strong>.

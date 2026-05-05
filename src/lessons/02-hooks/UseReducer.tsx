@@ -185,7 +185,7 @@ export default function App() {
           value={input}
           onChange={e => setInput(e.target.value)}
           placeholder="Add a todo..."
-          style={{ flex: 1, padding: 8, fontSize: 14, border: '1px solid #ccc', borderRadius: 4 }}
+          style={{ flex: 1, padding: 8, fontSize: 14, border: '1px solid var(--pg-card-border)', borderRadius: 4 }}
         />
         <button
           type="submit"
@@ -196,7 +196,7 @@ export default function App() {
       </form>
 
       {todos.length > 0 && (
-        <p style={{ fontSize: 12, color: '#888', marginBottom: 8 }}>
+        <p style={{ fontSize: 12, color: 'var(--pg-muted)', marginBottom: 8 }}>
           {completed}/{todos.length} completed
         </p>
       )}
@@ -212,8 +212,8 @@ export default function App() {
                 display: 'flex',
                 alignItems: 'center',
                 padding: 8,
-                background: '#f9fafb',
-                color: '#1f2937',
+                background: 'var(--pg-card)',
+                color: 'var(--pg-card-text)',
                 borderRadius: 4,
                 marginBottom: 4,
               }}

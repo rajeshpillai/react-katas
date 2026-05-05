@@ -131,7 +131,7 @@ export default function App() {
     return (
         <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
             <h2>Autocomplete / Typeahead</h2>
-            <p style={{ color: '#666', marginBottom: 16 }}>
+            <p style={{ color: 'var(--pg-muted)', marginBottom: 16 }}>
                 Search for a fruit. Uses debouncing, caching, and keyboard navigation.
             </p>
             <div style={{ maxWidth: 360, position: 'relative' }}>
@@ -146,12 +146,12 @@ export default function App() {
                         padding: 10,
                         fontSize: 16,
                         borderRadius: 4,
-                        border: '1px solid #ccc',
+                        border: '1px solid var(--pg-card-border)',
                         boxSizing: 'border-box',
                     }}
                 />
                 {loading && (
-                    <div style={{ position: 'absolute', right: 10, top: 12, fontSize: 12, color: '#888' }}>
+                    <div style={{ position: 'absolute', right: 10, top: 12, fontSize: 12, color: 'var(--pg-muted)' }}>
                         Loading...
                     </div>
                 )}
@@ -161,8 +161,8 @@ export default function App() {
                         top: '100%',
                         left: 0,
                         right: 0,
-                        background: 'white',
-                        border: '1px solid #ccc',
+                        background: 'var(--pg-card)',
+                        border: '1px solid var(--pg-card-border)',
                         borderTop: 'none',
                         borderRadius: '0 0 4px 4px',
                         listStyle: 'none',
@@ -302,7 +302,7 @@ export default function AutoComplete() {
                 />
 
                 {loading && (
-                    <div style={{ position: 'absolute', right: 10, top: 12, fontSize: '12px', color: '#888' }}>
+                    <div style={{ position: 'absolute', right: 10, top: 12, fontSize: '12px', color: 'var(--pg-muted)' }}>
                         Loading...
                     </div>
                 )}

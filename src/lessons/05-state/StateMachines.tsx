@@ -259,7 +259,7 @@ export default function App() {
                 )}
             </div>
 
-            <div style={{ marginTop: 16, fontSize: 12, color: '#888' }}>
+            <div style={{ marginTop: 16, fontSize: 12, color: 'var(--pg-muted)' }}>
                 <strong>Valid transitions from "{state.status}":</strong>{' '}
                 {Object.keys(transitions[state.status]).join(', ') || 'none'}
             </div>

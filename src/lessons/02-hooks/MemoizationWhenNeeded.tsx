@@ -57,7 +57,7 @@ export default function App() {
       <h2>useMemo - Expensive Calculation</h2>
       <p>Count: <strong>{count}</strong></p>
       <p>Expensive Result: <strong>{expensiveResult}</strong></p>
-      <p style={{ fontSize: 12, color: '#888' }}>
+      <p style={{ fontSize: 12, color: 'var(--pg-muted)' }}>
         Check the console - computation only runs when count changes, not when you type.
       </p>
 
@@ -65,13 +65,13 @@ export default function App() {
         value={text}
         onChange={e => setText(e.target.value)}
         placeholder="Type here (no recomputation)..."
-        style={{ padding: 8, fontSize: 14, width: '100%', marginBottom: 16, border: '1px solid #ccc', borderRadius: 4 }}
+        style={{ padding: 8, fontSize: 14, width: '100%', marginBottom: 16, border: '1px solid var(--pg-card-border)', borderRadius: 4 }}
       />
 
       <hr style={{ margin: '20px 0' }} />
 
       <h2>useCallback - Stable References</h2>
-      <p style={{ fontSize: 12, color: '#888', marginBottom: 8 }}>
+      <p style={{ fontSize: 12, color: 'var(--pg-muted)', marginBottom: 8 }}>
         Check the console - MemoizedButton only renders when its props change.
       </p>
       <MemoizedButton onClick={handleIncrement} label="Increment" />

@@ -96,15 +96,15 @@ export default function App() {
     return (
         <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
             <h2>Infinite Scroll</h2>
-            <p style={{ color: '#666', marginBottom: 12 }}>
+            <p style={{ color: 'var(--pg-muted)', marginBottom: 12 }}>
                 Scroll down to load more items automatically.
             </p>
             <div style={{
                 height: 320,
                 overflowY: 'auto',
-                border: '1px solid #ddd',
+                border: '1px solid var(--pg-card-border)',
                 borderRadius: 8,
-                background: '#fafafa',
+                background: 'var(--pg-card)',
             }}>
                 {items.map((item, index) => (
                     <div
@@ -112,7 +112,7 @@ export default function App() {
                         style={{
                             padding: '14px 16px',
                             borderBottom: '1px solid #eee',
-                            background: 'white',
+                            background: 'var(--pg-card)',
                         }}
                     >
                         {item}
@@ -125,7 +125,7 @@ export default function App() {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        color: '#888',
+                        color: 'var(--pg-muted)',
                         fontSize: 14,
                     }}
                 >
@@ -215,7 +215,7 @@ export default function InfiniteScroll() {
                 ))}
 
                 {/* Sentinel Element */}
-                <div ref={observerTarget} style={{ height: 20, margin: 10, textAlign: 'center', color: '#888' }}>
+                <div ref={observerTarget} style={{ height: 20, margin: 10, textAlign: 'center', color: 'var(--pg-muted)' }}>
                     {loading && <span>Loading more...</span>}
                     {!hasMore && <span>You have reached the end!</span>}
                 </div>
