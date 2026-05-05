@@ -10,9 +10,11 @@ export default defineConfig({
             // Enable React 19 features
             jsxRuntime: 'automatic',
         }),
-        // @ts-expect-error vite ?raw import
+        // @ts-expect-error rollup-plugin-visualizer's plugin type is from rollup, not vite
         visualizer({
-            open: true,
+            // Don't auto-open stats.html on every build — open it manually when
+            // investigating bundle size. Output: ./stats.html in repo root.
+            open: false,
             gzipSize: true,
             brotliSize: true,
         }),
