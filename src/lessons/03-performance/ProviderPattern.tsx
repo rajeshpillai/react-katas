@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, ReactNode, useRef, Dispatch, SetStateAction } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
 import type { PlaygroundVariant } from '@components/playground'
+import { ProviderPatternDiagram } from '@components/diagrams'
 
 // Example of an optimized provider
 const ThemeContext = createContext<{ theme: string } | null>(null)
@@ -163,6 +164,8 @@ export default function ProviderPattern() {
         Context providers can cause performance issues if not optimized. Learn how to prevent
         unnecessary re-renders when using Context API.
       </p>
+
+      <ProviderPatternDiagram />
 
       {/* Section 1: The Problem */}
       <section style={{ marginBottom: 'var(--space-8)' }}>

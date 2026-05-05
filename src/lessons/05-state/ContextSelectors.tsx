@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useRef, useCallback, useSyncExternalStore, memo, useMemo, type ReactNode, type Dispatch, type SetStateAction } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
 import type { PlaygroundVariant } from '@components/playground'
+import { ContextSelectorsDiagram } from '@components/diagrams'
 import sourceCode from './ContextSelectors.tsx?raw'
 
 // ============================================================
@@ -741,6 +742,8 @@ export default function ContextSelectors() {
                     only uses one field. At scale (dozens of consumers, frequent updates), this becomes a real performance
                     bottleneck. Context selectors solve this by letting each component subscribe to only the slice of state it needs.
                 </p>
+
+                <ContextSelectorsDiagram />
 
                 {/* Section 1: The Problem */}
                 <section style={{ marginBottom: 'var(--space-8)' }}>

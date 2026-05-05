@@ -267,9 +267,11 @@ Editing tier sequences: just update `INTERVIEW_SEQUENCES` in `interview-tiers.ts
 ## Known Gaps
 
 ### Missing features
-1. **More pattern diagrams** — initial four shipped (Compound, Render Props, HOC, Portal). Still missing for: Context, Provider Pattern, asChild / Slot, State Machines, Behavioral Hooks. Convention is documented in "Authoring Conventions → Pattern diagrams".
-2. **Tests** — Vitest is set up but very sparse. New components (variant selector, console panel, interview tier flow, diagrams) have no tests.
-3. **Bundle size** — `playground-vendor` chunk is ~730KB (CodeMirror + Sucrase). Could be further split or lazy-loaded.
+1. **Tests** — Vitest is set up but very sparse. New components (variant selector, console panel, interview tier flow, diagrams) have no tests.
+2. **Bundle size** — `playground-vendor` chunk is ~730KB (CodeMirror + Sucrase). Could be further split or lazy-loaded.
+
+### Pattern diagrams — done for the core patterns
+Compound Components, Render Props, HOC, Portal, Context, Context Selectors, Provider Pattern, asChild, Slots, State Machines, Behavioral Hooks. See [src/components/diagrams/](src/components/diagrams/). Add more for new patterns following the convention in "Authoring Conventions → Pattern diagrams".
 
 ### Possible content additions
 - Variant adoption in the ~11 katas where Before/After didn't fit naturally on first pass (jsx-basics, code-splitting, react-19-compiler, render-timing-reconciliation, profiling-debugging, context-deep-dive, global-state-patterns, compound-components-tabs, children-as-data, testing-accessibility, and the 5 machine-coding katas).

@@ -1,6 +1,7 @@
 import { useState, ReactNode } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
 import type { PlaygroundVariant } from '@components/playground'
+import { SlotsDiagram } from '@components/diagrams'
 import sourceCode from './SlotsPattern.tsx?raw'
 
 export const playgroundVariants: PlaygroundVariant[] = [
@@ -327,6 +328,8 @@ export default function SlotsPattern() {
                 This approach is inspired by how libraries like Radix UI and many design systems
                 structure their component APIs.
             </p>
+
+            <SlotsDiagram />
 
             {/* Section 1: What are Slots? */}
             <section style={{ marginBottom: 'var(--space-8)' }}>

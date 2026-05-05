@@ -1,6 +1,7 @@
 import { useState, ReactNode, ReactElement, cloneElement, isValidElement } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
 import type { PlaygroundVariant } from '@components/playground'
+import { AsChildDiagram } from '@components/diagrams'
 import sourceCode from './AsChildPattern.tsx?raw'
 
 export const playgroundVariants: PlaygroundVariant[] = [
@@ -316,6 +317,8 @@ export default function AsChildPattern() {
                 component passes its props down to whatever child you provide. This pattern was
                 popularized by Radix UI.
             </p>
+
+            <AsChildDiagram />
 
             {/* Section 1: The Problem */}
             <section style={{ marginBottom: 'var(--space-8)' }}>

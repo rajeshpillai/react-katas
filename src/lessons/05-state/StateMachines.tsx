@@ -1,5 +1,6 @@
 import { LessonLayout } from '@components/lesson-layout'
 import type { PlaygroundVariant } from '@components/playground'
+import { StateMachineDiagram } from '@components/diagrams'
 import sourceCode from './StateMachines.tsx?raw'
 
 export const playgroundVariants: PlaygroundVariant[] = [
@@ -281,6 +282,8 @@ export default function StateMachines() {
         State machines provide a structured way to manage complex state transitions. They make your
         app's behavior predictable and easier to reason about.
       </p>
+
+      <StateMachineDiagram />
 
       {/* Section 1: What are State Machines */}
       <section style={{ marginBottom: 'var(--space-8)' }}>

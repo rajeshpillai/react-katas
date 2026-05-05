@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback, RefObject } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
 import type { PlaygroundVariant } from '@components/playground'
+import { BehavioralHooksDiagram } from '@components/diagrams'
 
 import sourceCode from './BehavioralHooks.tsx?raw'
 
@@ -583,6 +584,8 @@ export default function BehavioralHooks() {
           functions. They isolate browser-level concerns from your component logic, keeping
           components clean and focused on rendering.
         </p>
+
+        <BehavioralHooksDiagram />
 
         {/* Section 1: What are Behavioral Hooks? */}
         <section style={{ marginBottom: 'var(--space-8)' }}>

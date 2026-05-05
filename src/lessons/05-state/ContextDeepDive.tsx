@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, ReactNode, useMemo } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
 import type { PlaygroundConfig } from '@components/playground'
+import { ContextDiagram } from '@components/diagrams'
 import sourceCode from './ContextDeepDive.tsx?raw'
 
 // Example context
@@ -116,6 +117,8 @@ export default function ContextDeepDive() {
         Master the Context API for sharing data across your component tree without prop drilling.
         Learn advanced patterns and best practices.
       </p>
+
+      <ContextDiagram />
 
       {/* Section 1: Context Basics */}
       <section style={{ marginBottom: 'var(--space-8)' }}>
