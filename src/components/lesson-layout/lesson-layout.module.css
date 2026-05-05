@@ -26,15 +26,3 @@
     color: var(--color-primary-500);
 }
 
-.source-code {
-    padding: var(--space-5);
-    background: var(--bg-secondary);
-    border-radius: var(--radius-lg);
-    overflow: auto;
-    font-size: var(--font-size-sm);
-}
-
-.source-code code {
-    background: transparent;
-    color: inherit;
-}

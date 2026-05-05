@@ -6,6 +6,8 @@ const PlaygroundLayout = lazy(() =>
     import('@components/playground').then((m) => ({ default: m.PlaygroundLayout }))
 )
 
+const SourceCodeViewer = lazy(() => import('./source-code-viewer'))
+
 type Tab = 'lesson' | 'playground' | 'code'
 
 interface LessonLayoutProps {
@@ -43,7 +45,9 @@ export function LessonLayout({ title, playgroundConfig, sourceCode, children }: 
             )}
 
             {activeTab === 'code' && (
-                <pre className={styles['source-code']}><code>{sourceCode}</code></pre>
+                <Suspense fallback={<div>Loading source...</div>}>
+                    <SourceCodeViewer code={sourceCode} />
+                </Suspense>
             )}
         </div>
     )

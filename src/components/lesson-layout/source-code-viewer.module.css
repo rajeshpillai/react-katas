@@ -1,0 +1,14 @@
+.viewer {
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color, #e2e8f0);
+    background: var(--bg-secondary);
+}
+
+:root[data-theme="dark"] .viewer {
+    border-color: #334155;
+}
+
+.viewer :global(.cm-editor) {
+    max-height: 70vh;
+}
