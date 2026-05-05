@@ -12,28 +12,35 @@ export function VariantSelector({ variants, activeId, onChange }: VariantSelecto
 
     return (
         <div className={styles.wrapper}>
-            <div
-                className={styles.segments}
-                role="tablist"
-                aria-label="Implementation variant"
-            >
-                {variants.map((v) => {
-                    const isActive = v.id === active.id
-                    return (
-                        <button
-                            key={v.id}
-                            role="tab"
-                            aria-selected={isActive}
-                            className={`${styles.segment} ${isActive ? styles.active : ''}`}
-                            onClick={() => onChange(v.id)}
-                        >
-                            {v.label}
-                        </button>
-                    )
-                })}
+            <div className={styles.row}>
+                <span className={styles.label}>Implementation</span>
+                <div
+                    className={styles.segments}
+                    role="tablist"
+                    aria-label="Implementation variant"
+                >
+                    {variants.map((v) => {
+                        const isActive = v.id === active.id
+                        return (
+                            <button
+                                key={v.id}
+                                role="tab"
+                                aria-selected={isActive}
+                                className={`${styles.segment} ${isActive ? styles.active : ''}`}
+                                onClick={() => onChange(v.id)}
+                            >
+                                {isActive && <span className={styles.dot} aria-hidden="true" />}
+                                {v.label}
+                            </button>
+                        )
+                    })}
+                </div>
             </div>
             {active.description && (
-                <p className={styles.description}>{active.description}</p>
+                <p className={styles.description}>
+                    <span className={styles['desc-prefix']}>Showing:</span>{' '}
+                    {active.description}
+                </p>
             )}
         </div>
     )

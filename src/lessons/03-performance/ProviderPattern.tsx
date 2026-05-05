@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, ReactNode, useRef, Dispatch, SetStateAction } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
-import type { PlaygroundConfig } from '@components/playground'
+import type { PlaygroundVariant } from '@components/playground'
 
 // Example of an optimized provider
 const ThemeContext = createContext<{ theme: string } | null>(null)
@@ -9,77 +9,58 @@ const ThemeUpdateContext = createContext<Dispatch<SetStateAction<string>> | null
 // @ts-ignore
 import sourceCode from './ProviderPattern.tsx?raw'
 
-export const playgroundConfig: PlaygroundConfig = {
-  files: [
-    {
-      name: 'App.tsx',
-      language: 'tsx',
-      code: `import { createContext, useContext, useState, useRef, ReactNode } from 'react'
+export const playgroundVariants: PlaygroundVariant[] = [
+  {
+    id: 'lumped',
+    label: 'Before — single lumped context',
+    description:
+      'One context holds { theme, setTheme }. Toggle the theme: every consumer of the context re-renders, even ToggleButton which only needs the setter and never reads the value.',
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { createContext, useContext, useState, useRef, ReactNode } from 'react'
 
-// Split contexts: one for value, one for updater
-const ThemeContext = createContext<string>('light')
-const ThemeUpdateContext = createContext<((t: string) => void)>(() => {})
+type Ctx = { theme: string; setTheme: (t: string) => void }
+const ThemeCtx = createContext<Ctx>({ theme: 'light', setTheme: () => {} })
 
 function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState('light')
-
+  // New object every render -> all consumers see a "changed" value
   return (
-    <ThemeContext.Provider value={theme}>
-      <ThemeUpdateContext.Provider value={setTheme}>
-        {children}
-      </ThemeUpdateContext.Provider>
-    </ThemeContext.Provider>
+    <ThemeCtx.Provider value={{ theme, setTheme }}>
+      {children}
+    </ThemeCtx.Provider>
   )
 }
 
 function ThemeDisplay() {
-  const theme = useContext(ThemeContext)
-  const renderCount = useRef(0)
-  renderCount.current += 1
-
+  const { theme } = useContext(ThemeCtx)
+  const renders = useRef(0)
+  renders.current += 1
   return (
-    <div style={{
-      padding: 12,
-      background: theme === 'dark' ? '#2d3748' : '#ebf8ff',
-      color: theme === 'dark' ? 'white' : '#2d3748',
-      borderRadius: 6,
-      marginBottom: 8,
-    }}>
-      <strong>Theme Display</strong> (reads ThemeContext)
-      <div>Current theme: {theme}</div>
-      <div style={{ fontSize: 12, opacity: 0.7 }}>Renders: {renderCount.current} -- re-renders on theme change</div>
+    <div style={{ padding: 12, background: theme === 'dark' ? '#1f2937' : '#ebf8ff', color: theme === 'dark' ? '#fff' : '#1f2937', borderRadius: 6, marginBottom: 8 }}>
+      <strong>ThemeDisplay</strong> · theme = {theme}
+      <div style={{ fontSize: 12, opacity: 0.7 }}>renders: {renders.current}</div>
     </div>
   )
 }
 
-function ThemeToggle() {
-  const setTheme = useContext(ThemeUpdateContext)
-  const renderCount = useRef(0)
-  renderCount.current += 1
-
+function ToggleButton() {
+  const { setTheme } = useContext(ThemeCtx)
+  const renders = useRef(0)
+  renders.current += 1
   return (
     <div style={{ marginBottom: 8 }}>
       <button
-        onClick={() => setTheme((prev: string) => prev === 'light' ? 'dark' : 'light')}
-        style={{ padding: '8px 16px', background: '#805ad5', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer' }}
+        onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')}
+        style={{ padding: '8px 16px', background: '#7c3aed', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer' }}
       >
-        Toggle Theme
+        Toggle theme
       </button>
-      <div style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>
-        Toggle renders: {renderCount.current} -- does NOT re-render on theme change!
+      <div style={{ fontSize: 12, opacity: 0.7 }}>
+        ToggleButton renders: {renders.current} (also climbs even though it only needs the setter)
       </div>
-    </div>
-  )
-}
-
-function ExpensiveChild() {
-  const renderCount = useRef(0)
-  renderCount.current += 1
-
-  return (
-    <div style={{ padding: 12, background: '#c6f6d5', borderRadius: 6 }}>
-      <strong>Expensive Child</strong> (no context)
-      <div style={{ fontSize: 12, opacity: 0.7 }}>Renders: {renderCount.current} -- never re-renders!</div>
     </div>
   )
 }
@@ -87,26 +68,98 @@ function ExpensiveChild() {
 export default function App() {
   return (
     <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
-      <h2>Provider Pattern: Split Contexts</h2>
-      <p>Toggle the theme and watch which components re-render.</p>
+      <h2>Lumped context</h2>
       <ThemeProvider>
         <ThemeDisplay />
-        <ThemeToggle />
-        <ExpensiveChild />
+        <ToggleButton />
       </ThemeProvider>
     </div>
   )
 }
 `,
-    },
-  ],
-  entryFile: 'App.tsx',
-  height: 450,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 360,
+  },
+  {
+    id: 'split',
+    label: 'After — split contexts',
+    description:
+      "Two contexts: one for the value, one for the setter. ToggleButton only subscribes to the setter (which never changes), so its renders stay flat while ThemeDisplay re-renders on toggle.",
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { createContext, useContext, useState, useRef, ReactNode } from 'react'
+
+const ThemeCtx = createContext<string>('light')
+const SetThemeCtx = createContext<(t: string) => void>(() => {})
+
+function ThemeProvider({ children }: { children: ReactNode }) {
+  const [theme, setTheme] = useState('light')
+  return (
+    <ThemeCtx.Provider value={theme}>
+      <SetThemeCtx.Provider value={setTheme}>
+        {children}
+      </SetThemeCtx.Provider>
+    </ThemeCtx.Provider>
+  )
 }
+
+function ThemeDisplay() {
+  const theme = useContext(ThemeCtx)
+  const renders = useRef(0)
+  renders.current += 1
+  return (
+    <div style={{ padding: 12, background: theme === 'dark' ? '#1f2937' : '#ebf8ff', color: theme === 'dark' ? '#fff' : '#1f2937', borderRadius: 6, marginBottom: 8 }}>
+      <strong>ThemeDisplay</strong> · theme = {theme}
+      <div style={{ fontSize: 12, opacity: 0.7 }}>renders: {renders.current}</div>
+    </div>
+  )
+}
+
+function ToggleButton() {
+  const setTheme = useContext(SetThemeCtx)
+  const renders = useRef(0)
+  renders.current += 1
+  return (
+    <div style={{ marginBottom: 8 }}>
+      <button
+        onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')}
+        style={{ padding: '8px 16px', background: '#7c3aed', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer' }}
+      >
+        Toggle theme
+      </button>
+      <div style={{ fontSize: 12, opacity: 0.7 }}>
+        ToggleButton renders: {renders.current} (stays flat — setter reference is stable)
+      </div>
+    </div>
+  )
+}
+
+export default function App() {
+  return (
+    <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+      <h2>Split contexts</h2>
+      <ThemeProvider>
+        <ThemeDisplay />
+        <ToggleButton />
+      </ThemeProvider>
+    </div>
+  )
+}
+`,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 360,
+  },
+]
 
 export default function ProviderPattern() {
   return (
-    <LessonLayout title="Provider Pattern Optimization" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+    <LessonLayout title="Provider Pattern Optimization" playgroundVariants={playgroundVariants} sourceCode={sourceCode}>
       <p>
         Context providers can cause performance issues if not optimized. Learn how to prevent
         unnecessary re-renders when using Context API.

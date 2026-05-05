@@ -1,91 +1,131 @@
 import { useState, useRef } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
-import type { PlaygroundConfig } from '@components/playground'
+import type { PlaygroundVariant } from '@components/playground'
 
 // @ts-ignore
 import sourceCode from './ControlledUncontrolled.tsx?raw'
 
-export const playgroundConfig: PlaygroundConfig = {
-  files: [
-    {
-      name: 'App.tsx',
-      language: 'tsx',
-      code: `import { useState, useRef } from 'react'
-
-function ControlledInput() {
-    const [value, setValue] = useState('')
-
-    return (
-        <div style={{ marginBottom: 24 }}>
-            <h3>Controlled Input (useState)</h3>
-            <input
-                type="text"
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
-                placeholder="Type here..."
-                style={{ width: '100%', padding: 8, fontSize: 14, marginBottom: 8, border: '1px solid #d1d5db', borderRadius: 6 }}
-            />
-            <div style={{ padding: 8, background: '#f3f4f6', color: '#1f2937', borderRadius: 6 }}>
-                <p><strong>Current Value:</strong> {value || '(empty)'}</p>
-                <p style={{ color: '#6b7280', fontSize: 12 }}>Value is controlled by React state -- updates on every keystroke</p>
-            </div>
-        </div>
-    )
-}
-
-function UncontrolledInput() {
-    const inputRef = useRef<HTMLInputElement>(null)
-    const [submittedValue, setSubmittedValue] = useState('')
-
-    const handleSubmit = () => {
-        if (inputRef.current) {
-            setSubmittedValue(inputRef.current.value)
-        }
-    }
-
-    return (
-        <div>
-            <h3>Uncontrolled Input (useRef)</h3>
-            <input
-                ref={inputRef}
-                type="text"
-                defaultValue="Initial value"
-                placeholder="Type here..."
-                style={{ width: '100%', padding: 8, fontSize: 14, marginBottom: 8, border: '1px solid #d1d5db', borderRadius: 6 }}
-            />
-            <button
-                onClick={handleSubmit}
-                style={{ padding: '6px 16px', background: '#3b82f6', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer', marginBottom: 8 }}
-            >
-                Get Value
-            </button>
-            <div style={{ padding: 8, background: '#f3f4f6', color: '#1f2937', borderRadius: 6 }}>
-                <p><strong>Submitted Value:</strong> {submittedValue || '(click button to get value)'}</p>
-                <p style={{ color: '#6b7280', fontSize: 12 }}>Value is managed by the DOM, accessed via ref on demand</p>
-            </div>
-        </div>
-    )
-}
+export const playgroundVariants: PlaygroundVariant[] = [
+  {
+    id: 'broken',
+    label: 'Before — value without onChange',
+    description:
+      'Try typing in the input. Nothing happens. The most common React form bug: setting `value` makes it controlled, but with no `onChange` the value can never change. React even warns about this in the console.',
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState } from 'react'
 
 export default function App() {
+    const [name, setName] = useState('Ada')
+
     return (
         <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
-            <h2>Controlled vs Uncontrolled</h2>
-            <ControlledInput />
-            <UncontrolledInput />
+            <h3>Read-only by accident</h3>
+            <input
+                type="text"
+                value={name}
+                placeholder="Try typing here..."
+                style={{ width: '100%', padding: 8, fontSize: 14, marginBottom: 8, border: '1px solid #d1d5db', borderRadius: 6 }}
+            />
+            <p style={{ fontSize: 12, color: '#888' }}>
+                React owns the value via the prop, but with no onChange we never tell React to update it.
+                Result: the input refuses keystrokes.
+            </p>
+            <button onClick={() => setName('')}>
+                External reset works (it changes state, which re-renders the input)
+            </button>
         </div>
     )
 }
 `,
-    },
-  ],
-  entryFile: 'App.tsx',
-  height: 450,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 280,
+  },
+  {
+    id: 'controlled',
+    label: 'After — fully controlled',
+    description:
+      'value + onChange = controlled. React owns the source of truth, and any external state change (like the reset button) propagates to the input.',
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState } from 'react'
+
+export default function App() {
+    const [name, setName] = useState('Ada')
+
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h3>Controlled Input</h3>
+            <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Try typing here..."
+                style={{ width: '100%', padding: 8, fontSize: 14, marginBottom: 8, border: '1px solid #d1d5db', borderRadius: 6 }}
+            />
+            <p>Current value: <strong>{name || '(empty)'}</strong></p>
+            <button onClick={() => setName('')}>Reset</button>
+        </div>
+    )
 }
+`,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 280,
+  },
+  {
+    id: 'uncontrolled',
+    label: 'Alternative — uncontrolled',
+    description:
+      "Sometimes you don't need React to track every keystroke — let the DOM own the value, then read it on demand via a ref. Useful for one-shot reads on submit.",
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useRef, useState } from 'react'
+
+export default function App() {
+    const inputRef = useRef<HTMLInputElement>(null)
+    const [submitted, setSubmitted] = useState('')
+
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h3>Uncontrolled Input</h3>
+            <input
+                ref={inputRef}
+                type="text"
+                defaultValue="Ada"
+                placeholder="Type freely..."
+                style={{ width: '100%', padding: 8, fontSize: 14, marginBottom: 8, border: '1px solid #d1d5db', borderRadius: 6 }}
+            />
+            <button onClick={() => setSubmitted(inputRef.current?.value ?? '')}>
+                Read value
+            </button>
+            <p>Submitted: <strong>{submitted || '(none)'}</strong></p>
+            <p style={{ fontSize: 12, color: '#888' }}>
+                The DOM owns the value. React only reads it when we ask.
+            </p>
+        </div>
+    )
+}
+`,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 280,
+  },
+]
 
 export default function ControlledUncontrolled() {
   return (
-    <LessonLayout title="Controlled vs Uncontrolled Components" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+    <LessonLayout title="Controlled vs Uncontrolled Components" playgroundVariants={playgroundVariants} sourceCode={sourceCode}>
       <div>
         <p>
           Learn the difference between controlled and uncontrolled components, and when to use each

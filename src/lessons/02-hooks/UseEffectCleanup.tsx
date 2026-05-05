@@ -1,116 +1,162 @@
 import { useState, useEffect } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
-import type { PlaygroundConfig } from '@components/playground'
+import type { PlaygroundVariant } from '@components/playground'
 // @ts-ignore
 import sourceCode from './UseEffectCleanup.tsx?raw'
 
-export const playgroundConfig: PlaygroundConfig = {
-  files: [
-    {
-      name: 'App.tsx',
-      language: 'tsx',
-      code: `import { useState, useEffect } from 'react'
+export const playgroundVariants: PlaygroundVariant[] = [
+  {
+    id: 'leaking',
+    label: 'Before — no cleanup (leaks)',
+    description:
+      'Mount the timer, then unmount, then mount again. Watch the console: each unmounted timer keeps ticking forever, and a new one starts on every remount. After 3 mounts you have 3 intervals firing in parallel.',
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState, useEffect } from 'react'
 
-function Timer() {
-  const [seconds, setSeconds] = useState(0)
-
+function Timer({ id }: { id: number }) {
   useEffect(() => {
-    const interval = setInterval(() => {
-      setSeconds(s => s + 1)
+    console.log('starting timer #' + id)
+    setInterval(() => {
+      console.log('timer #' + id + ' tick')
     }, 1000)
-
-    // Cleanup: clear interval on unmount
-    return () => {
-      clearInterval(interval)
-    }
+    // No cleanup! The interval survives unmount.
   }, [])
 
   return (
-    <div style={{ padding: 12, background: '#e0f2fe', borderRadius: 8, marginBottom: 8 }}>
-      <strong>Timer:</strong> {seconds}s
-      <p style={{ fontSize: 12, color: '#666' }}>
-        Unmount me to see cleanup in the console
-      </p>
-    </div>
-  )
-}
-
-function MouseTracker() {
-  const [position, setPosition] = useState({ x: 0, y: 0 })
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setPosition({ x: e.clientX, y: e.clientY })
-    }
-
-    window.addEventListener('mousemove', handleMouseMove)
-
-    // Cleanup: remove event listener on unmount
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove)
-    }
-  }, [])
-
-  return (
-    <div style={{ padding: 12, background: '#fef3c7', borderRadius: 8, marginBottom: 8 }}>
-      <strong>Mouse Position:</strong> X: {position.x}, Y: {position.y}
-      <p style={{ fontSize: 12, color: '#666' }}>
-        Move your mouse around. Listener is cleaned up on unmount.
-      </p>
+    <div style={{ padding: 12, background: '#fef2f2', borderRadius: 8, marginBottom: 8 }}>
+      <strong>Timer #{id}</strong> running — open the console.
     </div>
   )
 }
 
 export default function App() {
-  const [showTimer, setShowTimer] = useState(false)
-  const [showTracker, setShowTracker] = useState(false)
+  const [show, setShow] = useState(true)
+  const [id, setId] = useState(1)
 
   return (
     <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
-      <h2>Timer with Start/Stop (Cleanup Demo)</h2>
+      <h2>Leaking timer</h2>
       <button
-        onClick={() => setShowTimer(v => !v)}
-        style={{
-          padding: '8px 16px',
-          background: showTimer ? '#ef4444' : '#22c55e',
-          color: 'white',
-          border: 'none',
-          borderRadius: 6,
-          cursor: 'pointer',
-          marginBottom: 12,
+        onClick={() => {
+          if (show) setShow(false)
+          else { setId(n => n + 1); setShow(true) }
         }}
+        style={{ padding: '8px 16px', background: show ? '#ef4444' : '#22c55e', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer', marginBottom: 12 }}
       >
-        {showTimer ? 'Unmount Timer' : 'Mount Timer'}
+        {show ? 'Unmount' : 'Mount a new timer'}
       </button>
-      {showTimer && <Timer />}
-
-      <hr style={{ margin: '20px 0' }} />
-
-      <h2>Mouse Position Tracker (Event Listener Cleanup)</h2>
-      <button
-        onClick={() => setShowTracker(v => !v)}
-        style={{
-          padding: '8px 16px',
-          background: showTracker ? '#ef4444' : '#22c55e',
-          color: 'white',
-          border: 'none',
-          borderRadius: 6,
-          cursor: 'pointer',
-          marginBottom: 12,
-        }}
-      >
-        {showTracker ? 'Stop Tracking' : 'Start Tracking'}
-      </button>
-      {showTracker && <MouseTracker />}
+      {show && <Timer id={id} />}
+      <p style={{ fontSize: 12, color: '#888' }}>
+        Unmount the timer. Old ticks keep firing. Mount again — now two are firing.
+      </p>
     </div>
   )
 }
 `,
-    },
-  ],
-  entryFile: 'App.tsx',
-  height: 400,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 320,
+  },
+  {
+    id: 'cleaned-up',
+    label: 'After — return cleanup',
+    description:
+      "useEffect's return value is a cleanup function. React runs it when the component unmounts and before the effect re-runs. Now mounting/unmounting is safe — each unmount stops its own interval.",
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState, useEffect } from 'react'
+
+function Timer({ id }: { id: number }) {
+  useEffect(() => {
+    console.log('starting timer #' + id)
+    const handle = setInterval(() => {
+      console.log('timer #' + id + ' tick')
+    }, 1000)
+    return () => {
+      console.log('cleaning up timer #' + id)
+      clearInterval(handle)
+    }
+  }, [id])
+
+  return (
+    <div style={{ padding: 12, background: '#ecfdf5', borderRadius: 8, marginBottom: 8 }}>
+      <strong>Timer #{id}</strong> running — open the console.
+    </div>
+  )
 }
+
+export default function App() {
+  const [show, setShow] = useState(true)
+  const [id, setId] = useState(1)
+
+  return (
+    <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+      <h2>Properly cleaned up</h2>
+      <button
+        onClick={() => {
+          if (show) setShow(false)
+          else { setId(n => n + 1); setShow(true) }
+        }}
+        style={{ padding: '8px 16px', background: show ? '#ef4444' : '#22c55e', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer', marginBottom: 12 }}
+      >
+        {show ? 'Unmount' : 'Mount a new timer'}
+      </button>
+      {show && <Timer id={id} />}
+      <p style={{ fontSize: 12, color: '#888' }}>
+        Unmount fires "cleaning up". Each timer stops with its component.
+      </p>
+    </div>
+  )
+}
+`,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 320,
+  },
+  {
+    id: 'mouse-tracker',
+    label: 'Event listeners',
+    description:
+      "Same pattern for window event listeners: subscribe in the effect, unsubscribe in the cleanup. Without cleanup you'd accumulate listeners on every re-mount.",
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState, useEffect } from 'react'
+
+export default function App() {
+  const [pos, setPos] = useState({ x: 0, y: 0 })
+
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => setPos({ x: e.clientX, y: e.clientY })
+    window.addEventListener('mousemove', onMove)
+    return () => window.removeEventListener('mousemove', onMove)
+  }, [])
+
+  return (
+    <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+      <h2>Mouse Tracker</h2>
+      <p>X: {pos.x} · Y: {pos.y}</p>
+      <p style={{ fontSize: 12, color: '#888' }}>
+        Move your mouse over the preview. The listener is attached once and removed on unmount.
+      </p>
+    </div>
+  )
+}
+`,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 240,
+  },
+]
 
 export default function UseEffectCleanup() {
   const [showTimer, setShowTimer] = useState(false)
@@ -120,7 +166,7 @@ export default function UseEffectCleanup() {
 
 
   return (
-    <LessonLayout title="useEffect Cleanup" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+    <LessonLayout title="useEffect Cleanup" playgroundVariants={playgroundVariants} sourceCode={sourceCode}>
       <p>
         Cleanup functions prevent <strong>memory leaks</strong> and unwanted behavior. They run
         before the effect re-executes and when the component unmounts.

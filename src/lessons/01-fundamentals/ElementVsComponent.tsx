@@ -1,16 +1,105 @@
 import { useState, useRef, createElement, ReactNode } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
-import type { PlaygroundConfig } from '@components/playground'
+import type { PlaygroundVariant } from '@components/playground'
 
 // @ts-ignore
 import sourceCode from './ElementVsComponent.tsx?raw'
 
-export const playgroundConfig: PlaygroundConfig = {
-  files: [
-    {
-      name: 'App.tsx',
-      language: 'tsx',
-      code: `import { useState, createElement, useRef } from 'react'
+export const playgroundVariants: PlaygroundVariant[] = [
+  {
+    id: 'broken-call',
+    label: 'Before — calling like a function',
+    description:
+      "Greeting() is invoked directly inside App's render, so its useState ends up as one of App's hooks. Click Toggle: showing/hiding Greeting changes how many hooks App calls — React throws 'Rendered fewer hooks than expected'.",
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState } from 'react'
+
+function Greeting({ name }: { name: string }) {
+    const [waves, setWaves] = useState(0)
+    return (
+        <div style={{ padding: 12, background: '#fee2e2', borderRadius: 6 }}>
+            <strong>Hello, {name}!</strong> ({waves} waves)
+            <br />
+            <button onClick={() => setWaves(w => w + 1)} style={{ marginTop: 4 }}>Wave</button>
+        </div>
+    )
+}
+
+export default function App() {
+    const [show, setShow] = useState(true)
+
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>The function-call mistake</h2>
+            <button onClick={() => setShow(s => !s)} style={{ marginBottom: 12 }}>
+                Toggle Greeting
+            </button>
+            {/* MISTAKE: calling instead of rendering. Greeting's hook becomes App's hook. */}
+            {show && Greeting({ name: 'Ada' })}
+        </div>
+    )
+}
+`,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 280,
+  },
+  {
+    id: 'correct-jsx',
+    label: 'After — render as element',
+    description:
+      'Same Greeting, written as <Greeting />. React sees it as its own component with its own hook scope, so toggling visibility never affects App\'s hook count.',
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState } from 'react'
+
+function Greeting({ name }: { name: string }) {
+    const [waves, setWaves] = useState(0)
+    return (
+        <div style={{ padding: 12, background: '#dcfce7', borderRadius: 6 }}>
+            <strong>Hello, {name}!</strong> ({waves} waves)
+            <br />
+            <button onClick={() => setWaves(w => w + 1)} style={{ marginTop: 4 }}>Wave</button>
+        </div>
+    )
+}
+
+export default function App() {
+    const [show, setShow] = useState(true)
+
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>The right way</h2>
+            <button onClick={() => setShow(s => !s)} style={{ marginBottom: 12 }}>
+                Toggle Greeting
+            </button>
+            {/* JSX form: Greeting is its own component with its own hooks. */}
+            {show && <Greeting name="Ada" />}
+        </div>
+    )
+}
+`,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 280,
+  },
+  {
+    id: 'identity',
+    label: 'Element identity',
+    description:
+      'Elements are plain objects describing what to render. typeof a JSX expression is "object". createElement produces the same shape. A stored element keeps its identity across renders, so React can skip its subtree.',
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState, createElement, useRef } from 'react'
 
 function Greeting({ name }: { name: string }) {
     return <h2>Hello, {name}!</h2>
@@ -26,8 +115,7 @@ function RenderCounter({ label }: { label: string }) {
     )
 }
 
-// Extract only the meaningful parts of a React element for display
-function describeElement(el) {
+function describeElement(el: any): string {
     if (!el || typeof el !== 'object') return String(el)
     const typeName = typeof el.type === 'function' ? el.type.name || 'Anonymous'
         : typeof el.type === 'string' ? '"' + el.type + '"'
@@ -37,45 +125,33 @@ function describeElement(el) {
 
 export default function App() {
     const [count, setCount] = useState(0)
-
-    // 1. typeof checks
     const element = <Greeting name="World" />
     const elementViaCreateElement = createElement(Greeting, { name: 'World' })
-
-    // 2. Element identity: stored vs inline
     const [storedElement] = useState(() => <RenderCounter label="Stored element" />)
 
     return (
         <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
-            <h2>React Elements vs Components</h2>
-
-            <section style={{ marginBottom: 24 }}>
-                <h3>1. typeof Checks</h3>
-                <p><code>typeof Greeting</code> = <strong>{typeof Greeting}</strong> (it is a function)</p>
-                <p><code>typeof &lt;Greeting /&gt;</code> = <strong>{typeof element}</strong> (it is an object)</p>
-                <pre style={{ padding: 12, borderRadius: 6 }}>
+            <section style={{ marginBottom: 16 }}>
+                <h3>1. typeof checks</h3>
+                <p><code>typeof Greeting</code> = <strong>{typeof Greeting}</strong> (a function)</p>
+                <p><code>typeof &lt;Greeting /&gt;</code> = <strong>{typeof element}</strong> (an object)</p>
+                <pre style={{ padding: 8, borderRadius: 6, fontSize: 12 }}>
 {describeElement(element)}
                 </pre>
             </section>
 
-            <section style={{ marginBottom: 24 }}>
-                <h3>2. createElement Output</h3>
-                <p>JSX and createElement produce the same result:</p>
-                <pre style={{ padding: 12, borderRadius: 6 }}>
+            <section style={{ marginBottom: 16 }}>
+                <h3>2. createElement = JSX</h3>
+                <pre style={{ padding: 8, borderRadius: 6, fontSize: 12 }}>
 {describeElement(elementViaCreateElement)}
                 </pre>
             </section>
 
-            <section style={{ marginBottom: 24 }}>
-                <h3>3. Element Identity and Re-rendering</h3>
-                <p>Click the button to trigger a parent re-render. The stored element keeps its identity, so its subtree does not re-render.</p>
-                <button
-                    onClick={() => setCount(c => c + 1)}
-                    style={{ padding: '8px 16px', background: '#3b82f6', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer', marginBottom: 12 }}
-                >
-                    Parent re-renders: {count}
+            <section>
+                <h3>3. Stored vs inline</h3>
+                <button onClick={() => setCount(c => c + 1)} style={{ marginBottom: 8 }}>
+                    Re-render parent: {count}
                 </button>
-
                 {storedElement}
                 <RenderCounter label="Inline element" />
             </section>
@@ -83,11 +159,12 @@ export default function App() {
     )
 }
 `,
-    },
-  ],
-  entryFile: 'App.tsx',
-  height: 500,
-}
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 500,
+  },
+]
 
 // --- Demo Components ---
 
@@ -296,7 +373,7 @@ function ElementIdentityDemo() {
 
 export default function ElementVsComponent() {
   return (
-    <LessonLayout title="Elements vs Components" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+    <LessonLayout title="Elements vs Components" playgroundVariants={playgroundVariants} sourceCode={sourceCode}>
       <div>
         <p>
           Understanding the difference between React elements and React components is fundamental.
