@@ -9,7 +9,6 @@ export interface LessonMetadata {
     order: number
     path: string
     component: ComponentType
-    documentPath: string
 }
 
 // Lesson sections
@@ -35,7 +34,6 @@ export const lessons: LessonMetadata[] = [
         order: 39,
         path: '/lessons/file-explorer',
         component: lazy(() => import('@lessons/07-machine-coding/FileExplorer')),
-        documentPath: '/lessons/07-machine-coding/01-file-explorer.md',
     },
     {
         id: 'auto-complete',
@@ -45,7 +43,6 @@ export const lessons: LessonMetadata[] = [
         order: 40,
         path: '/lessons/auto-complete',
         component: lazy(() => import('@lessons/07-machine-coding/AutoComplete')),
-        documentPath: '/lessons/07-machine-coding/02-auto-complete.md',
     },
     {
         id: 'toast-system',
@@ -55,7 +52,6 @@ export const lessons: LessonMetadata[] = [
         order: 41,
         path: '/lessons/toast-system',
         component: lazy(() => import('@lessons/07-machine-coding/ToastSystem')),
-        documentPath: '/lessons/07-machine-coding/03-toast-system.md',
     },
     {
         id: 'drag-and-drop',
@@ -65,7 +61,6 @@ export const lessons: LessonMetadata[] = [
         order: 42,
         path: '/lessons/drag-and-drop',
         component: lazy(() => import('@lessons/07-machine-coding/DragAndDrop')),
-        documentPath: '/lessons/07-machine-coding/04-drag-drop.md',
     },
     {
         id: 'infinite-scroll',
@@ -75,7 +70,6 @@ export const lessons: LessonMetadata[] = [
         order: 43,
         path: '/lessons/infinite-scroll',
         component: lazy(() => import('@lessons/07-machine-coding/InfiniteScroll')),
-        documentPath: '/lessons/07-machine-coding/05-infinite-scroll.md',
     },
 
     // Section 1: Fundamentals
@@ -87,7 +81,6 @@ export const lessons: LessonMetadata[] = [
         order: 1,
         path: '/lessons/jsx-basics',
         component: lazy(() => import('@lessons/01-fundamentals/JSXBasics')),
-        documentPath: '/lessons/01-fundamentals/01-jsx-basics.md',
     },
     {
         id: 'element-vs-component',
@@ -97,7 +90,6 @@ export const lessons: LessonMetadata[] = [
         order: 2,
         path: '/lessons/element-vs-component',
         component: lazy(() => import('@lessons/01-fundamentals/ElementVsComponent')),
-        documentPath: '/lessons/01-fundamentals/06-element-vs-component.md',
     },
     {
         id: 'components-props',
@@ -107,7 +99,6 @@ export const lessons: LessonMetadata[] = [
         order: 3,
         path: '/lessons/components-props',
         component: lazy(() => import('@lessons/01-fundamentals/ComponentsProps')),
-        documentPath: '/lessons/01-fundamentals/02-components-props.md',
     },
     {
         id: 'state-basics',
@@ -117,7 +108,6 @@ export const lessons: LessonMetadata[] = [
         order: 4,
         path: '/lessons/state-basics',
         component: lazy(() => import('@lessons/01-fundamentals/StateBasics')),
-        documentPath: '/lessons/01-fundamentals/03-state-basics.md',
     },
     {
         id: 'event-handling',
@@ -127,7 +117,6 @@ export const lessons: LessonMetadata[] = [
         order: 5,
         path: '/lessons/event-handling',
         component: lazy(() => import('@lessons/01-fundamentals/EventHandling')),
-        documentPath: '/lessons/01-fundamentals/04-event-handling.md',
     },
     {
         id: 'conditional-rendering',
@@ -137,7 +126,6 @@ export const lessons: LessonMetadata[] = [
         order: 6,
         path: '/lessons/conditional-rendering',
         component: lazy(() => import('@lessons/01-fundamentals/ConditionalRendering')),
-        documentPath: '/lessons/01-fundamentals/05-conditional-rendering.md',
     },
 
     // Section 2: Hooks & Side Effects
@@ -149,7 +137,6 @@ export const lessons: LessonMetadata[] = [
         order: 7,
         path: '/lessons/useeffect-fundamentals',
         component: lazy(() => import('@lessons/02-hooks/UseEffectFundamentals')),
-        documentPath: '/lessons/02-hooks/01-useeffect-fundamentals.md',
     },
     {
         id: 'useeffect-cleanup',
@@ -159,7 +146,6 @@ export const lessons: LessonMetadata[] = [
         order: 8,
         path: '/lessons/useeffect-cleanup',
         component: lazy(() => import('@lessons/02-hooks/UseEffectCleanup')),
-        documentPath: '/lessons/02-hooks/02-useeffect-cleanup.md',
     },
     {
         id: 'useref',
@@ -169,7 +155,6 @@ export const lessons: LessonMetadata[] = [
         order: 9,
         path: '/lessons/useref',
         component: lazy(() => import('@lessons/02-hooks/UseRef')),
-        documentPath: '/lessons/02-hooks/03-useref.md',
     },
     {
         id: 'custom-hooks',
@@ -179,7 +164,6 @@ export const lessons: LessonMetadata[] = [
         order: 10,
         path: '/lessons/custom-hooks',
         component: lazy(() => import('@lessons/02-hooks/CustomHooks')),
-        documentPath: '/lessons/02-hooks/04-custom-hooks.md',
     },
     {
         id: 'usereducer',
@@ -189,7 +173,6 @@ export const lessons: LessonMetadata[] = [
         order: 11,
         path: '/lessons/usereducer',
         component: lazy(() => import('@lessons/02-hooks/UseReducer')),
-        documentPath: '/lessons/02-hooks/05-usereducer.md',
     },
     {
         id: 'memoization-when-needed',
@@ -199,7 +182,6 @@ export const lessons: LessonMetadata[] = [
         order: 12,
         path: '/lessons/memoization-when-needed',
         component: lazy(() => import('@lessons/02-hooks/MemoizationWhenNeeded')),
-        documentPath: '/lessons/02-hooks/06-memoization-when-needed.md',
     },
     {
         id: 'behavioral-hooks',
@@ -209,7 +191,6 @@ export const lessons: LessonMetadata[] = [
         order: 13,
         path: '/lessons/behavioral-hooks',
         component: lazy(() => import('@lessons/02-hooks/BehavioralHooks')),
-        documentPath: '/lessons/02-hooks/07-behavioral-hooks.md',
     },
 
     // Section 3: Performance Optimization
@@ -221,7 +202,6 @@ export const lessons: LessonMetadata[] = [
         order: 14,
         path: '/lessons/render-timing-reconciliation',
         component: lazy(() => import('@lessons/03-performance/RenderTimingReconciliation')),
-        documentPath: '/lessons/03-performance/08-render-timing-reconciliation.md',
     },
     {
         id: 'component-composition',
@@ -231,7 +211,6 @@ export const lessons: LessonMetadata[] = [
         order: 15,
         path: '/lessons/component-composition',
         component: lazy(() => import('@lessons/03-performance/ComponentComposition')),
-        documentPath: '/lessons/03-performance/01-component-composition.md',
     },
     {
         id: 'react-memo',
@@ -241,7 +220,6 @@ export const lessons: LessonMetadata[] = [
         order: 16,
         path: '/lessons/react-memo',
         component: lazy(() => import('@lessons/03-performance/ReactMemo')),
-        documentPath: '/lessons/03-performance/02-react-memo.md',
     },
     {
         id: 'code-splitting',
@@ -251,7 +229,6 @@ export const lessons: LessonMetadata[] = [
         order: 17,
         path: '/lessons/code-splitting',
         component: lazy(() => import('@lessons/03-performance/CodeSplitting')),
-        documentPath: '/lessons/03-performance/03-code-splitting.md',
     },
     {
         id: 'provider-pattern',
@@ -261,7 +238,6 @@ export const lessons: LessonMetadata[] = [
         order: 18,
         path: '/lessons/provider-pattern',
         component: lazy(() => import('@lessons/03-performance/ProviderPattern')),
-        documentPath: '/lessons/03-performance/04-provider-pattern.md',
     },
     {
         id: 'profiling-debugging',
@@ -271,7 +247,6 @@ export const lessons: LessonMetadata[] = [
         order: 19,
         path: '/lessons/profiling-debugging',
         component: lazy(() => import('@lessons/03-performance/ProfilingDebugging')),
-        documentPath: '/lessons/03-performance/05-profiling-debugging.md',
     },
     {
         id: 'react-19-compiler',
@@ -281,7 +256,6 @@ export const lessons: LessonMetadata[] = [
         order: 20,
         path: '/lessons/react-19-compiler',
         component: lazy(() => import('@lessons/03-performance/React19Compiler')),
-        documentPath: '/lessons/03-performance/06-react-19-compiler.md',
     },
     {
         id: 'virtualization',
@@ -291,7 +265,6 @@ export const lessons: LessonMetadata[] = [
         order: 21,
         path: '/lessons/virtualization',
         component: lazy(() => import('@lessons/03-performance/Virtualization')),
-        documentPath: '/lessons/03-performance/07-virtualization.md',
     },
 
     // Section 4: Advanced Patterns
@@ -303,7 +276,6 @@ export const lessons: LessonMetadata[] = [
         order: 22,
         path: '/lessons/compound-components',
         component: lazy(() => import('@lessons/04-patterns/CompoundComponents')),
-        documentPath: '/lessons/04-patterns/01-compound-components.md',
     },
     {
         id: 'compound-components-tabs',
@@ -313,7 +285,6 @@ export const lessons: LessonMetadata[] = [
         order: 23,
         path: '/lessons/compound-components-tabs',
         component: lazy(() => import('@lessons/04-patterns/CompoundComponentsTabs')),
-        documentPath: '/lessons/04-patterns/09-compound-components-tabs.md',
     },
     {
         id: 'render-props',
@@ -323,7 +294,6 @@ export const lessons: LessonMetadata[] = [
         order: 24,
         path: '/lessons/render-props',
         component: lazy(() => import('@lessons/04-patterns/RenderProps')),
-        documentPath: '/lessons/04-patterns/02-render-props.md',
     },
     {
         id: 'higher-order-components',
@@ -333,7 +303,6 @@ export const lessons: LessonMetadata[] = [
         order: 25,
         path: '/lessons/higher-order-components',
         component: lazy(() => import('@lessons/04-patterns/HigherOrderComponents')),
-        documentPath: '/lessons/04-patterns/03-higher-order-components.md',
     },
     {
         id: 'controlled-uncontrolled',
@@ -343,7 +312,6 @@ export const lessons: LessonMetadata[] = [
         order: 26,
         path: '/lessons/controlled-uncontrolled',
         component: lazy(() => import('@lessons/04-patterns/ControlledUncontrolled')),
-        documentPath: '/lessons/04-patterns/04-controlled-uncontrolled.md',
     },
     {
         id: 'portal-pattern',
@@ -353,7 +321,6 @@ export const lessons: LessonMetadata[] = [
         order: 27,
         path: '/lessons/portal-pattern',
         component: lazy(() => import('@lessons/04-patterns/PortalPattern')),
-        documentPath: '/lessons/04-patterns/05-portal-pattern.md',
     },
     {
         id: 'as-child-pattern',
@@ -363,7 +330,6 @@ export const lessons: LessonMetadata[] = [
         order: 28,
         path: '/lessons/as-child-pattern',
         component: lazy(() => import('@lessons/04-patterns/AsChildPattern')),
-        documentPath: '/lessons/04-patterns/06-as-child-pattern.md',
     },
     {
         id: 'children-as-data',
@@ -373,7 +339,6 @@ export const lessons: LessonMetadata[] = [
         order: 29,
         path: '/lessons/children-as-data',
         component: lazy(() => import('@lessons/04-patterns/ChildrenAsData')),
-        documentPath: '/lessons/04-patterns/07-children-as-data.md',
     },
     {
         id: 'slots-pattern',
@@ -383,7 +348,6 @@ export const lessons: LessonMetadata[] = [
         order: 30,
         path: '/lessons/slots-pattern',
         component: lazy(() => import('@lessons/04-patterns/SlotsPattern')),
-        documentPath: '/lessons/04-patterns/08-slots-pattern.md',
     },
 
     // Section 5: State Management
@@ -395,7 +359,6 @@ export const lessons: LessonMetadata[] = [
         order: 31,
         path: '/lessons/context-deep-dive',
         component: lazy(() => import('@lessons/05-state/ContextDeepDive')),
-        documentPath: '/lessons/05-state/01-context-deep-dive.md',
     },
     {
         id: 'context-selectors',
@@ -405,7 +368,6 @@ export const lessons: LessonMetadata[] = [
         order: 32,
         path: '/lessons/context-selectors',
         component: lazy(() => import('@lessons/05-state/ContextSelectors')),
-        documentPath: '/lessons/05-state/02-context-selectors.md',
     },
     {
         id: 'state-machines',
@@ -415,7 +377,6 @@ export const lessons: LessonMetadata[] = [
         order: 33,
         path: '/lessons/state-machines',
         component: lazy(() => import('@lessons/05-state/StateMachines')),
-        documentPath: '/lessons/05-state/03-state-machines.md',
     },
     {
         id: 'global-state-patterns',
@@ -425,7 +386,6 @@ export const lessons: LessonMetadata[] = [
         order: 34,
         path: '/lessons/global-state-patterns',
         component: lazy(() => import('@lessons/05-state/GlobalStatePatterns')),
-        documentPath: '/lessons/05-state/04-global-state-patterns.md',
     },
 
     // Section 6: Accessibility & Production
@@ -437,7 +397,6 @@ export const lessons: LessonMetadata[] = [
         order: 35,
         path: '/lessons/aria-fundamentals',
         component: lazy(() => import('@lessons/06-accessibility/ARIAFundamentals')),
-        documentPath: '/lessons/06-accessibility/01-aria-fundamentals.md',
     },
     {
         id: 'keyboard-navigation',
@@ -447,7 +406,6 @@ export const lessons: LessonMetadata[] = [
         order: 36,
         path: '/lessons/keyboard-navigation',
         component: lazy(() => import('@lessons/06-accessibility/KeyboardNavigation')),
-        documentPath: '/lessons/06-accessibility/02-keyboard-navigation.md',
     },
     {
         id: 'accessible-forms',
@@ -457,7 +415,6 @@ export const lessons: LessonMetadata[] = [
         order: 37,
         path: '/lessons/accessible-forms',
         component: lazy(() => import('@lessons/06-accessibility/AccessibleForms')),
-        documentPath: '/lessons/06-accessibility/03-accessible-forms.md',
     },
     {
         id: 'testing-accessibility',
@@ -467,7 +424,6 @@ export const lessons: LessonMetadata[] = [
         order: 38,
         path: '/lessons/testing-accessibility',
         component: lazy(() => import('@lessons/06-accessibility/TestingAccessibility')),
-        documentPath: '/lessons/06-accessibility/04-testing-accessibility.md',
     },
 
     // Section 8: Architecture & Leadership
@@ -479,7 +435,6 @@ export const lessons: LessonMetadata[] = [
         order: 44,
         path: '/lessons/migrating-legacy-react',
         component: lazy(() => import('@lessons/08-architecture/MigratingLegacyReact')),
-        documentPath: '',
     },
     {
         id: 'design-system-governance',
@@ -489,7 +444,6 @@ export const lessons: LessonMetadata[] = [
         order: 45,
         path: '/lessons/design-system-governance',
         component: lazy(() => import('@lessons/08-architecture/DesignSystemGovernance')),
-        documentPath: '',
     },
     {
         id: 'performance-budgets',
@@ -499,7 +453,6 @@ export const lessons: LessonMetadata[] = [
         order: 46,
         path: '/lessons/performance-budgets',
         component: lazy(() => import('@lessons/08-architecture/PerformanceBudgets')),
-        documentPath: '',
     },
 ]
 

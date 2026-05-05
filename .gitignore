@@ -4,3 +4,6 @@ stats.html
 *.local
 .env
 .env.*
+
+# bun.lock — repo uses npm; some tools occasionally generate this.
+bun.lock
