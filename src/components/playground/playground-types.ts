@@ -25,3 +25,12 @@ export interface RuntimeError {
 }
 
 export type PlaygroundError = TranspileError | RuntimeError
+
+export type ConsoleMethod = 'log' | 'info' | 'warn' | 'error' | 'debug'
+
+export interface ConsoleMessage {
+    id: number
+    method: ConsoleMethod
+    args: string[]
+    timestamp: number
+}

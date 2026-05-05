@@ -120,6 +120,61 @@ else{document.body.classList.remove('dark');document.querySelector('meta[name=co
 }
 __applyTheme(window.parent.document.documentElement.dataset.theme==='dark');
 new MutationObserver(function(){__applyTheme(window.parent.document.documentElement.dataset.theme==='dark')}).observe(window.parent.document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+// Console capture: proxy log/info/warn/error/debug to parent window
+(function(){
+    function serialize(value, seen, depth){
+        seen = seen || [];
+        depth = depth || 0;
+        if (depth > 4) return '[…]';
+        if (value === null) return 'null';
+        if (value === undefined) return 'undefined';
+        var t = typeof value;
+        if (t === 'string') return value;
+        if (t === 'number' || t === 'boolean' || t === 'bigint') return String(value);
+        if (t === 'symbol') return value.toString();
+        if (t === 'function') return '[Function' + (value.name ? ': ' + value.name : '') + ']';
+        if (value instanceof Error) return value.name + ': ' + value.message;
+        if (typeof Element !== 'undefined' && value instanceof Element) {
+            return '<' + value.tagName.toLowerCase() + (value.id ? ' id="' + value.id + '"' : '') + '>';
+        }
+        if (seen.indexOf(value) !== -1) return '[Circular]';
+        seen = seen.concat([value]);
+        if (Array.isArray(value)) {
+            var items = value.slice(0, 50).map(function(v){ return serialize(v, seen, depth + 1); });
+            return '[' + items.join(', ') + (value.length > 50 ? ', …' : '') + ']';
+        }
+        if (t === 'object') {
+            try {
+                var keys = Object.keys(value).slice(0, 30);
+                var pairs = keys.map(function(k){
+                    return k + ': ' + serialize(value[k], seen, depth + 1);
+                });
+                return '{ ' + pairs.join(', ') + (Object.keys(value).length > 30 ? ', …' : '') + ' }';
+            } catch (e) {
+                return '[Object]';
+            }
+        }
+        return String(value);
+    }
+    var __orig = {};
+    ['log','info','warn','error','debug'].forEach(function(method){
+        __orig[method] = console[method] ? console[method].bind(console) : function(){};
+        console[method] = function(){
+            var args = Array.prototype.slice.call(arguments);
+            try {
+                window.parent.postMessage({
+                    type: 'PLAYGROUND_CONSOLE',
+                    method: method,
+                    args: args.map(function(a){ return serialize(a); }),
+                    timestamp: Date.now()
+                }, '*');
+            } catch(e) {}
+            __orig[method].apply(null, args);
+        };
+    });
+})();
+
 window.onerror = function(msg, source, line, col, error) {
     window.parent.postMessage({
         type: 'PLAYGROUND_RUNTIME_ERROR',

@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react'
-import type { PlaygroundError } from './playground-types'
+import type { PlaygroundError, ConsoleMethod } from './playground-types'
 import styles from './preview.module.css'
 
 interface PreviewProps {
@@ -7,9 +7,10 @@ interface PreviewProps {
     height: number
     onError: (error: PlaygroundError) => void
     onReady: () => void
+    onConsole?: (method: ConsoleMethod, args: string[], timestamp: number) => void
 }
 
-export function Preview({ iframeDoc, height, onError, onReady }: PreviewProps) {
+export function Preview({ iframeDoc, height, onError, onReady, onConsole }: PreviewProps) {
     const iframeRef = useRef<HTMLIFrameElement>(null)
 
     // Listen for messages from the iframe
@@ -28,12 +29,18 @@ export function Preview({ iframeDoc, height, onError, onReady }: PreviewProps) {
                 })
             } else if (data?.type === 'PLAYGROUND_READY') {
                 onReady()
+            } else if (data?.type === 'PLAYGROUND_CONSOLE' && onConsole) {
+                onConsole(
+                    data.method as ConsoleMethod,
+                    Array.isArray(data.args) ? data.args : [],
+                    typeof data.timestamp === 'number' ? data.timestamp : Date.now()
+                )
             }
         }
 
         window.addEventListener('message', handleMessage)
         return () => window.removeEventListener('message', handleMessage)
-    }, [onError, onReady])
+    }, [onError, onReady, onConsole])
 
     return (
         <div className={styles.container} style={{ height }}>

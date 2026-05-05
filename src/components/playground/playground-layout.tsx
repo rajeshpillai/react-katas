@@ -2,13 +2,21 @@ import { useState, useCallback, useRef, useEffect } from 'react'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom/client'
 import * as jsxRuntime from 'react/jsx-runtime'
-import type { PlaygroundConfig, PlaygroundError } from './playground-types'
+import type {
+    PlaygroundConfig,
+    PlaygroundError,
+    ConsoleMessage,
+    ConsoleMethod,
+} from './playground-types'
 import { usePlaygroundExecution } from './use-playground-execution'
 import { CodeEditor } from './code-editor'
 import { FileTabBar } from './file-tab-bar'
 import { Preview } from './preview'
 import { ErrorDisplay } from './error-display'
+import { ConsolePanel } from './console-panel'
 import styles from './playground-layout.module.css'
+
+const MAX_CONSOLE_MESSAGES = 500
 
 // Expose React to iframe via window globals (once)
 function ensureReactGlobals() {
@@ -65,6 +73,8 @@ export function PlaygroundLayout({ config }: { config: PlaygroundConfig }) {
     const [files, setFiles] = useState(buildFilesMap)
     const [activeFile, setActiveFile] = useState(entryFile)
     const [runtimeErrors, setRuntimeErrors] = useState<PlaygroundError[]>([])
+    const [consoleMessages, setConsoleMessages] = useState<ConsoleMessage[]>([])
+    const consoleIdRef = useRef(0)
     const [maximized, setMaximized] = useState<MaximizedPane>(null)
     const { splitPercent, setSplitPercent, layoutRef, onMouseDown } = useSplitter(50)
 
@@ -94,8 +104,9 @@ export function PlaygroundLayout({ config }: { config: PlaygroundConfig }) {
                 next.set(activeFile, code)
                 return next
             })
-            // Clear runtime errors when code changes
+            // Clear runtime errors and console output when code changes
             setRuntimeErrors([])
+            setConsoleMessages([])
         },
         [activeFile]
     )
@@ -103,6 +114,7 @@ export function PlaygroundLayout({ config }: { config: PlaygroundConfig }) {
     const handleReset = useCallback(() => {
         setFiles(new Map(initialFiles.current))
         setRuntimeErrors([])
+        setConsoleMessages([])
     }, [])
 
     const handleRuntimeError = useCallback((error: PlaygroundError) => {
@@ -115,6 +127,26 @@ export function PlaygroundLayout({ config }: { config: PlaygroundConfig }) {
 
     const handleDismissErrors = useCallback(() => {
         setRuntimeErrors([])
+    }, [])
+
+    const handleConsole = useCallback(
+        (method: ConsoleMethod, args: string[], timestamp: number) => {
+            setConsoleMessages((prev) => {
+                const next = [
+                    ...prev,
+                    { id: ++consoleIdRef.current, method, args, timestamp },
+                ]
+                if (next.length > MAX_CONSOLE_MESSAGES) {
+                    return next.slice(next.length - MAX_CONSOLE_MESSAGES)
+                }
+                return next
+            })
+        },
+        []
+    )
+
+    const handleClearConsole = useCallback(() => {
+        setConsoleMessages([])
     }, [])
 
     const currentCode = files.get(activeFile) || ''
@@ -186,6 +218,7 @@ export function PlaygroundLayout({ config }: { config: PlaygroundConfig }) {
                         height={maximized === 'preview' ? height + 200 : height}
                         onError={handleRuntimeError}
                         onReady={handleReady}
+                        onConsole={handleConsole}
                     />
                     {allErrors.length > 0 && (
                         <ErrorDisplay
@@ -193,6 +226,11 @@ export function PlaygroundLayout({ config }: { config: PlaygroundConfig }) {
                             onDismiss={handleDismissErrors}
                         />
                     )}
+                    <ConsolePanel
+                        messages={consoleMessages}
+                        onClear={handleClearConsole}
+                    />
+
                 </div>
             )}
         </div>
