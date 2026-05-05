@@ -37,9 +37,24 @@ export default defineConfig({
         sourcemap: true,
         rollupOptions: {
             output: {
+                // Split CodeMirror (used by both playground and read-only source
+                // viewer) from sucrase + the language packs only the playground
+                // needs, so clicking "Source Code" doesn't force-download the
+                // ~200KB transpiler the user never invokes.
                 manualChunks: {
                     'react-vendor': ['react', 'react-dom'],
-                    'playground-vendor': ['sucrase', 'codemirror', '@codemirror/lang-javascript', '@codemirror/lang-css'],
+                    'codemirror': [
+                        'codemirror',
+                        '@codemirror/state',
+                        '@codemirror/view',
+                        '@codemirror/lang-javascript',
+                        '@codemirror/theme-one-dark',
+                    ],
+                    'playground-runtime': [
+                        'sucrase',
+                        '@codemirror/lang-css',
+                        '@codemirror/commands',
+                    ],
                 },
             },
         },
