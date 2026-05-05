@@ -29,13 +29,15 @@ interface RouterProviderProps {
 
 // Router provider component
 export function RouterProvider({ children }: RouterProviderProps) {
-    const [currentPath, setCurrentPath] = useState(window.location.pathname)
+    const [currentPath, setCurrentPath] = useState(
+        () => window.location.pathname + window.location.search
+    )
     const [params] = useState<RouteParams>({})
 
     useEffect(() => {
         // Listen for browser back/forward navigation
         const handlePopState = () => {
-            setCurrentPath(window.location.pathname)
+            setCurrentPath(window.location.pathname + window.location.search)
         }
 
         window.addEventListener('popstate', handlePopState)
@@ -66,7 +68,9 @@ interface LinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
 
 export function Link({ to, children, className = '', activeClassName = '', ...props }: LinkProps) {
     const { currentPath, navigate } = useRouter()
-    const isActive = currentPath === to
+    const currentPathname = currentPath.split('?')[0]
+    const targetPathname = to.split('?')[0]
+    const isActive = currentPathname === targetPathname
 
     const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
         e.preventDefault()

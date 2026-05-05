@@ -1,10 +1,40 @@
-import { Component, Suspense, useState, useEffect, useCallback, ReactNode } from 'react'
+import { Component, Suspense, useState, useEffect, useCallback, useMemo, ReactNode } from 'react'
 import { RouterProvider, useRouter, Link } from '@router/router'
-import { getLessonByPath, getAdjacentLessons } from '@router/routes'
+import { getLessonByPath, getAdjacentLessons, lessons, type LessonMetadata } from '@router/routes'
+import {
+    getTier,
+    getTierFromPath,
+    getSequence,
+    type Tier,
+} from '@router/interview-tiers'
 import Sidebar from '@components/navigation/sidebar'
+import { InterviewSidebar } from '@components/interview/interview-sidebar'
+import { InterviewLanding } from '@components/interview/interview-landing'
+import { TierPage } from '@components/interview/tier-page'
+import { SiteHeader } from '@components/header/site-header'
 import styles from './App.module.css'
 import { useProgress } from '@hooks/use-progress'
 import '@hooks/use-theme' // Initializes theme from localStorage on load
+
+function getInterviewAdjacent(tier: Tier, currentLessonId: string) {
+    const sequence = getSequence(tier.id)
+    const idx = sequence.findIndex((s) => s.lessonId === currentLessonId)
+    if (idx < 0) return { previous: null as LessonMetadata | null, next: null as LessonMetadata | null }
+
+    const findLesson = (id?: string) => (id ? lessons.find((l) => l.id === id) ?? null : null)
+    let prev: LessonMetadata | null = null
+    let nxt: LessonMetadata | null = null
+
+    for (let i = idx - 1; i >= 0; i--) {
+        const found = findLesson(sequence[i].lessonId)
+        if (found) { prev = found; break }
+    }
+    for (let i = idx + 1; i < sequence.length; i++) {
+        const found = findLesson(sequence[i].lessonId)
+        if (found) { nxt = found; break }
+    }
+    return { previous: prev, next: nxt }
+}
 
 // Error Boundary to catch lazy-load failures and render errors
 class LessonErrorBoundary extends Component<
@@ -70,8 +100,20 @@ function AppContent() {
     const { completedLessons, toggleLessonCompletion, isLessonCompleted } = useProgress()
     const { collapsed, toggle: toggleSidebar } = useSidebarCollapse()
 
-    // Get the current lesson based on path
-    const currentLesson = getLessonByPath(currentPath)
+    // Split path and query so getLessonByPath works regardless of ?tier=
+    const [pathOnly, queryString] = useMemo(() => {
+        const [p, q = ''] = currentPath.split('?')
+        return [p, q]
+    }, [currentPath])
+
+    const activeTierId = useMemo(() => {
+        return new URLSearchParams(queryString).get('tier') ?? undefined
+    }, [queryString])
+
+    const activeTier: Tier | undefined = activeTierId ? getTier(activeTierId) : undefined
+
+    // Get the current lesson based on path (without query)
+    const currentLesson = getLessonByPath(pathOnly)
 
     const appClass = `${styles.app} ${collapsed ? styles.sidebarCollapsed : ''}`
 
@@ -129,9 +171,36 @@ function AppContent() {
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
 
-    // Render home page if no lesson is selected (no sidebar)
-    if (!currentLesson || currentPath === '/') {
-        return <HomePage />
+    // Interview Role Play landing
+    if (pathOnly === '/interview') {
+        return (
+            <div className={styles.appShell}>
+                <SiteHeader />
+                <InterviewLanding />
+            </div>
+        )
+    }
+
+    // Interview tier page
+    const interviewTierId = getTierFromPath(pathOnly)
+    if (interviewTierId) {
+        const tier = getTier(interviewTierId)!
+        return (
+            <div className={styles.appShell}>
+                <SiteHeader />
+                <TierPage tier={tier} />
+            </div>
+        )
+    }
+
+    // Home page (no sidebar)
+    if (!currentLesson || pathOnly === '/') {
+        return (
+            <div className={styles.appShell}>
+                <SiteHeader />
+                <HomePage />
+            </div>
+        )
     }
 
     const MIN_TIME_SECONDS = 30 // 30 seconds reading time requirement
@@ -140,12 +209,30 @@ function AppContent() {
     // Render the lesson component
     const LessonComponent = currentLesson.component
     const isCompleted = isLessonCompleted(currentLesson.id)
-    const { previous, next } = getAdjacentLessons(currentPath)
+
+    // Tier-aware previous/next: use interview sequence when in interview mode,
+    // otherwise fall back to the default lesson order.
+    const { previous, next } = activeTier
+        ? getInterviewAdjacent(activeTier, currentLesson.id)
+        : getAdjacentLessons(pathOnly)
+
+    const appendTier = (path: string) => activeTier ? `${path}?tier=${activeTier.id}` : path
 
     return (
-        <div className={appClass}>
+        <div className={styles.appShell}>
+            <SiteHeader />
+            <div className={appClass}>
             <aside className={styles.sidebar}>
-                <Sidebar completedLessons={completedLessons} collapsed={collapsed} onToggleCollapse={toggleSidebar} />
+                {activeTier ? (
+                    <InterviewSidebar
+                        tier={activeTier}
+                        completedLessons={completedLessons}
+                        collapsed={collapsed}
+                        onToggleCollapse={toggleSidebar}
+                    />
+                ) : (
+                    <Sidebar completedLessons={completedLessons} collapsed={collapsed} onToggleCollapse={toggleSidebar} />
+                )}
             </aside>
             <main className={styles.mainContent}>
                 <LessonErrorBoundary resetKey={currentPath}>
@@ -225,7 +312,7 @@ function AppContent() {
                     }}>
                         {previous ? (
                             <Link
-                                to={previous.path}
+                                to={appendTier(previous.path)}
                                 style={{
                                     display: 'flex',
                                     alignItems: 'center',
@@ -250,7 +337,7 @@ function AppContent() {
 
                         {next ? (
                             <Link
-                                to={next.path}
+                                to={appendTier(next.path)}
                                 style={{
                                     display: 'flex',
                                     alignItems: 'center',
@@ -276,6 +363,7 @@ function AppContent() {
                     </div>
                 </div>
             </main>
+            </div>
         </div>
     )
 }
@@ -323,6 +411,25 @@ function HomePage() {
                     </h2>
                     <p style={{ color: 'var(--on-surface-primary)', opacity: 0.8, margin: 0 }}>
                         Master React 19 from fundamentals to advanced patterns
+                    </p>
+                </Link>
+
+                {/* Interview Role Play card */}
+                <Link
+                    to="/interview"
+                    style={{
+                        ...cardBase,
+                        background: 'rgba(16, 185, 129, 0.12)',
+                        color: 'var(--text-primary)',
+                        boxShadow: 'var(--shadow-md)',
+                        border: '1px solid rgba(16, 185, 129, 0.35)',
+                    }}
+                >
+                    <h2 style={{ color: '#10b981', marginBottom: 'var(--space-3)' }}>
+                        Interview Role Play
+                    </h2>
+                    <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
+                        Practice with curated interview questions tailored to your experience level
                     </p>
                 </Link>
 

@@ -1,0 +1,105 @@
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: var(--space-8) var(--space-6);
+}
+
+.header {
+    margin-bottom: var(--space-10);
+}
+
+.crumb {
+    display: inline-block;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-4);
+}
+
+.crumb:hover {
+    color: var(--text-primary);
+}
+
+.title {
+    font-size: var(--font-size-4xl);
+    margin-bottom: var(--space-3);
+    color: var(--text-primary);
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    max-width: 720px;
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-6);
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    border-radius: var(--radius-xl);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--tier-accent);
+    box-shadow: var(--shadow-sm);
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--tier-accent);
+}
+
+.card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.card-years {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--tier-accent);
+    background: var(--tier-surface);
+    padding: 2px 10px;
+    border-radius: var(--radius-full);
+}
+
+.card-count {
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+    font-variant-numeric: tabular-nums;
+}
+
+.card-title {
+    font-size: var(--font-size-xl);
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.card-intro {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+    flex: 1;
+}
+
+.card-cta {
+    margin-top: var(--space-2);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--tier-accent);
+}

@@ -1,7 +1,14 @@
+.appShell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--bg-primary);
+}
+
 .app {
     display: grid;
     grid-template-columns: 280px 1fr;
-    min-height: 100vh;
+    flex: 1;
     background-color: var(--bg-primary);
     padding: 4px;
     transition: grid-template-columns 0.2s ease;
@@ -16,8 +23,8 @@
     border-right: 1px solid var(--border-color);
     overflow-y: auto;
     position: sticky;
-    top: 0;
-    height: 100vh;
+    top: 56px;
+    height: calc(100vh - 56px);
     margin-right: 2em;
     transition: width 0.2s ease;
 }
