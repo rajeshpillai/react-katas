@@ -1,5 +1,6 @@
 import { useState, lazy, Suspense, ReactNode } from 'react'
-import type { PlaygroundConfig } from '@components/playground'
+import type { PlaygroundConfig, PlaygroundVariant } from '@components/playground'
+import { VariantSelector } from './variant-selector'
 import styles from './lesson-layout.module.css'
 
 const PlaygroundLayout = lazy(() =>
@@ -12,16 +13,46 @@ type Tab = 'lesson' | 'playground' | 'code'
 
 interface LessonLayoutProps {
     title: string
+    /** Single-version playground (existing). Mutually exclusive with playgroundVariants. */
     playgroundConfig?: PlaygroundConfig
+    /** Multi-version playground for Before/After comparisons. Mutually exclusive with playgroundConfig. */
+    playgroundVariants?: PlaygroundVariant[]
     sourceCode: string
     children: ReactNode
 }
 
-export function LessonLayout({ title, playgroundConfig, sourceCode, children }: LessonLayoutProps) {
+function variantToConfig(v: PlaygroundVariant): PlaygroundConfig {
+    return {
+        files: v.files,
+        entryFile: v.entryFile,
+        height: v.height,
+    }
+}
+
+export function LessonLayout({
+    title,
+    playgroundConfig,
+    playgroundVariants,
+    sourceCode,
+    children,
+}: LessonLayoutProps) {
     const [activeTab, setActiveTab] = useState<Tab>('lesson')
-    const tabs: Tab[] = playgroundConfig
+    const [variantId, setVariantId] = useState<string | undefined>(
+        playgroundVariants?.[0]?.id
+    )
+
+    const hasPlayground =
+        Boolean(playgroundConfig) || Boolean(playgroundVariants && playgroundVariants.length > 0)
+
+    const tabs: Tab[] = hasPlayground
         ? ['lesson', 'playground', 'code']
         : ['lesson', 'code']
+
+    const activeVariant =
+        playgroundVariants?.find((v) => v.id === variantId) ?? playgroundVariants?.[0]
+    const activeConfig: PlaygroundConfig | undefined = activeVariant
+        ? variantToConfig(activeVariant)
+        : playgroundConfig
 
     return (
         <div>
@@ -41,10 +72,22 @@ export function LessonLayout({ title, playgroundConfig, sourceCode, children }: 
 
             {activeTab === 'lesson' && children}
 
-            {activeTab === 'playground' && playgroundConfig && (
-                <Suspense fallback={<div>Loading playground...</div>}>
-                    <PlaygroundLayout config={playgroundConfig} />
-                </Suspense>
+            {activeTab === 'playground' && activeConfig && (
+                <>
+                    {playgroundVariants && playgroundVariants.length > 1 && activeVariant && (
+                        <VariantSelector
+                            variants={playgroundVariants}
+                            activeId={activeVariant.id}
+                            onChange={setVariantId}
+                        />
+                    )}
+                    <Suspense fallback={<div>Loading playground...</div>}>
+                        <PlaygroundLayout
+                            key={activeVariant?.id ?? 'single'}
+                            config={activeConfig}
+                        />
+                    </Suspense>
+                </>
             )}
 
             {activeTab === 'code' && (
