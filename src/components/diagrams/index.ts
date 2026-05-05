@@ -1,0 +1,5 @@
+export { Diagram } from './diagram'
+export { CompoundComponentsDiagram } from './compound-components-diagram'
+export { RenderPropsDiagram } from './render-props-diagram'
+export { HocDiagram } from './hoc-diagram'
+export { PortalDiagram } from './portal-diagram'

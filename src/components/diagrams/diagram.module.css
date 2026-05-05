@@ -1,0 +1,99 @@
+.diagram {
+    display: block;
+    margin: var(--space-6) 0;
+    padding: var(--space-5);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    overflow-x: auto;
+}
+
+.diagram-title {
+    display: block;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-tertiary);
+    margin-bottom: var(--space-3);
+}
+
+.diagram-caption {
+    display: block;
+    margin-top: var(--space-3);
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    font-style: italic;
+    line-height: var(--line-height-relaxed);
+}
+
+.svg-root {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: 720px;
+    margin: 0 auto;
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+}
+
+/* Common SVG element classes used by all diagrams */
+/* Inner SVG element classes are kept un-scoped via :global so the
+ * diagram component can use literal className="box" / "arrow" / "label"
+ * on individual SVG elements. The .svg-root selector itself stays scoped. */
+.svg-root :global(.box) {
+    fill: var(--bg-elevated);
+    stroke: var(--border-color);
+    stroke-width: 1.5;
+}
+
+.svg-root :global(.box-accent) {
+    fill: var(--surface-primary);
+    stroke: var(--color-primary-500);
+    stroke-width: 1.5;
+}
+
+.svg-root :global(.box-muted) {
+    fill: var(--bg-tertiary);
+    stroke: var(--border-color);
+    stroke-width: 1.5;
+    stroke-dasharray: 4 3;
+}
+
+.svg-root :global(.arrow) {
+    fill: none;
+    stroke: var(--text-secondary);
+    stroke-width: 1.75;
+}
+
+.svg-root :global(.arrow-accent) {
+    fill: none;
+    stroke: var(--color-primary-500);
+    stroke-width: 1.75;
+}
+
+.svg-root :global(.label) {
+    fill: var(--text-primary);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.svg-root :global(.label-muted) {
+    fill: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.svg-root :global(.label-mono) {
+    fill: var(--text-secondary);
+    font-size: 12px;
+    font-family: var(--font-mono);
+}
+
+.svg-root :global(.label-accent) {
+    fill: var(--color-primary-500);
+    font-size: 11px;
+    font-weight: 600;
+}

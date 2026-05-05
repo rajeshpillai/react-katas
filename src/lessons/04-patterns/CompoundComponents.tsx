@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, ReactNode } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
 import type { PlaygroundVariant } from '@components/playground'
+import { CompoundComponentsDiagram } from '@components/diagrams'
 
 import sourceCode from './CompoundComponents.tsx?raw'
 
@@ -287,6 +288,8 @@ export default function CompoundComponents() {
           Compound components work together to form a complete UI. They share implicit state and
           provide a flexible, declarative API.
         </p>
+
+        <CompoundComponentsDiagram />
 
         {/* Section 1: What are Compound Components */}
         <section style={{ marginBottom: 'var(--space-8)' }}>

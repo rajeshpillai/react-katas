@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
 import type { PlaygroundVariant } from '@components/playground'
+import { RenderPropsDiagram } from '@components/diagrams'
 
 import sourceCode from './RenderProps.tsx?raw'
 
@@ -175,6 +176,8 @@ export default function RenderProps() {
           Render props is a pattern where a component takes a function as a prop and calls it to
           render content. It's a powerful way to share code between components.
         </p>
+
+        <RenderPropsDiagram />
 
         {/* Section 1: What are Render Props */}
         <section style={{ marginBottom: 'var(--space-8)' }}>

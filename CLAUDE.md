@@ -28,6 +28,7 @@ src/
 │   ├── routes.ts                 # Lesson catalog with lazy() imports (46 lessons)
 │   └── interview-tiers.ts        # Tier metadata + question sequences for Interview Role Play
 ├── components/
+│   ├── diagrams/                 # Inline-SVG pattern diagrams (theme-aware)
 │   ├── header/                   # Site header (Home, theme toggle, GitHub link)
 │   ├── interview/                # Tier landing, tier page, interview sidebar
 │   ├── lesson-layout/            # Lesson tabs, source viewer, variant selector
@@ -155,7 +156,28 @@ The lint rules don't catch this; conventions catches it during review.
 
 The playground iframe proxies `console.log/info/warn/error/debug` and forwards them to a dedicated panel below the preview. Lesson playground code can use `console.log()` freely — there's no need to add a custom in-page logger. Logs cap at 500 entries, clear on code change, and color-code by method.
 
-### 5. Lint scope
+### 5. Pattern diagrams
+
+For pattern katas (compound components, render props, HOCs, portals, etc.), drop a visual mental model near the top of the lesson body before the first explanatory section. Diagrams live in [src/components/diagrams/](src/components/diagrams/) as inline-SVG React components and import via the `@components/diagrams` alias.
+
+```tsx
+import { CompoundComponentsDiagram } from '@components/diagrams'
+
+<LessonLayout title="..." playgroundVariants={...} sourceCode={sourceCode}>
+    <p>Intro paragraph...</p>
+    <CompoundComponentsDiagram />   {/* visual model right after the intro */}
+    <section>...</section>
+</LessonLayout>
+```
+
+**Rules for new diagrams:**
+- Wrap with the shared [`<Diagram>`](src/components/diagrams/diagram.tsx) primitive — it provides the themed container, ALT-text plumbing, and SVG arrowhead defs.
+- Use the prebaked SVG classes (`box`, `box-accent`, `box-muted`, `arrow`, `arrow-accent`, `label`, `label-muted`, `label-mono`, `label-accent`) from [diagram.module.css](src/components/diagrams/diagram.module.css) so colours track the app's light/dark theme.
+- Use `arrow-accent` + `markerEnd="url(#arrowhead-accent)"` to highlight the *one* relationship the diagram is teaching; everything else stays muted. Don't paint everything in primary colour.
+- Each diagram needs a one-sentence `caption` so the figure has a clear reading.
+- Keep them small (≤ ~720x320 viewBox) — the figure is supplemental, not the whole lesson.
+
+### 6. Lint scope
 
 `eslint.config.js` disables a handful of rules **only inside `src/lessons/**`** because they fire on legitimate teaching demos:
 
@@ -245,8 +267,8 @@ Editing tier sequences: just update `INTERVIEW_SEQUENCES` in `interview-tiers.ts
 ## Known Gaps
 
 ### Missing features
-1. **Pattern diagrams** — no visual mental models / architecture diagrams yet (CLAUDE.md still flags this; see "Teaching Philosophy → How to teach").
-2. **Tests** — Vitest is set up but very sparse. New components (variant selector, console panel, interview tier flow) have no tests.
+1. **More pattern diagrams** — initial four shipped (Compound, Render Props, HOC, Portal). Still missing for: Context, Provider Pattern, asChild / Slot, State Machines, Behavioral Hooks. Convention is documented in "Authoring Conventions → Pattern diagrams".
+2. **Tests** — Vitest is set up but very sparse. New components (variant selector, console panel, interview tier flow, diagrams) have no tests.
 3. **Bundle size** — `playground-vendor` chunk is ~730KB (CodeMirror + Sucrase). Could be further split or lazy-loaded.
 
 ### Possible content additions

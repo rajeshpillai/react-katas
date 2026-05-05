@@ -2,6 +2,7 @@ import { createPortal } from 'react-dom'
 import { useState } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
 import type { PlaygroundVariant } from '@components/playground'
+import { PortalDiagram } from '@components/diagrams'
 
 import sourceCode from './PortalPattern.tsx?raw'
 
@@ -227,6 +228,8 @@ export default function PortalPattern() {
           Portals provide a way to render children into a DOM node that exists outside the parent
           component's DOM hierarchy. Perfect for modals, tooltips, and dropdowns!
         </p>
+
+        <PortalDiagram />
 
         {/* Section 1: What are Portals */}
         <section style={{ marginBottom: 'var(--space-8)' }}>

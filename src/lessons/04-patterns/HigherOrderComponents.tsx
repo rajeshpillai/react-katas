@@ -1,5 +1,6 @@
 import { LessonLayout } from '@components/lesson-layout'
 import type { PlaygroundVariant } from '@components/playground'
+import { HocDiagram } from '@components/diagrams'
 
 import sourceCode from './HigherOrderComponents.tsx?raw'
 
@@ -180,6 +181,8 @@ export default function HigherOrderComponents() {
           A Higher-Order Component is a function that takes a component and returns a new component
           with additional props or behavior. It's a pattern for reusing component logic.
         </p>
+
+        <HocDiagram />
 
         {/* Section 1: What are HOCs */}
         <section style={{ marginBottom: 'var(--space-8)' }}>
