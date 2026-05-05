@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, ReactNode } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
-import type { PlaygroundConfig } from '@components/playground'
+import type { PlaygroundVariant } from '@components/playground'
 
 // @ts-ignore
 import sourceCode from './CompoundComponents.tsx?raw'
@@ -11,12 +11,158 @@ const AccordionContext = createContext<{
   setOpenIndex: (index: number | null) => void
 } | null>(null)
 
-export const playgroundConfig: PlaygroundConfig = {
-  files: [
-    {
-      name: 'App.tsx',
-      language: 'tsx',
-      code: `import { Accordion, AccordionItem, AccordionHeader, AccordionPanel } from './Accordion'
+export const playgroundVariants: PlaygroundVariant[] = [
+  {
+    id: 'prop-explosion',
+    label: 'Before — prop explosion',
+    description:
+      'A monolithic Accordion takes the entire structure as data props (items + renderHeader + renderPanel). The API balloons every time someone needs control over a sub-part.',
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState } from 'react'
+
+interface Item { id: string; title: string; body: string }
+
+function Accordion({
+    items,
+    activeId,
+    onChange,
+    renderHeader,
+    renderBody,
+}: {
+    items: Item[]
+    activeId: string | null
+    onChange: (id: string | null) => void
+    renderHeader?: (item: Item) => React.ReactNode
+    renderBody?: (item: Item) => React.ReactNode
+}) {
+    return (
+        <div style={{ border: '1px solid var(--pg-card-border)', borderRadius: 6 }}>
+            {items.map(item => (
+                <div key={item.id} style={{ borderTop: '1px solid var(--pg-card-border)' }}>
+                    <button
+                        onClick={() => onChange(item.id === activeId ? null : item.id)}
+                        style={{ display: 'block', width: '100%', padding: 12, textAlign: 'left', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--pg-card-text)' }}
+                    >
+                        {renderHeader ? renderHeader(item) : item.title}
+                    </button>
+                    {item.id === activeId && (
+                        <div style={{ padding: 12, background: 'var(--pg-card)' }}>
+                            {renderBody ? renderBody(item) : item.body}
+                        </div>
+                    )}
+                </div>
+            ))}
+        </div>
+    )
+}
+
+export default function App() {
+    const [activeId, setActiveId] = useState<string | null>(null)
+    const items = [
+        { id: 'a', title: 'Section A', body: 'Body A' },
+        { id: 'b', title: 'Section B', body: 'Body B' },
+    ]
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Prop-driven Accordion</h2>
+            <Accordion items={items} activeId={activeId} onChange={setActiveId} />
+        </div>
+    )
+}
+`,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 320,
+  },
+  {
+    id: 'compound',
+    label: 'After — compound API',
+    description:
+      "Expose the structure as <Accordion><Accordion.Item><Accordion.Header /><Accordion.Panel /></Accordion.Item></Accordion>. Shared state lives in Context. The consumer arranges the parts however they like — no new props needed.",
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { createContext, useContext, useState, ReactNode } from 'react'
+
+interface Ctx { activeId: string | null; setActiveId: (id: string | null) => void }
+const AccordionCtx = createContext<Ctx | null>(null)
+function useAccordion() {
+    const ctx = useContext(AccordionCtx)
+    if (!ctx) throw new Error('Accordion.* must be used inside <Accordion>')
+    return ctx
+}
+const ItemCtx = createContext<string>('')
+
+function Accordion({ children }: { children: ReactNode }) {
+    const [activeId, setActiveId] = useState<string | null>(null)
+    return (
+        <AccordionCtx.Provider value={{ activeId, setActiveId }}>
+            <div style={{ border: '1px solid var(--pg-card-border)', borderRadius: 6 }}>{children}</div>
+        </AccordionCtx.Provider>
+    )
+}
+function Item({ id, children }: { id: string; children: ReactNode }) {
+    return <ItemCtx.Provider value={id}><div style={{ borderTop: '1px solid var(--pg-card-border)' }}>{children}</div></ItemCtx.Provider>
+}
+function Header({ children }: { children: ReactNode }) {
+    const { activeId, setActiveId } = useAccordion()
+    const id = useContext(ItemCtx)
+    return (
+        <button
+            onClick={() => setActiveId(id === activeId ? null : id)}
+            style={{ display: 'block', width: '100%', padding: 12, textAlign: 'left', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--pg-card-text)' }}
+        >
+            {children}
+        </button>
+    )
+}
+function Panel({ children }: { children: ReactNode }) {
+    const { activeId } = useAccordion()
+    const id = useContext(ItemCtx)
+    if (id !== activeId) return null
+    return <div style={{ padding: 12, background: 'var(--pg-card)' }}>{children}</div>
+}
+Accordion.Item = Item
+Accordion.Header = Header
+Accordion.Panel = Panel
+
+export default function App() {
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Compound Accordion</h2>
+            <Accordion>
+                <Accordion.Item id="a">
+                    <Accordion.Header>Section A</Accordion.Header>
+                    <Accordion.Panel>Body A</Accordion.Panel>
+                </Accordion.Item>
+                <Accordion.Item id="b">
+                    <Accordion.Header>Section B</Accordion.Header>
+                    <Accordion.Panel>Body B</Accordion.Panel>
+                </Accordion.Item>
+            </Accordion>
+        </div>
+    )
+}
+`,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 360,
+  },
+  {
+    id: 'original',
+    label: 'Original demo',
+    description: 'The kata\'s original Accordion playground.',
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { Accordion, AccordionItem, AccordionHeader, AccordionPanel } from './Accordion'
 
 export default function App() {
     return (
@@ -127,15 +273,16 @@ export function AccordionPanel({ children }: { children: ReactNode }) {
     )
 }
 `,
-    },
-  ],
-  entryFile: 'App.tsx',
-  height: 400,
-}
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 400,
+  },
+]
 
 export default function CompoundComponents() {
   return (
-    <LessonLayout title="Compound Components" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+    <LessonLayout title="Compound Components" playgroundVariants={playgroundVariants} sourceCode={sourceCode}>
       <div>
         <p>
           Compound components work together to form a complete UI. They share implicit state and

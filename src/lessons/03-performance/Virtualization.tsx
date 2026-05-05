@@ -1,16 +1,56 @@
 import { useState } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
-import type { PlaygroundConfig } from '@components/playground'
+import type { PlaygroundVariant } from '@components/playground'
 
 // @ts-ignore
 import sourceCode from './Virtualization.tsx?raw'
 
-export const playgroundConfig: PlaygroundConfig = {
-  files: [
-    {
-      name: 'App.tsx',
-      language: 'tsx',
-      code: `import { useState } from 'react'
+export const playgroundVariants: PlaygroundVariant[] = [
+  {
+    id: 'naive-render-all',
+    label: 'Before — render all 5,000',
+    description:
+      "Map over the whole array and emit a DOM node per item. The first paint is slow, scrolling stutters, and the page allocates 5,000 React fibers it doesn't need.",
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `const ITEMS = Array.from({ length: 5000 }, (_, i) => ({
+    id: i,
+    text: 'Item #' + (i + 1),
+}))
+
+export default function App() {
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>5,000 items, all in the DOM</h2>
+            <p>Initial paint stalls; scroll feels heavy.</p>
+            <div style={{ height: 320, overflowY: 'auto', border: '1px solid var(--pg-card-border)', borderRadius: 8 }}>
+                {ITEMS.map(item => (
+                    <div key={item.id} style={{ height: 32, padding: '0 12px', display: 'flex', alignItems: 'center', borderBottom: '1px solid var(--pg-card-border)', fontSize: 13 }}>
+                        {item.text}
+                    </div>
+                ))}
+            </div>
+        </div>
+    )
+}
+`,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 420,
+  },
+  {
+    id: 'virtualized',
+    label: 'After — windowed (~20 nodes)',
+    description:
+      "Only render the items currently visible in the viewport, plus a small buffer. The full scroll height is preserved by an absolutely-positioned spacer, so the user can't tell from the outside.",
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState } from 'react'
 
 const ITEMS = Array.from({ length: 10000 }, (_, i) => ({
   id: i,
@@ -95,11 +135,12 @@ export default function App() {
   )
 }
 `,
-    },
-  ],
-  entryFile: 'App.tsx',
-  height: 500,
-}
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 500,
+  },
+]
 
 // Generates 10,000 items
 const ITEMS = Array.from({ length: 10000 }, (_, i) => ({
@@ -109,7 +150,7 @@ const ITEMS = Array.from({ length: 10000 }, (_, i) => ({
 
 export default function Virtualization() {
   return (
-    <LessonLayout title="Virtualization (Windowing)" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+    <LessonLayout title="Virtualization (Windowing)" playgroundVariants={playgroundVariants} sourceCode={sourceCode}>
       <p>
         Rendering large lists of data can significantly degrade performance. <strong>Virtualization</strong> (or windowing) is a technique where you only render the items that are currently visible to the user.
       </p>

@@ -1,15 +1,100 @@
 import { LessonLayout } from '@components/lesson-layout'
-import type { PlaygroundConfig } from '@components/playground'
+import type { PlaygroundVariant } from '@components/playground'
 
 // @ts-ignore
 import sourceCode from './HigherOrderComponents.tsx?raw'
 
-export const playgroundConfig: PlaygroundConfig = {
-  files: [
-    {
-      name: 'App.tsx',
-      language: 'tsx',
-      code: `import { useState, ComponentType, useEffect, useRef } from 'react'
+export const playgroundVariants: PlaygroundVariant[] = [
+  {
+    id: 'duplicated-auth',
+    label: 'Before — duplicated auth checks',
+    description:
+      'Three components each check auth themselves and render a fallback. The same boilerplate gets copy-pasted at the top of every protected component.',
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState } from 'react'
+
+function Dashboard({ isAuthed }: { isAuthed: boolean }) {
+    if (!isAuthed) return <p>Please sign in to view dashboard.</p>
+    return <h3>Dashboard contents</h3>
+}
+function Settings({ isAuthed }: { isAuthed: boolean }) {
+    if (!isAuthed) return <p>Please sign in to view settings.</p>
+    return <h3>Settings contents</h3>
+}
+function Profile({ isAuthed }: { isAuthed: boolean }) {
+    if (!isAuthed) return <p>Please sign in to view profile.</p>
+    return <h3>Profile contents</h3>
+}
+
+export default function App() {
+    const [isAuthed, setIsAuthed] = useState(false)
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <button onClick={() => setIsAuthed(a => !a)}>{isAuthed ? 'Sign out' : 'Sign in'}</button>
+            <Dashboard isAuthed={isAuthed} />
+            <Settings isAuthed={isAuthed} />
+            <Profile isAuthed={isAuthed} />
+        </div>
+    )
+}
+`,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 280,
+  },
+  {
+    id: 'hoc',
+    label: 'After — withAuth HOC',
+    description:
+      'Wrap each component once with withAuth(). The check lives in one place; protected components don\'t even know about auth.',
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState, ComponentType } from 'react'
+
+function withAuth<P extends object>(Component: ComponentType<P>) {
+    return function Authed(props: P & { isAuthed: boolean }) {
+        if (!props.isAuthed) return <p>Please sign in.</p>
+        return <Component {...props as P} />
+    }
+}
+
+const Dashboard = withAuth(function Dashboard() { return <h3>Dashboard contents</h3> })
+const Settings  = withAuth(function Settings() { return <h3>Settings contents</h3> })
+const Profile   = withAuth(function Profile() { return <h3>Profile contents</h3> })
+
+export default function App() {
+    const [isAuthed, setIsAuthed] = useState(false)
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <button onClick={() => setIsAuthed(a => !a)}>{isAuthed ? 'Sign out' : 'Sign in'}</button>
+            <Dashboard isAuthed={isAuthed} />
+            <Settings isAuthed={isAuthed} />
+            <Profile isAuthed={isAuthed} />
+        </div>
+    )
+}
+`,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 280,
+  },
+  {
+    id: 'logging-hoc',
+    label: 'Logging HOC',
+    description:
+      'A second classic HOC use: a withLogger that logs every render of the wrapped component.',
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState, ComponentType, useEffect, useRef } from 'react'
 
 // The withLogger HOC - logs when the wrapped component renders
 function withLogger<P extends object>(WrappedComponent: ComponentType<P>, componentName: string) {
@@ -81,15 +166,16 @@ export default function App() {
     )
 }
 `,
-    },
-  ],
-  entryFile: 'App.tsx',
-  height: 450,
-}
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 450,
+  },
+]
 
 export default function HigherOrderComponents() {
   return (
-    <LessonLayout title="Higher-Order Components (HOCs)" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+    <LessonLayout title="Higher-Order Components (HOCs)" playgroundVariants={playgroundVariants} sourceCode={sourceCode}>
       <div>
         <p>
           A Higher-Order Component is a function that takes a component and returns a new component

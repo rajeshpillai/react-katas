@@ -1,13 +1,106 @@
 import { useState } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
-import type { PlaygroundConfig } from '@components/playground'
+import type { PlaygroundVariant } from '@components/playground'
 
 // @ts-ignore
 import sourceCode from './RenderProps.tsx?raw'
 
-export const playgroundConfig: PlaygroundConfig = {
-  files: [
-    {
+export const playgroundVariants: PlaygroundVariant[] = [
+  {
+    id: 'duplicated',
+    label: 'Before — duplicated tracking logic',
+    description:
+      "Two components both need the mouse position. Each tracks pointer events itself. Adding a third consumer means copying the same effect a third time.",
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState, useEffect } from 'react'
+
+function Crosshair() {
+    const [pos, setPos] = useState({ x: 0, y: 0 })
+    useEffect(() => {
+        const fn = (e: MouseEvent) => setPos({ x: e.clientX, y: e.clientY })
+        window.addEventListener('mousemove', fn)
+        return () => window.removeEventListener('mousemove', fn)
+    }, [])
+    return <div>Crosshair: ({pos.x}, {pos.y})</div>
+}
+
+function CoordinatesBadge() {
+    // Same logic, copy-pasted.
+    const [pos, setPos] = useState({ x: 0, y: 0 })
+    useEffect(() => {
+        const fn = (e: MouseEvent) => setPos({ x: e.clientX, y: e.clientY })
+        window.addEventListener('mousemove', fn)
+        return () => window.removeEventListener('mousemove', fn)
+    }, [])
+    return <div>Badge: ({pos.x}, {pos.y})</div>
+}
+
+export default function App() {
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Two consumers, two copies of the logic</h2>
+            <Crosshair />
+            <CoordinatesBadge />
+        </div>
+    )
+}
+`,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 240,
+  },
+  {
+    id: 'render-prop',
+    label: 'After — render prop',
+    description:
+      "<Mouse> tracks the position once and lets each consumer render whatever they want via children-as-function. Same logic, multiple UIs.",
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState, useEffect, ReactNode } from 'react'
+
+function Mouse({ children }: { children: (pos: { x: number; y: number }) => ReactNode }) {
+    const [pos, setPos] = useState({ x: 0, y: 0 })
+    useEffect(() => {
+        const fn = (e: MouseEvent) => setPos({ x: e.clientX, y: e.clientY })
+        window.addEventListener('mousemove', fn)
+        return () => window.removeEventListener('mousemove', fn)
+    }, [])
+    return <>{children(pos)}</>
+}
+
+export default function App() {
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>One Mouse, many consumers</h2>
+            <Mouse>{pos => <div>Crosshair: ({pos.x}, {pos.y})</div>}</Mouse>
+            <Mouse>{pos => <div>Badge: ({pos.x}, {pos.y})</div>}</Mouse>
+            <Mouse>{pos => (
+                <div style={{ marginTop: 8, padding: 8, background: 'var(--pg-card)', border: '1px solid var(--pg-card-border)', borderRadius: 6 }}>
+                    Quadrant: {pos.x > window.innerWidth/2 ? 'right' : 'left'}-{pos.y > window.innerHeight/2 ? 'bottom' : 'top'}
+                </div>
+            )}</Mouse>
+        </div>
+    )
+}
+`,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 280,
+  },
+  {
+    id: 'data-driven',
+    label: 'Data-driven render prop',
+    description:
+      'A larger demo: a List that exposes search-filter state via render prop, letting consumers customize how each row is drawn.',
+    files: [
+      {
       name: 'App.tsx',
       language: 'tsx',
       code: `import { useState } from 'react'
@@ -68,15 +161,16 @@ export default function App() {
     )
 }
 `,
-    },
-  ],
-  entryFile: 'App.tsx',
-  height: 450,
-}
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 450,
+  },
+]
 
 export default function RenderProps() {
   return (
-    <LessonLayout title="Render Props" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+    <LessonLayout title="Render Props" playgroundVariants={playgroundVariants} sourceCode={sourceCode}>
       <div>
         <p>
           Render props is a pattern where a component takes a function as a prop and calls it to

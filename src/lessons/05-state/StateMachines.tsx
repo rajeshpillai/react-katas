@@ -1,14 +1,138 @@
 import { LessonLayout } from '@components/lesson-layout'
-import type { PlaygroundConfig } from '@components/playground'
+import type { PlaygroundVariant } from '@components/playground'
 // @ts-ignore
 import sourceCode from './StateMachines.tsx?raw'
 
-export const playgroundConfig: PlaygroundConfig = {
-    files: [
-        {
-            name: 'App.tsx',
-            language: 'tsx',
-            code: `import { useReducer } from 'react'
+export const playgroundVariants: PlaygroundVariant[] = [
+    {
+        id: 'boolean-soup',
+        label: 'Before — boolean flags',
+        description:
+            "isLoading, isError, isSuccess, isRetrying — four booleans for one async flow. Nothing prevents impossible combinations like isLoading=true and isError=true at the same time, and bug-fixing means tracking which combo violated invariants.",
+        files: [
+            {
+                name: 'App.tsx',
+                language: 'tsx',
+                code: `import { useState } from 'react'
+
+export default function App() {
+    const [isLoading, setIsLoading] = useState(false)
+    const [isError, setIsError] = useState(false)
+    const [isSuccess, setIsSuccess] = useState(false)
+    const [data, setData] = useState<string | null>(null)
+
+    function load() {
+        setIsLoading(true)
+        setIsError(false)
+        setIsSuccess(false)
+        setData(null)
+        setTimeout(() => {
+            setIsLoading(false)
+            setIsSuccess(true)
+            setData('Hello!')
+            // Forgot to clear isError? Forgot to reset previous data?
+        }, 600)
+    }
+
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Boolean-flag state</h2>
+            <button onClick={load} disabled={isLoading}>{isLoading ? 'Loading...' : 'Load'}</button>
+            <p>flags: loading={String(isLoading)} error={String(isError)} success={String(isSuccess)}</p>
+            {isError && <p>Error</p>}
+            {isSuccess && <p>Data: {data}</p>}
+        </div>
+    )
+}
+`,
+            },
+        ],
+        entryFile: 'App.tsx',
+        height: 280,
+    },
+    {
+        id: 'machine',
+        label: 'After — explicit state machine',
+        description:
+            "One status field with a finite set of values: 'idle' | 'loading' | 'success' | 'error'. Impossible states are unrepresentable. The reducer enumerates the legal transitions.",
+        files: [
+            {
+                name: 'App.tsx',
+                language: 'tsx',
+                code: `import { useReducer } from 'react'
+
+type State =
+    | { status: 'idle' }
+    | { status: 'loading' }
+    | { status: 'success'; data: string }
+    | { status: 'error'; error: string }
+
+type Event =
+    | { type: 'LOAD' }
+    | { type: 'SUCCESS'; data: string }
+    | { type: 'ERROR'; error: string }
+    | { type: 'RESET' }
+
+function transition(state: State, event: Event): State {
+    switch (state.status) {
+        case 'idle':
+            if (event.type === 'LOAD') return { status: 'loading' }
+            return state
+        case 'loading':
+            if (event.type === 'SUCCESS') return { status: 'success', data: event.data }
+            if (event.type === 'ERROR') return { status: 'error', error: event.error }
+            return state
+        case 'success':
+        case 'error':
+            if (event.type === 'RESET') return { status: 'idle' }
+            return state
+    }
+}
+
+export default function App() {
+    const [state, send] = useReducer(transition, { status: 'idle' })
+
+    function load() {
+        send({ type: 'LOAD' })
+        setTimeout(() => send({ type: 'SUCCESS', data: 'Hello!' }), 600)
+    }
+
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>State machine</h2>
+            <p>status: <strong>{state.status}</strong></p>
+            {state.status === 'idle' && <button onClick={load}>Load</button>}
+            {state.status === 'loading' && <p>Loading...</p>}
+            {state.status === 'success' && (
+                <>
+                    <p>Data: {state.data}</p>
+                    <button onClick={() => send({ type: 'RESET' })}>Reset</button>
+                </>
+            )}
+            {state.status === 'error' && (
+                <>
+                    <p>Error: {state.error}</p>
+                    <button onClick={() => send({ type: 'RESET' })}>Reset</button>
+                </>
+            )}
+        </div>
+    )
+}
+`,
+            },
+        ],
+        entryFile: 'App.tsx',
+        height: 280,
+    },
+    {
+        id: 'rich',
+        label: 'Original demo',
+        description: "The kata's original state-machine playground.",
+        files: [
+            {
+                name: 'App.tsx',
+                language: 'tsx',
+                code: `import { useReducer } from 'react'
 
 type State = 'idle' | 'loading' | 'success' | 'error'
 type Event = { type: 'FETCH' } | { type: 'SUCCESS'; data: string } | { type: 'ERROR'; error: string } | { type: 'RESET' }
@@ -143,15 +267,16 @@ export default function App() {
     )
 }
 `,
-        },
-    ],
-    entryFile: 'App.tsx',
-    height: 450,
-}
+            },
+        ],
+        entryFile: 'App.tsx',
+        height: 450,
+    },
+]
 
 export default function StateMachines() {
   return (
-    <LessonLayout title="State Machines" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+    <LessonLayout title="State Machines" playgroundVariants={playgroundVariants} sourceCode={sourceCode}>
       <div>
       <p>
         State machines provide a structured way to manage complex state transitions. They make your

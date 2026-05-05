@@ -1,13 +1,120 @@
 import { useState, useRef, createContext, useContext, KeyboardEvent } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
-import type { PlaygroundConfig } from '@components/playground'
+import type { PlaygroundVariant } from '@components/playground'
 // @ts-ignore
 import sourceCode from './KeyboardNavigation.tsx?raw'
 
-export const playgroundConfig: PlaygroundConfig = {
-    files: [
-        {
-            name: 'App.tsx',
+export const playgroundVariants: PlaygroundVariant[] = [
+    {
+        id: 'tab-trap-broken',
+        label: 'Before — modal leaks focus',
+        description:
+            "Open the modal, then press Tab repeatedly. Focus walks out of the modal back into the page behind it — the user can interact with content they shouldn't reach until the modal closes.",
+        files: [
+            {
+                name: 'App.tsx',
+                language: 'tsx',
+                code: `import { useState } from 'react'
+
+export default function App() {
+    const [open, setOpen] = useState(false)
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <button onClick={() => setOpen(true)}>Open modal</button>
+            <input placeholder="Background input (should be unreachable when modal is open)" style={{ display: 'block', marginTop: 8, padding: 6, width: '100%' }} />
+            <a href="#" style={{ display: 'inline-block', marginTop: 8 }}>Background link</a>
+
+            {open && (
+                <div role="dialog" aria-modal="true" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'grid', placeItems: 'center', zIndex: 999 }}>
+                    <div style={{ padding: 24, background: 'var(--pg-card)', color: 'var(--pg-card-text)', border: '1px solid var(--pg-card-border)', borderRadius: 6, minWidth: 280 }}>
+                        <h3>Modal</h3>
+                        <input placeholder="Modal input" style={{ display: 'block', padding: 6, width: '100%', marginBottom: 8 }} />
+                        <button onClick={() => setOpen(false)}>Close</button>
+                    </div>
+                </div>
+            )}
+        </div>
+    )
+}
+`,
+            },
+        ],
+        entryFile: 'App.tsx',
+        height: 360,
+    },
+    {
+        id: 'focus-trap',
+        label: 'After — focus trap + initial focus',
+        description:
+            'Move focus into the modal on open, trap Tab inside it, restore focus on close. The user can\'t accidentally interact with the page behind the modal.',
+        files: [
+            {
+                name: 'App.tsx',
+                language: 'tsx',
+                code: `import { useState, useEffect, useRef } from 'react'
+
+function useFocusTrap(active: boolean) {
+    const ref = useRef<HTMLDivElement>(null)
+    useEffect(() => {
+        if (!active || !ref.current) return
+        const previouslyFocused = document.activeElement as HTMLElement | null
+        const focusables = ref.current.querySelectorAll<HTMLElement>('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')
+        const first = focusables[0]
+        const last = focusables[focusables.length - 1]
+        first?.focus()
+
+        function onKey(e: KeyboardEvent) {
+            if (e.key !== 'Tab') return
+            if (focusables.length === 0) return e.preventDefault()
+            if (e.shiftKey && document.activeElement === first) {
+                last.focus(); e.preventDefault()
+            } else if (!e.shiftKey && document.activeElement === last) {
+                first.focus(); e.preventDefault()
+            }
+        }
+        document.addEventListener('keydown', onKey)
+        return () => {
+            document.removeEventListener('keydown', onKey)
+            previouslyFocused?.focus()
+        }
+    }, [active])
+    return ref
+}
+
+export default function App() {
+    const [open, setOpen] = useState(false)
+    const trap = useFocusTrap(open)
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <button onClick={() => setOpen(true)}>Open modal</button>
+            <input placeholder="Background input" style={{ display: 'block', marginTop: 8, padding: 6, width: '100%' }} />
+            <a href="#" style={{ display: 'inline-block', marginTop: 8 }}>Background link</a>
+
+            {open && (
+                <div role="dialog" aria-modal="true" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'grid', placeItems: 'center', zIndex: 999 }}>
+                    <div ref={trap} style={{ padding: 24, background: 'var(--pg-card)', color: 'var(--pg-card-text)', border: '1px solid var(--pg-card-border)', borderRadius: 6, minWidth: 280 }}>
+                        <h3>Modal</h3>
+                        <input placeholder="Modal input" style={{ display: 'block', padding: 6, width: '100%', marginBottom: 8 }} />
+                        <button onClick={() => setOpen(false)}>Close</button>
+                    </div>
+                </div>
+            )}
+        </div>
+    )
+}
+`,
+            },
+        ],
+        entryFile: 'App.tsx',
+        height: 360,
+    },
+    {
+        id: 'rich',
+        label: 'Original demo',
+        description: "The kata's original keyboard-nav playground.",
+        files: [
+            {
+                name: 'App.tsx',
             language: 'tsx',
             code: `import { useState, useRef, useEffect } from 'react'
 
@@ -106,15 +213,16 @@ export default function App() {
     )
 }
 `,
-        },
-    ],
-    entryFile: 'App.tsx',
-    height: 420,
-}
+            },
+        ],
+        entryFile: 'App.tsx',
+        height: 420,
+    },
+]
 
 export default function KeyboardNavigation() {
     return (
-        <LessonLayout title="Keyboard Navigation" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+        <LessonLayout title="Keyboard Navigation" playgroundVariants={playgroundVariants} sourceCode={sourceCode}>
             <p>
                 Ensure your React applications are fully navigable using only a keyboard. Essential for
                 accessibility and power users!

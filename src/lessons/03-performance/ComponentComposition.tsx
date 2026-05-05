@@ -1,16 +1,115 @@
 import { useState, useRef } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
-import type { PlaygroundConfig } from '@components/playground'
+import type { PlaygroundVariant } from '@components/playground'
 
 // @ts-ignore
 import sourceCode from './ComponentComposition.tsx?raw'
 
-export const playgroundConfig: PlaygroundConfig = {
-  files: [
-    {
-      name: 'App.tsx',
-      language: 'tsx',
-      code: `import { useState, useRef, ReactNode } from 'react'
+export const playgroundVariants: PlaygroundVariant[] = [
+  {
+    id: 'parent-rebuilds-children',
+    label: 'Before — children rebuilt by parent',
+    description:
+      "The parent owns count AND renders ExpensiveList directly. When count ticks, React re-renders the parent — and rebuilds ExpensiveList. Watch the render counter climb on every count change.",
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState, useRef } from 'react'
+
+function ExpensiveList() {
+    const renders = useRef(0)
+    renders.current += 1
+    const items = Array.from({ length: 50 }, (_, i) => i)
+    return (
+        <div style={{ marginTop: 12, padding: 12, background: 'var(--pg-card)', border: '1px solid var(--pg-card-border)', borderRadius: 6 }}>
+            <strong>ExpensiveList renders: {renders.current}</strong>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 8 }}>
+                {items.map(i => <span key={i} style={{ padding: '2px 6px', background: 'rgba(127,127,127,0.15)', borderRadius: 4, fontSize: 12 }}>{i}</span>)}
+            </div>
+        </div>
+    )
+}
+
+export default function App() {
+    const [count, setCount] = useState(0)
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Parent owns count AND renders the list</h2>
+            <p>Count: {count}</p>
+            <button onClick={() => setCount(c => c + 1)}>Bump count</button>
+            <ExpensiveList />
+        </div>
+    )
+}
+`,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 360,
+  },
+  {
+    id: 'composed',
+    label: 'After — composition keeps list stable',
+    description:
+      "Move count down into a Counter component, and let the parent receive ExpensiveList as children. When Counter updates, ExpensiveList's element identity is unchanged, so React skips its re-render — no memo() needed.",
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState, useRef, ReactNode } from 'react'
+
+function ExpensiveList() {
+    const renders = useRef(0)
+    renders.current += 1
+    const items = Array.from({ length: 50 }, (_, i) => i)
+    return (
+        <div style={{ marginTop: 12, padding: 12, background: 'var(--pg-card)', border: '1px solid var(--pg-card-border)', borderRadius: 6 }}>
+            <strong>ExpensiveList renders: {renders.current}</strong>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 8 }}>
+                {items.map(i => <span key={i} style={{ padding: '2px 6px', background: 'rgba(127,127,127,0.15)', borderRadius: 4, fontSize: 12 }}>{i}</span>)}
+            </div>
+        </div>
+    )
+}
+
+function Counter({ children }: { children: ReactNode }) {
+    const [count, setCount] = useState(0)
+    return (
+        <div>
+            <p>Count: {count}</p>
+            <button onClick={() => setCount(c => c + 1)}>Bump count</button>
+            {children}
+        </div>
+    )
+}
+
+export default function App() {
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Counter wraps ExpensiveList as children</h2>
+            <Counter>
+                <ExpensiveList />
+            </Counter>
+        </div>
+    )
+}
+`,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 360,
+  },
+  {
+    id: 'split',
+    label: 'Split state demo',
+    description:
+      'A bigger demo: lifting state down into the smallest component that needs it.',
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState, useRef, ReactNode } from 'react'
 
 // -- Bad Pattern: Everything re-renders --
 function BadExample() {
@@ -83,15 +182,16 @@ export default function App() {
   )
 }
 `,
-    },
-  ],
-  entryFile: 'App.tsx',
-  height: 500,
-}
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 500,
+  },
+]
 
 export default function ComponentComposition() {
   return (
-    <LessonLayout title="Component Composition" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+    <LessonLayout title="Component Composition" playgroundVariants={playgroundVariants} sourceCode={sourceCode}>
       <p>
         Component composition is the <strong>most powerful performance optimization</strong> in
         React. It's better than memoization and works automatically with React 19's compiler!

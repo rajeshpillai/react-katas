@@ -1,17 +1,130 @@
 import { createPortal } from 'react-dom'
 import { useState } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
-import type { PlaygroundConfig } from '@components/playground'
+import type { PlaygroundVariant } from '@components/playground'
 
 // @ts-ignore
 import sourceCode from './PortalPattern.tsx?raw'
 
-export const playgroundConfig: PlaygroundConfig = {
-  files: [
-    {
-      name: 'App.tsx',
-      language: 'tsx',
-      code: `import { useState } from 'react'
+export const playgroundVariants: PlaygroundVariant[] = [
+  {
+    id: 'clipped',
+    label: 'Before — modal clipped by parent',
+    description:
+      "The modal is rendered inside a parent that has overflow:hidden (or transform/contain) — so the modal gets clipped, can't escape its container, and z-index doesn't help.",
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState } from 'react'
+
+export default function App() {
+    const [open, setOpen] = useState(false)
+
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Modal trapped inside an overflow:hidden parent</h2>
+            <p>The card below has overflow:hidden — see how the modal gets clipped.</p>
+            <div style={{
+                position: 'relative',
+                overflow: 'hidden',
+                border: '2px dashed var(--pg-card-border)',
+                borderRadius: 8,
+                padding: 16,
+                height: 160,
+                background: 'var(--pg-card)',
+            }}>
+                <button onClick={() => setOpen(true)}>Open modal</button>
+                {open && (
+                    <div style={{
+                        position: 'absolute',
+                        inset: 0,
+                        background: 'rgba(0,0,0,0.4)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 999,
+                    }}>
+                        <div style={{ padding: 24, background: 'var(--pg-card)', color: 'var(--pg-card-text)', border: '1px solid var(--pg-card-border)', borderRadius: 6, minWidth: 220 }}>
+                            <p>I'm clipped to my parent.</p>
+                            <button onClick={() => setOpen(false)}>Close</button>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    )
+}
+`,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 320,
+  },
+  {
+    id: 'portal',
+    label: 'After — createPortal',
+    description:
+      'createPortal renders the modal into document.body, escaping the overflow:hidden context. React still treats it as a child for events and context, but the DOM tree is detached.',
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState } from 'react'
+import { createPortal } from 'react-dom'
+
+export default function App() {
+    const [open, setOpen] = useState(false)
+
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Modal escapes via portal</h2>
+            <div style={{
+                position: 'relative',
+                overflow: 'hidden',
+                border: '2px dashed var(--pg-card-border)',
+                borderRadius: 8,
+                padding: 16,
+                height: 160,
+                background: 'var(--pg-card)',
+            }}>
+                <button onClick={() => setOpen(true)}>Open modal</button>
+                {open && createPortal(
+                    <div style={{
+                        position: 'fixed',
+                        inset: 0,
+                        background: 'rgba(0,0,0,0.4)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 999,
+                    }}>
+                        <div style={{ padding: 24, background: 'var(--pg-card)', color: 'var(--pg-card-text)', border: '1px solid var(--pg-card-border)', borderRadius: 6, minWidth: 220 }}>
+                            <p>I'm rendered into document.body!</p>
+                            <button onClick={() => setOpen(false)}>Close</button>
+                        </div>
+                    </div>,
+                    document.body
+                )}
+            </div>
+        </div>
+    )
+}
+`,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 320,
+  },
+  {
+    id: 'rich',
+    label: 'Original demo',
+    description: "The kata's original portal demo with multiple uses.",
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState } from 'react'
 import { createPortal } from 'react-dom'
 
 function Modal({ onClose }: { onClose: () => void }) {
@@ -97,18 +210,19 @@ export default function App() {
     )
 }
 `,
-    },
-  ],
-  entryFile: 'App.tsx',
-  height: 400,
-}
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 400,
+  },
+]
 
 export default function PortalPattern() {
   const [showModal, setShowModal] = useState(false)
   const [showTooltip, setShowTooltip] = useState(false)
 
   return (
-    <LessonLayout title="Portal Pattern" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+    <LessonLayout title="Portal Pattern" playgroundVariants={playgroundVariants} sourceCode={sourceCode}>
       <div>
         <p>
           Portals provide a way to render children into a DOM node that exists outside the parent

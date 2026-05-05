@@ -1,14 +1,90 @@
 import { LessonLayout } from '@components/lesson-layout'
-import type { PlaygroundConfig } from '@components/playground'
+import type { PlaygroundVariant } from '@components/playground'
 // @ts-ignore
 import sourceCode from './ARIAFundamentals.tsx?raw'
 
-export const playgroundConfig: PlaygroundConfig = {
-    files: [
-        {
-            name: 'App.tsx',
-            language: 'tsx',
-            code: `import { useState } from 'react'
+export const playgroundVariants: PlaygroundVariant[] = [
+    {
+        id: 'div-buttons',
+        label: 'Before — <div> as button',
+        description:
+            "A styled <div> with onClick. It's not focusable, screen readers don't announce it as a button, Enter/Space don't activate it. Try Tab + Enter — nothing happens.",
+        files: [
+            {
+                name: 'App.tsx',
+                language: 'tsx',
+                code: `import { useState } from 'react'
+
+export default function App() {
+    const [count, setCount] = useState(0)
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Inaccessible "buttons"</h2>
+            <div
+                onClick={() => setCount(c => c + 1)}
+                style={{ display: 'inline-block', padding: '8px 16px', background: 'var(--pg-card)', border: '1px solid var(--pg-card-border)', borderRadius: 6, color: 'var(--pg-card-text)', cursor: 'pointer', userSelect: 'none' }}
+            >
+                Click me
+            </div>
+            <p>Count: {count}</p>
+            <p style={{ fontSize: 12, color: 'var(--pg-muted)' }}>
+                Tab into the div — no focus ring. Press Enter — nothing. Screen readers announce
+                it as plain text, not a control.
+            </p>
+        </div>
+    )
+}
+`,
+            },
+        ],
+        entryFile: 'App.tsx',
+        height: 280,
+    },
+    {
+        id: 'native-button',
+        label: 'After — <button>',
+        description:
+            "Use the native element. Built-in: focus ring, Enter and Space activation, role=button announced by AT, disabled state, form submission semantics. ARIA can't replicate all of this.",
+        files: [
+            {
+                name: 'App.tsx',
+                language: 'tsx',
+                code: `import { useState } from 'react'
+
+export default function App() {
+    const [count, setCount] = useState(0)
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Accessible button</h2>
+            <button
+                onClick={() => setCount(c => c + 1)}
+                style={{ padding: '8px 16px', background: 'var(--pg-card)', border: '1px solid var(--pg-card-border)', borderRadius: 6, color: 'var(--pg-card-text)', cursor: 'pointer' }}
+            >
+                Click me
+            </button>
+            <p>Count: {count}</p>
+            <p style={{ fontSize: 12, color: 'var(--pg-muted)' }}>
+                Tab → focus ring. Enter or Space activates. Screen readers announce "Click me, button".
+            </p>
+        </div>
+    )
+}
+`,
+            },
+        ],
+        entryFile: 'App.tsx',
+        height: 280,
+    },
+    {
+        id: 'role-fixup',
+        label: 'When you must use a div',
+        description:
+            "If a div is genuinely required (e.g. design system constraint), at minimum: role='button', tabindex='0', and explicit Enter/Space handlers. Still inferior to a native button — but recoverable.",
+        files: [
+            {
+                name: 'App.tsx',
+                language: 'tsx',
+                code: `import { useState } from 'react'
 
 export default function App() {
     const [isOn, setIsOn] = useState(false)
@@ -72,15 +148,16 @@ export default function App() {
     )
 }
 `,
-        },
-    ],
-    entryFile: 'App.tsx',
-    height: 350,
-}
+            },
+        ],
+        entryFile: 'App.tsx',
+        height: 350,
+    },
+]
 
 export default function ARIAFundamentals() {
     return (
-        <LessonLayout title="ARIA Fundamentals" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+        <LessonLayout title="ARIA Fundamentals" playgroundVariants={playgroundVariants} sourceCode={sourceCode}>
             <p>
                 ARIA (Accessible Rich Internet Applications) attributes help make web applications
                 accessible to people using assistive technologies. Learn the essentials!

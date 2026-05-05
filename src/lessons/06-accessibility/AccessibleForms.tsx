@@ -1,15 +1,109 @@
 import { useState } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
-import type { PlaygroundConfig } from '@components/playground'
+import type { PlaygroundVariant } from '@components/playground'
 // @ts-ignore
 import sourceCode from './AccessibleForms.tsx?raw'
 
-export const playgroundConfig: PlaygroundConfig = {
-    files: [
-        {
-            name: 'App.tsx',
-            language: 'tsx',
-            code: `import { useState } from 'react'
+export const playgroundVariants: PlaygroundVariant[] = [
+    {
+        id: 'placeholder-only',
+        label: 'Before — placeholders as labels',
+        description:
+            "The form uses placeholders instead of <label>s, has no programmatic error association, and shows errors as a coloured paragraph. Screen-reader users won't hear field names; sighted-but-zoomed users lose context once they start typing.",
+        files: [
+            {
+                name: 'App.tsx',
+                language: 'tsx',
+                code: `import { useState } from 'react'
+
+export default function App() {
+    const [email, setEmail] = useState('')
+    const [submitted, setSubmitted] = useState(false)
+    const invalid = submitted && !email.includes('@')
+
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Inaccessible signup</h2>
+            <form onSubmit={e => { e.preventDefault(); setSubmitted(true) }}>
+                <input
+                    type="text"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    placeholder="Email"
+                    style={{ display: 'block', padding: 6, width: '100%', marginBottom: 8 }}
+                />
+                {invalid && <p style={{ color: 'red' }}>That doesn't look like an email</p>}
+                <button type="submit">Sign up</button>
+            </form>
+            <p style={{ fontSize: 12, color: 'var(--pg-muted)', marginTop: 12 }}>
+                No label, no aria-describedby on the error, no role="alert". Screen-reader silent on submit.
+            </p>
+        </div>
+    )
+}
+`,
+            },
+        ],
+        entryFile: 'App.tsx',
+        height: 320,
+    },
+    {
+        id: 'accessible',
+        label: 'After — labels + error association',
+        description:
+            "Visible <label> tied to the input via htmlFor/id. Errors get an id and are associated to the input via aria-describedby and aria-invalid. The error message has role='alert' so AT announces it on submit.",
+        files: [
+            {
+                name: 'App.tsx',
+                language: 'tsx',
+                code: `import { useState } from 'react'
+
+export default function App() {
+    const [email, setEmail] = useState('')
+    const [submitted, setSubmitted] = useState(false)
+    const invalid = submitted && !email.includes('@')
+
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Accessible signup</h2>
+            <form onSubmit={e => { e.preventDefault(); setSubmitted(true) }}>
+                <label htmlFor="email" style={{ display: 'block', marginBottom: 4, fontWeight: 600 }}>
+                    Email address
+                </label>
+                <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    aria-invalid={invalid}
+                    aria-describedby={invalid ? 'email-error' : undefined}
+                    style={{ display: 'block', padding: 6, width: '100%', marginBottom: 8, borderColor: invalid ? '#ef4444' : 'var(--pg-input-border)' }}
+                />
+                {invalid && (
+                    <p id="email-error" role="alert" style={{ color: '#ef4444', marginBottom: 8 }}>
+                        Please include an "@" in your email address.
+                    </p>
+                )}
+                <button type="submit">Sign up</button>
+            </form>
+        </div>
+    )
+}
+`,
+            },
+        ],
+        entryFile: 'App.tsx',
+        height: 320,
+    },
+    {
+        id: 'rich',
+        label: 'Original demo',
+        description: "The kata's original signup form playground.",
+        files: [
+            {
+                name: 'App.tsx',
+                language: 'tsx',
+                code: `import { useState } from 'react'
 
 interface FieldError {
     name?: string
@@ -168,15 +262,16 @@ export default function App() {
     )
 }
 `,
-        },
-    ],
-    entryFile: 'App.tsx',
-    height: 500,
-}
+            },
+        ],
+        entryFile: 'App.tsx',
+        height: 500,
+    },
+]
 
 export default function AccessibleForms() {
     return (
-        <LessonLayout title="Accessible Forms" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+        <LessonLayout title="Accessible Forms" playgroundVariants={playgroundVariants} sourceCode={sourceCode}>
             <p>
                 Create forms that everyone can use. Learn proper labeling, error handling, and validation
                 for accessible form experiences.

@@ -1,13 +1,111 @@
 import { useState, ReactNode, ReactElement, cloneElement, isValidElement } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
-import type { PlaygroundConfig } from '@components/playground'
+import type { PlaygroundVariant } from '@components/playground'
 // @ts-ignore
 import sourceCode from './AsChildPattern.tsx?raw'
 
-export const playgroundConfig: PlaygroundConfig = {
-    files: [
-        {
-            name: 'App.tsx',
+export const playgroundVariants: PlaygroundVariant[] = [
+    {
+        id: 'wrapper-bloat',
+        label: 'Before — wrapper bloat',
+        description:
+            'A "Button" component renders a <button> wrapper around its children. Putting an <a> inside makes a <button><a/></button>, which is invalid HTML, breaks keyboard semantics, and double-styles.',
+        files: [
+            {
+                name: 'App.tsx',
+                language: 'tsx',
+                code: `function Button({ children, ...rest }: any) {
+    return (
+        <button {...rest} style={{ padding: '8px 16px', borderRadius: 6, border: '1px solid var(--pg-card-border)', background: 'var(--pg-card)', color: 'var(--pg-card-text)', cursor: 'pointer' }}>
+            {children}
+        </button>
+    )
+}
+
+export default function App() {
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>button-inside-link disaster</h2>
+            <Button onClick={() => alert('Button clicked')}>Plain button</Button>
+            {' '}
+            <Button>
+                <a href="https://example.com" target="_blank" rel="noreferrer" style={{ color: 'inherit' }}>
+                    Open docs
+                </a>
+            </Button>
+            <p style={{ fontSize: 12, color: 'var(--pg-muted)', marginTop: 12 }}>
+                Inspect the DOM: invalid &lt;button&gt; wrapping &lt;a&gt;. Right-click + open-in-new-tab is broken.
+            </p>
+        </div>
+    )
+}
+`,
+            },
+        ],
+        entryFile: 'App.tsx',
+        height: 320,
+    },
+    {
+        id: 'as-child',
+        label: 'After — asChild via Slot',
+        description:
+            "asChild={true} tells Button to merge its styles and event handlers onto the child element instead of wrapping it. The <a> stays the root — preserving keyboard semantics, focus, right-click, and HTML validity.",
+        files: [
+            {
+                name: 'App.tsx',
+                language: 'tsx',
+                code: `import { ReactNode, isValidElement, cloneElement } from 'react'
+
+function Slot({ children, ...slotProps }: any) {
+    if (isValidElement(children)) {
+        return cloneElement(children, {
+            ...slotProps,
+            ...(children.props as any),
+            style: { ...(slotProps.style || {}), ...((children.props as any)?.style || {}) },
+        })
+    }
+    return null
+}
+
+function Button({ asChild, children, ...rest }: { asChild?: boolean; children: ReactNode; [k: string]: any }) {
+    const buttonProps = {
+        ...rest,
+        style: { padding: '8px 16px', borderRadius: 6, border: '1px solid var(--pg-card-border)', background: 'var(--pg-card)', color: 'var(--pg-card-text)', cursor: 'pointer', display: 'inline-block', textDecoration: 'none' },
+    }
+    if (asChild) return <Slot {...buttonProps}>{children}</Slot>
+    return <button {...buttonProps}>{children}</button>
+}
+
+export default function App() {
+    return (
+        <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+            <h2>Button preserves the consumer's element</h2>
+            <Button onClick={() => alert('Button clicked')}>Plain button</Button>
+            {' '}
+            <Button asChild>
+                <a href="https://example.com" target="_blank" rel="noreferrer">
+                    Open docs (real anchor)
+                </a>
+            </Button>
+            <p style={{ fontSize: 12, color: 'var(--pg-muted)', marginTop: 12 }}>
+                Right-click → "Open link in new tab" works. The DOM is just &lt;a&gt; with Button's styles.
+            </p>
+        </div>
+    )
+}
+`,
+            },
+        ],
+        entryFile: 'App.tsx',
+        height: 320,
+    },
+    {
+        id: 'rich',
+        label: 'Original demo',
+        description: "The kata's original asChild demo.",
+        files: [
+            {
+                name: 'App.tsx',
             language: 'tsx',
             code: `import { useState, ReactNode, ReactElement, cloneElement, isValidElement, forwardRef } from 'react'
 
@@ -138,11 +236,12 @@ export default function App() {
     )
 }
 `,
-        },
-    ],
-    entryFile: 'App.tsx',
-    height: 400,
-}
+            },
+        ],
+        entryFile: 'App.tsx',
+        height: 400,
+    },
+]
 
 // --- Slot component for merging props onto child ---
 
@@ -209,7 +308,7 @@ export default function AsChildPattern() {
     const [clickCount, setClickCount] = useState(0)
 
     return (
-        <LessonLayout title="asChild Pattern" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+        <LessonLayout title="asChild Pattern" playgroundVariants={playgroundVariants} sourceCode={sourceCode}>
             <div>
             <p>
                 The <code>asChild</code> pattern lets a component delegate its rendering to its
