@@ -1,34 +1,129 @@
 import { useState, useEffect } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
-import type { PlaygroundConfig } from '@components/playground'
+import type { PlaygroundVariant } from '@components/playground'
 // @ts-ignore
 import sourceCode from './UseEffectFundamentals.tsx?raw'
 
-export const playgroundConfig: PlaygroundConfig = {
-  files: [
-    {
-      name: 'App.tsx',
-      language: 'tsx',
-      code: `import { useState, useEffect } from 'react'
+export const playgroundVariants: PlaygroundVariant[] = [
+  {
+    id: 'derived-state-effect',
+    label: 'Before — useEffect for derived state',
+    description:
+      "A common anti-pattern: storing derived data in state and syncing it via an effect. Each keystroke schedules an extra render — open the console to see the effect firing.",
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState, useEffect } from 'react'
+
+export default function App() {
+  const [firstName, setFirstName] = useState('Ada')
+  const [lastName, setLastName] = useState('Lovelace')
+  const [fullName, setFullName] = useState('') // redundant state
+
+  // Anti-pattern: useEffect to compute a value derived from props/state.
+  useEffect(() => {
+    setFullName(firstName + ' ' + lastName)
+    console.log('effect ran — extra render scheduled')
+  }, [firstName, lastName])
+
+  return (
+    <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+      <h2>Hello, {fullName || '...'}!</h2>
+      <p style={{ fontSize: 12, color: '#888' }}>
+        Every keystroke triggers an effect that schedules an extra render
+        to update fullName. fullName can also be briefly stale.
+      </p>
+      <input
+        value={firstName}
+        onChange={e => setFirstName(e.target.value)}
+        placeholder="First name"
+        style={{ display: 'block', padding: 8, marginBottom: 8, width: '100%' }}
+      />
+      <input
+        value={lastName}
+        onChange={e => setLastName(e.target.value)}
+        placeholder="Last name"
+        style={{ display: 'block', padding: 8, width: '100%' }}
+      />
+    </div>
+  )
+}
+`,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 320,
+  },
+  {
+    id: 'derived-inline',
+    label: 'After — derive during render',
+    description:
+      "Most 'derived state' isn't state — it's a value you can compute from existing state during render. No effect, no extra render, no risk of staleness.",
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState } from 'react'
+
+export default function App() {
+  const [firstName, setFirstName] = useState('Ada')
+  const [lastName, setLastName] = useState('Lovelace')
+  const fullName = firstName + ' ' + lastName // just compute it
+
+  return (
+    <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+      <h2>Hello, {fullName}!</h2>
+      <p style={{ fontSize: 12, color: '#888' }}>
+        No state, no effect. Rendering is a function call —
+        recomputing during render is fine.
+      </p>
+      <input
+        value={firstName}
+        onChange={e => setFirstName(e.target.value)}
+        placeholder="First name"
+        style={{ display: 'block', padding: 8, marginBottom: 8, width: '100%' }}
+      />
+      <input
+        value={lastName}
+        onChange={e => setLastName(e.target.value)}
+        placeholder="Last name"
+        style={{ display: 'block', padding: 8, width: '100%' }}
+      />
+    </div>
+  )
+}
+`,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 320,
+  },
+  {
+    id: 'genuine-effects',
+    label: 'When effects are right',
+    description:
+      "Effects are for syncing with external systems: document.title, intervals, subscriptions. Here, both — a title sync and a cleaned-up interval timer.",
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState, useEffect } from 'react'
 
 export default function App() {
   const [count, setCount] = useState(0)
   const [seconds, setSeconds] = useState(0)
   const [isRunning, setIsRunning] = useState(false)
 
-  // Effect 1: Update document title on every render
+  // Sync to an external system: the document title.
   useEffect(() => {
     document.title = \`Count: \${count}\`
   })
 
-  // Effect 2: Timer with cleanup and dependency array
+  // Subscribe to a timer; cleanup cancels it.
   useEffect(() => {
     if (!isRunning) return
-
-    const interval = setInterval(() => {
-      setSeconds(s => s + 1)
-    }, 1000)
-
+    const interval = setInterval(() => setSeconds(s => s + 1), 1000)
     return () => clearInterval(interval)
   }, [isRunning])
 
@@ -37,11 +132,9 @@ export default function App() {
       <h2>Document Title Updater</h2>
       <p>Count: <strong>{count}</strong></p>
       <p style={{ fontSize: 12, color: '#888' }}>
-        Check the browser tab title - it updates with the count!
+        Check the browser tab title — it updates with the count.
       </p>
-      <button onClick={() => setCount(c => c + 1)} style={{ marginRight: 8 }}>
-        Increment
-      </button>
+      <button onClick={() => setCount(c => c + 1)} style={{ marginRight: 8 }}>Increment</button>
       <button onClick={() => setCount(0)}>Reset</button>
 
       <hr style={{ margin: '20px 0' }} />
@@ -52,9 +145,7 @@ export default function App() {
         <button onClick={() => setIsRunning(r => !r)}>
           {isRunning ? 'Stop' : 'Start'}
         </button>
-        <button onClick={() => { setIsRunning(false); setSeconds(0) }}>
-          Reset
-        </button>
+        <button onClick={() => { setIsRunning(false); setSeconds(0) }}>Reset</button>
       </div>
       <p style={{ fontSize: 12, color: '#888', marginTop: 8 }}>
         The interval is cleaned up when stopped or when the component unmounts.
@@ -63,11 +154,12 @@ export default function App() {
   )
 }
 `,
-    },
-  ],
-  entryFile: 'App.tsx',
-  height: 400,
-}
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 400,
+  },
+]
 
 export default function UseEffectFundamentals() {
   const [count, setCount] = useState(0)
@@ -138,7 +230,7 @@ export default function UseEffectFundamentals() {
   }
 
   return (
-    <LessonLayout title="useEffect Fundamentals" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+    <LessonLayout title="useEffect Fundamentals" playgroundVariants={playgroundVariants} sourceCode={sourceCode}>
       <p>
         The <code>useEffect</code> hook lets you perform <strong>side effects</strong> in function
         components. Side effects include data fetching, subscriptions, timers, and manually

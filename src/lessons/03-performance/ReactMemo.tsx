@@ -1,85 +1,109 @@
 import { useState, memo, useRef } from 'react'
 import { LessonLayout } from '@components/lesson-layout'
-import type { PlaygroundConfig } from '@components/playground'
+import type { PlaygroundVariant } from '@components/playground'
 
 // @ts-ignore
 import sourceCode from './ReactMemo.tsx?raw'
 
-export const playgroundConfig: PlaygroundConfig = {
-  files: [
-    {
-      name: 'App.tsx',
-      language: 'tsx',
-      code: `import { useState, memo, useRef } from 'react'
+const SHARED_PREAMBLE = `// Watch the "Renders" counter on Item.
+// Click "Bump parent" — does Item re-render even though its prop didn't change?`
 
-function WithoutMemo({ value }: { value: number }) {
-  const renderCount = useRef(0)
-  renderCount.current += 1
+export const playgroundVariants: PlaygroundVariant[] = [
+  {
+    id: 'without-memo',
+    label: 'Before — no memo',
+    description:
+      'Click "Bump parent". Item\'s render counter climbs even though its props are unchanged — every parent state update re-renders the child by default.',
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState, useRef } from 'react'
 
+${SHARED_PREAMBLE}
+function Item({ value }: { value: number }) {
+  const renders = useRef(0)
+  renders.current += 1
   return (
-    <div style={{ padding: 12, background: '#fed7d7', borderRadius: 6, marginBottom: 8 }}>
-      <strong>Without memo</strong>
-      <div>Value: {value}</div>
-      <div>Renders: {renderCount.current}</div>
+    <div style={{ padding: 12, background: '#fed7d7', borderRadius: 6 }}>
+      <strong>Item value: {value}</strong>
+      <div>Renders: {renders.current}</div>
     </div>
   )
 }
 
-const WithMemo = memo(function WithMemo({ value }: { value: number }) {
-  const renderCount = useRef(0)
-  renderCount.current += 1
+export default function App() {
+  const [parentCount, setParentCount] = useState(0)
+  const [itemValue, setItemValue] = useState(0)
 
   return (
-    <div style={{ padding: 12, background: '#c6f6d5', borderRadius: 6, marginBottom: 8 }}>
-      <strong>With memo</strong>
-      <div>Value: {value}</div>
-      <div>Renders: {renderCount.current}</div>
+    <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
+      <h2>Without React.memo</h2>
+      <p>Parent count: {parentCount} · Item value: {itemValue}</p>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+        <button onClick={() => setParentCount(c => c + 1)}>Bump parent</button>
+        <button onClick={() => setItemValue(v => v + 1)}>Bump item value</button>
+      </div>
+      <Item value={itemValue} />
+    </div>
+  )
+}
+`,
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 360,
+  },
+  {
+    id: 'with-memo',
+    label: 'After — wrapped in memo',
+    description:
+      'Same component, wrapped with memo(). Now bumping the parent leaves Item alone — it only re-renders when its props are referentially different.',
+    files: [
+      {
+        name: 'App.tsx',
+        language: 'tsx',
+        code: `import { useState, useRef, memo } from 'react'
+
+${SHARED_PREAMBLE}
+const Item = memo(function Item({ value }: { value: number }) {
+  const renders = useRef(0)
+  renders.current += 1
+  return (
+    <div style={{ padding: 12, background: '#c6f6d5', borderRadius: 6 }}>
+      <strong>Item value: {value}</strong>
+      <div>Renders: {renders.current}</div>
     </div>
   )
 })
 
 export default function App() {
-  const [count, setCount] = useState(0)
-  const [value, setValue] = useState(0)
+  const [parentCount, setParentCount] = useState(0)
+  const [itemValue, setItemValue] = useState(0)
 
   return (
     <div style={{ padding: 16, fontFamily: 'sans-serif' }}>
-      <h2>React.memo Comparison</h2>
-      <p>Parent count: {count} | Value prop: {value}</p>
-
+      <h2>With React.memo</h2>
+      <p>Parent count: {parentCount} · Item value: {itemValue}</p>
       <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-        <button onClick={() => setCount(c => c + 1)} style={btnStyle}>
-          Increment Count (parent only)
-        </button>
-        <button onClick={() => setValue(v => v + 1)} style={{ ...btnStyle, background: '#805ad5' }}>
-          Increment Value (prop)
-        </button>
+        <button onClick={() => setParentCount(c => c + 1)}>Bump parent</button>
+        <button onClick={() => setItemValue(v => v + 1)}>Bump item value</button>
       </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-        <WithoutMemo value={value} />
-        <WithMemo value={value} />
-      </div>
-
-      <p style={{ color: '#718096', fontSize: 13, marginTop: 12 }}>
-        "Increment Count" triggers parent re-render. Without memo re-renders every time.
-        With memo only re-renders when the value prop changes.
-      </p>
+      <Item value={itemValue} />
     </div>
   )
 }
-
-const btnStyle = { padding: '8px 16px', background: '#3182ce', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer' }
 `,
-    },
-  ],
-  entryFile: 'App.tsx',
-  height: 450,
-}
+      },
+    ],
+    entryFile: 'App.tsx',
+    height: 360,
+  },
+]
 
 export default function ReactMemoLesson() {
   return (
-    <LessonLayout title="React.memo" playgroundConfig={playgroundConfig} sourceCode={sourceCode}>
+    <LessonLayout title="React.memo" playgroundVariants={playgroundVariants} sourceCode={sourceCode}>
       <p>
         <code>React.memo</code> is a higher-order component that prevents re-renders when props
         haven't changed. In React 19, it's less critical due to automatic optimizations, but still
