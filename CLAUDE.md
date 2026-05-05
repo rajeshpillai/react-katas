@@ -277,7 +277,7 @@ Compound Components, Render Props, HOC, Portal, Context, Context Selectors, Prov
 - Variant adoption in the ~11 katas where Before/After didn't fit naturally on first pass (jsx-basics, code-splitting, react-19-compiler, render-timing-reconciliation, profiling-debugging, context-deep-dive, global-state-patterns, compound-components-tabs, children-as-data, testing-accessibility, and the 5 machine-coding katas).
 - More tiers for the architect interview track if the catalog of architect-level lessons grows.
 
-### Teaching depth (still open)
-- Compound Components: tradeoffs discussion, when NOT to use.
-- Render Props: deeper "when render props beat hooks" framing.
-- Controlled / Uncontrolled: hybrid / progressive-control pattern.
+### Teaching depth — covered for the core patterns
+- Compound Components: "When NOT to Use" tradeoffs section now in the kata.
+- Render Props: "When Render Props Beat Hooks" deeper framing now in the kata (DOM-owning primitives, list iteration, capability hiding, layout from parent state).
+- Controlled / Uncontrolled: hybrid / progressive-control pattern documented in the kata with a `useControllableState` reference implementation.

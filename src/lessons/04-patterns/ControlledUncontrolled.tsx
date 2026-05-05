@@ -322,6 +322,84 @@ export default function ControlledUncontrolled() {
           </div>
         </section>
 
+        {/* Hybrid / progressive control */}
+        <section style={{ marginBottom: 'var(--space-8)' }}>
+          <h2>The Hybrid Pattern (Progressive Control)</h2>
+          <p>
+            Library components rarely have the luxury of picking one mode. The same{' '}
+            <code>&lt;Combobox&gt;</code>, <code>&lt;Tabs&gt;</code>, or <code>&lt;Dialog&gt;</code> needs to:
+          </p>
+          <ul>
+            <li><strong>Just work</strong> when a consumer drops it in with no props (uncontrolled).</li>
+            <li><strong>Be drivable</strong> when a consumer wires up <code>value</code> + <code>onChange</code> (controlled).</li>
+            <li><strong>Switch cleanly</strong> between the two — typically by reading whether <code>value</code> was passed.</li>
+          </ul>
+          <p>
+            This is the <em>progressive-control</em> pattern. Internally the component holds a fallback{' '}
+            <code>useState</code>; externally it reports either the controlled prop (when present) or
+            the internal state (when absent).
+          </p>
+
+          <pre style={{ background: 'var(--bg-secondary)', padding: 'var(--space-4)', borderRadius: 'var(--radius-md)' }}>
+            <code>{`function useControllableState<T>({
+    value,             // controlled prop, or undefined
+    defaultValue,      // initial value when uncontrolled
+    onChange,          // optional change reporter
+}: {
+    value?: T
+    defaultValue: T
+    onChange?: (next: T) => void
+}) {
+    const isControlled = value !== undefined
+    const [internal, setInternal] = useState<T>(defaultValue)
+
+    const current = isControlled ? value : internal
+    const setCurrent = (next: T) => {
+        if (!isControlled) setInternal(next)
+        onChange?.(next)
+    }
+    return [current, setCurrent] as const
+}
+
+// Inside <Combobox>
+const [open, setOpen] = useControllableState({
+    value: props.open,
+    defaultValue: false,
+    onChange: props.onOpenChange,
+})`}</code>
+          </pre>
+
+          <h3>Rules</h3>
+          <ul>
+            <li>
+              <strong>Lock the mode at first render.</strong> Switching from uncontrolled to controlled
+              (or back) mid-life is a footgun — React warns about it for native inputs. In your own
+              components, either tolerate the switch explicitly or warn in development.
+            </li>
+            <li>
+              <strong>Always call <code>onChange</code>.</strong> Whether the component is controlled
+              or not, the consumer wants to react to value changes. The hook above reports both
+              modes uniformly.
+            </li>
+            <li>
+              <strong>Document the contract.</strong> "If you pass <code>value</code> you must pass{' '}
+              <code>onChange</code>" — otherwise the consumer gets a permanently-frozen prop, which
+              is the same bug as the "value without onChange" Before variant above.
+            </li>
+            <li>
+              <strong>Don't expose the internal state setter.</strong> Consumers who want fine-grained
+              control should use the controlled mode. Mixing internal-and-external setters leads to
+              torn state.
+            </li>
+          </ul>
+
+          <p>
+            Most well-known component libraries (Radix, Headless UI, MUI, react-aria) implement
+            this pattern under various names: <code>useControllableState</code>,{' '}
+            <code>useControlled</code>, <code>useUncontrolledProp</code>. They look the same.
+          </p>
+        </section>
+
         {/* Key Takeaways */}
         <section>
           <h2>Key Takeaways</h2>
@@ -331,7 +409,7 @@ export default function ControlledUncontrolled() {
             <li>Controlled gives more control, uncontrolled is simpler</li>
             <li>Use controlled for complex forms with validation</li>
             <li>Use uncontrolled for simple forms or file inputs</li>
-            <li>In modern React, controlled is generally preferred</li>
+            <li>For library components, the hybrid pattern lets the same component be either — driven by whether <code>value</code> was passed.</li>
           </ul>
         </section>
       </div>

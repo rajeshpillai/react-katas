@@ -452,6 +452,49 @@ export default function CompoundComponents() {
           </div>
         </section>
 
+        {/* When NOT to use */}
+        <section style={{ marginBottom: 'var(--space-8)' }}>
+          <h2>When NOT to Use Compound Components</h2>
+          <p>
+            Compound components are not free. Each part adds API surface, learning curve,
+            and Provider/Consumer machinery. Reach for them only when the structure is
+            actually variable. Specifically, prefer plain props when:
+          </p>
+          <ul>
+            <li>
+              <strong>The structure is fixed.</strong> A <code>{'<PageHeader title="..." actions={...} />'}</code>
+              that always renders the same shape doesn't benefit from a compound API. The named slots
+              pattern (or just props) is simpler.
+            </li>
+            <li>
+              <strong>Consumers never want to reorder, omit, or repeat parts.</strong> If every
+              consumer of <code>&lt;Card&gt;</code> always uses Header / Body / Footer in that order,
+              named slots beat compound hierarchy.
+            </li>
+            <li>
+              <strong>You need strong type checks on combinations.</strong> Compound APIs let consumers
+              place <code>&lt;Tabs.Panel&gt;</code> outside <code>&lt;Tabs&gt;</code> — TypeScript can't prevent
+              that. Runtime hierarchy errors help, but a single component with a discriminated-union
+              prop catches more at compile time.
+            </li>
+            <li>
+              <strong>The component is single-use and unlikely to be reused.</strong> The Context +
+              hook + named subcomponents overhead pays back across many call sites; for a one-off
+              UI it's just ceremony.
+            </li>
+            <li>
+              <strong>Performance is sensitive and the tree is deep.</strong> Each compound part is
+              its own component subscribing to Context. For shallow trees the cost is invisible;
+              for deeply nested compound subcomponents on a hot path, profile before assuming
+              this is the right shape.
+            </li>
+          </ul>
+          <p>
+            Rule of thumb: start with props. Reach for the compound pattern when the second
+            consumer asks to lay out the parts differently.
+          </p>
+        </section>
+
         {/* Key Takeaways */}
         <section>
           <h2>Key Takeaways</h2>
@@ -460,7 +503,7 @@ export default function CompoundComponents() {
             <li>Provides flexible, declarative API</li>
             <li>Components work together as a cohesive unit</li>
             <li>Great for complex UI patterns (tabs, accordions, menus)</li>
-            <li>Improves code organization and reusability</li>
+            <li>Use them when consumers actually want to compose structure — not when the layout is fixed</li>
           </ul>
         </section>
       </div>
