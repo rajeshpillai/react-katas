@@ -533,7 +533,7 @@ function Counter() {
     <div>
       <p>Current: {count}</p>
       <p>Previous: {prevCount}</p>
-      <button onClick={() => setCount(count + 1)}>Increment</button>
+      <button onClick={() => setCount(c => c + 1)}>Increment</button>
     </div>
   );
 }`}</code>
@@ -895,7 +895,7 @@ function PreviousDemo() {
         Previous value is tracked using useRef
       </p>
       <button
-        onClick={() => setCount(count + 1)}
+        onClick={() => setCount(c => c + 1)}
         style={{
           padding: 'var(--space-2) var(--space-4)',
           background: 'var(--color-primary-500)',

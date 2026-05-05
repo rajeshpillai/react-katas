@@ -321,7 +321,7 @@ ref.current = newValue;`}</code>
     <div>
       <p>State: {count}</p>
       <p>Renders: {renderCount.current}</p>
-      <button onClick={() => setCount(count + 1)}>
+      <button onClick={() => setCount(c => c + 1)}>
         Increment
       </button>
     </div>
@@ -361,7 +361,7 @@ ref.current = newValue;`}</code>
     <div>
       <p>Current: {count}</p>
       <p>Previous: {prevCountRef.current}</p>
-      <button onClick={() => setCount(count + 1)}>
+      <button onClick={() => setCount(c => c + 1)}>
         Increment
       </button>
     </div>
@@ -486,7 +486,7 @@ ref.current = newValue;`}</code>
             </ul>
             <pre style={{ marginTop: 'var(--space-3)' }}>
               <code>{`const [count, setCount] = useState(0);
-setCount(count + 1); // Re-renders`}</code>
+setCount(c => c + 1); // Re-renders`}</code>
             </pre>
           </div>
 
@@ -631,7 +631,7 @@ function RenderCounter() {
         Notice: Render count increases without causing additional renders!
       </p>
       <button
-        onClick={() => setCount(count + 1)}
+        onClick={() => setCount(c => c + 1)}
         style={{
           padding: 'var(--space-2) var(--space-4)',
           background: 'var(--color-primary-500)',
@@ -674,7 +674,7 @@ function PreviousValue() {
         The previous value is stored in a ref and updated after each render
       </p>
       <button
-        onClick={() => setCount(count + 1)}
+        onClick={() => setCount(c => c + 1)}
         style={{
           padding: 'var(--space-2) var(--space-4)',
           background: 'var(--color-accent-500)',

@@ -118,7 +118,7 @@ export default function StateBasics() {
                     </div>
                     <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
                         <button
-                            onClick={() => setCount(count + 1)}
+                            onClick={() => setCount(c => c + 1)}
                             style={{
                                 padding: 'var(--space-3) var(--space-6)',
                                 background: 'var(--color-primary-500)',
@@ -132,7 +132,7 @@ export default function StateBasics() {
                             Increment
                         </button>
                         <button
-                            onClick={() => setCount(count - 1)}
+                            onClick={() => setCount(c => c - 1)}
                             style={{
                                 padding: 'var(--space-3) var(--space-6)',
                                 background: 'var(--color-accent-500)',
@@ -166,7 +166,7 @@ export default function StateBasics() {
 const [count, setCount] = useState(0);
 
 // Update state by calling the setter
-<button onClick={() => setCount(count + 1)}>
+<button onClick={() => setCount(c => c + 1)}>
   Increment
 </button>`}</code>
                     </pre>

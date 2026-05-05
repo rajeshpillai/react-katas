@@ -332,7 +332,7 @@ function MemoComparison() {
 
       <div style={{ display: 'flex', gap: 'var(--space-2)', marginBottom: 'var(--space-4)' }}>
         <button
-          onClick={() => setCount(count + 1)}
+          onClick={() => setCount(c => c + 1)}
           style={{
             padding: 'var(--space-2) var(--space-4)',
             background: 'var(--color-primary-500)',

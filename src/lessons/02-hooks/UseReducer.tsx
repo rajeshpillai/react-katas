@@ -517,7 +517,7 @@ function todoReducer(state: Todo[], action: Action): Todo[] {
             </ul>
             <pre style={{ marginTop: 'var(--space-3)' }}>
               <code>{`const [count, setCount] = useState(0);
-setCount(count + 1);`}</code>
+setCount(c => c + 1);`}</code>
             </pre>
           </div>
 

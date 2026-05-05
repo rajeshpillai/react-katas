@@ -328,7 +328,7 @@ export default function UseEffectFundamentals() {
             Check your browser tab - the title updates with the count!
           </p>
           <button
-            onClick={() => setCount(count + 1)}
+            onClick={() => setCount(c => c + 1)}
             style={{
               padding: 'var(--space-3) var(--space-6)',
               background: 'var(--color-primary-500)',

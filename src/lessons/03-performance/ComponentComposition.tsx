@@ -221,7 +221,7 @@ export default function ComponentComposition() {
 
     return (
         <div>
-        <button onClick={() => setCount(count + 1)}>
+        <button onClick={() => setCount(c => c + 1)}>
             Count: {count}
         </button>
         <ExpensiveComponent /> {/* Re-renders on every count change! */}
@@ -267,7 +267,7 @@ export default function ComponentComposition() {
 
     return (
         <div>
-        <button onClick={() => setCount(count + 1)}>
+        <button onClick={() => setCount(c => c + 1)}>
             Count: {count}
         </button>
         {children} {/* Children don't re-render when count changes! */}
@@ -409,7 +409,7 @@ export default function ComponentComposition() {
     const [count, setCount] = useState(0);
     return (
         <>
-        <button onClick={() => setCount(count + 1)}>
+        <button onClick={() => setCount(c => c + 1)}>
             {count}
         </button>
         <ExpensiveList /> {/* Re-renders! */}
@@ -431,7 +431,7 @@ export default function ComponentComposition() {
 
     function Counter() {
     const [count, setCount] = useState(0);
-    return <button onClick={() => setCount(count + 1)}>{count}</button>;
+    return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
     }`}</code>
           </pre>
         </div>
@@ -552,7 +552,7 @@ function LayoutWithState({ children }: { children: React.ReactNode }) {
       </p>
       <button
         onClick={() => {
-          setCount(count + 1)
+          setCount(c => c + 1)
         }}
         style={{
           padding: 'var(--space-2) var(--space-4)',
@@ -751,7 +751,7 @@ function CounterButton() {
 
   return (
     <button
-      onClick={() => setCount(count + 1)}
+      onClick={() => setCount(c => c + 1)}
       style={{
         padding: 'var(--space-3) var(--space-6)',
         background: 'var(--color-primary-500)',

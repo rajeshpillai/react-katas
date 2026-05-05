@@ -192,7 +192,7 @@ export default function MemoizationWhenNeeded() {
   return (
     <>
       <p>Result: {result}</p>
-      <button onClick={() => setCount(count + 1)}>Increment</button>
+      <button onClick={() => setCount(c => c + 1)}>Increment</button>
       <input value={input} onChange={(e) => setInput(e.target.value)} />
     </>
   );
@@ -226,7 +226,7 @@ export default function MemoizationWhenNeeded() {
   const [text, setText] = useState('');
 
   // Without useCallback: new function on every render
-  // const handleClick = () => setCount(count + 1);
+  // const handleClick = () => setCount(c => c + 1);
 
   // With useCallback: same function reference
   const handleClick = useCallback(() => {
@@ -290,7 +290,7 @@ function Parent() {
 
   return (
     <>
-      <button onClick={() => setOther(other + 1)}>
+      <button onClick={() => setOther(o => o + 1)}>
         Update Other
       </button>
       <ExpensiveChild value={count} />
