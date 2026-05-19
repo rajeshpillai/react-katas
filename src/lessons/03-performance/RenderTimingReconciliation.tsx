@@ -696,7 +696,7 @@ function Child() {
             process is called <strong>reconciliation</strong>.
           </p>
 
-          <pre style={{ background: 'transparent' }}>
+          <pre>
             <code>{`// Simplified reconciliation algorithm:
 function reconcile(oldTree, newTree) {
   // 1. If types differ -> unmount old, mount new
@@ -757,7 +757,7 @@ function reconcile(oldTree, newTree) {
             <ReconciliationDemo />
           </div>
 
-          <pre style={{ background: 'transparent', marginTop: 'var(--space-4)' }}>
+          <pre style={{ marginTop: 'var(--space-4)' }}>
             <code>{`// These produce DIFFERENT element types:
 {condition ? <div><input /></div> : <section><input /></section>}
 // Toggling condition -> unmount div subtree, mount section subtree
@@ -791,7 +791,7 @@ function reconcile(oldTree, newTree) {
             <KeyDemo />
           </div>
 
-          <pre style={{ background: 'transparent', marginTop: 'var(--space-4)' }}>
+          <pre style={{ marginTop: 'var(--space-4)' }}>
             <code>{`// WITH stable keys (key={item.id}):
 // React: "Apple(id=1) moved from index 0 to index 2"
 // -> Reuses the same DOM nodes, preserves state (input values)
@@ -879,7 +879,7 @@ function reconcile(oldTree, newTree) {
             <KeyResetDemo />
           </div>
 
-          <pre style={{ background: 'transparent', marginTop: 'var(--space-4)' }}>
+          <pre style={{ marginTop: 'var(--space-4)' }}>
             <code>{`// Common use cases for the key reset trick:
 
 // 1. Reset a form when switching between records
@@ -915,7 +915,7 @@ function reconcile(oldTree, newTree) {
             <ChildRenderDemo />
           </div>
 
-          <pre style={{ background: 'transparent', marginTop: 'var(--space-4)' }}>
+          <pre style={{ marginTop: 'var(--space-4)' }}>
             <code>{`// Render counter pattern using useRef:
 function MyComponent() {
   const renderCount = useRef(0)

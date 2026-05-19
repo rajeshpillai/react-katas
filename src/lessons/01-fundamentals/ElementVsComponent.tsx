@@ -389,7 +389,7 @@ export default function ElementVsComponent() {
             Elements are cheap to create and are immutable -- once created, you cannot change their children or attributes.
           </p>
 
-          <pre style={{ background: 'transparent' }}>
+          <pre>
             <code>{`// A React element is just an object like this:
 {
   type: 'div',           // or a component function/class
@@ -417,7 +417,7 @@ const el = React.createElement('div', { className: 'card' }, 'Hello')`}</code>
             elements. It is the <em>blueprint</em> or <em>template</em> for creating elements.
           </p>
 
-          <pre style={{ background: 'transparent' }}>
+          <pre>
             <code>{`// This is a component (a function):
 function Greeting({ name }) {
   return <h1>Hello, {name}!</h1>
@@ -496,7 +496,7 @@ const element = <Greeting name="World" />
             <CreateElementDemo />
           </div>
 
-          <pre style={{ background: 'transparent', marginTop: 'var(--space-4)' }}>
+          <pre style={{ marginTop: 'var(--space-4)' }}>
             <code>{`// These are equivalent:
 const a = <Greeting name="World" />
 const b = createElement(Greeting, { name: "World" })
@@ -532,7 +532,7 @@ const d = createElement('div', { id: 'box' }, 'Hi')
             <ElementIdentityDemo />
           </div>
 
-          <pre style={{ background: 'transparent', marginTop: 'var(--space-4)' }}>
+          <pre style={{ marginTop: 'var(--space-4)' }}>
             <code>{`function Parent() {
   const [count, setCount] = useState(0)
 
@@ -618,7 +618,7 @@ function ColorProvider({ children }) {
             </ul>
           </div>
 
-          <pre style={{ background: 'transparent', marginTop: 'var(--space-4)' }}>
+          <pre style={{ marginTop: 'var(--space-4)' }}>
             <code>{`// WRONG: calling component directly (no hooks, no lifecycle)
 function Parent() {
   return <div>{Greeting({ name: 'World' })}</div>

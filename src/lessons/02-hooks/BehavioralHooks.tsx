@@ -625,7 +625,7 @@ export default function BehavioralHooks() {
             </ul>
           </div>
 
-          <pre style={{ background: 'transparent', marginTop: 'var(--space-4)' }}>
+          <pre style={{ marginTop: 'var(--space-4)' }}>
             <code>{`// The pattern: wrap DOM interactions in a hook
 function useBehavior(ref, options) {
   useEffect(() => {
@@ -660,7 +660,7 @@ function useBehavior(ref, options) {
             <ClickOutsideDemo />
           </div>
 
-          <pre style={{ background: 'transparent', marginTop: 'var(--space-4)' }}>
+          <pre style={{ marginTop: 'var(--space-4)' }}>
             <code>{`function useClickOutside<T extends HTMLElement>(
   ref: RefObject<T | null>,
   handler: () => void
@@ -744,7 +744,7 @@ function Dropdown() {
             <MediaQueryDemo />
           </div>
 
-          <pre style={{ background: 'transparent', marginTop: 'var(--space-4)' }}>
+          <pre style={{ marginTop: 'var(--space-4)' }}>
             <code>{`function useMediaQuery(query: string): boolean {
   const [matches, setMatches] = useState(() => {
     return window.matchMedia(query).matches
@@ -830,7 +830,7 @@ function Layout() {
             <KeyboardShortcutDemo />
           </div>
 
-          <pre style={{ background: 'transparent', marginTop: 'var(--space-4)' }}>
+          <pre style={{ marginTop: 'var(--space-4)' }}>
             <code>{`function useKeyboardShortcut(
   key: string,
   callback: () => void,
@@ -911,7 +911,7 @@ function App() {
             can use multiple behavioral hooks without any conflicts.
           </p>
 
-          <pre style={{ background: 'transparent' }}>
+          <pre>
             <code>{`function CommandPalette() {
   const [isOpen, setIsOpen] = useState(false)
   const panelRef = useRef<HTMLDivElement>(null)

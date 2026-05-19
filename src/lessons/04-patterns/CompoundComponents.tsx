@@ -299,7 +299,7 @@ export default function CompoundComponents() {
             elements like <code>&lt;select&gt;</code> and <code>&lt;option&gt;</code>.
           </p>
 
-          <pre style={{ background: 'transparent' }}>
+          <pre>
             <code>{`// Compound component API
       <Accordion>
       <Accordion.Item>
@@ -377,7 +377,7 @@ export default function CompoundComponents() {
               </AccordionItem>
             </Accordion>
 
-            <pre style={{ marginTop: 'var(--space-4)', background: 'transparent' }}>
+            <pre style={{ marginTop: 'var(--space-4)' }}>
               <code>{`// Implementation
       const AccordionContext = createContext(null);
 
@@ -421,7 +421,7 @@ export default function CompoundComponents() {
             <p>The parent `Accordion` holds the state, and children communicate via Context:</p>
 
             <h4 style={{ marginTop: 'var(--space-4)' }}>1. Implicit State Sharing</h4>
-            <pre style={{ background: 'transparent' }}>
+            <pre>
               <code>{`const AccordionContext = createContext<{
       openIndex: number | null
       setOpenIndex: (index: number | null) => void
@@ -432,7 +432,7 @@ export default function CompoundComponents() {
             </p>
 
             <h4 style={{ marginTop: 'var(--space-4)' }}>2. Toggling State (Header)</h4>
-            <pre style={{ background: 'transparent' }}>
+            <pre>
               <code>{`// Inside AccordionHeader
       const { openIndex, setOpenIndex } = useContext(AccordionContext);
 
@@ -441,7 +441,7 @@ export default function CompoundComponents() {
             </pre>
 
             <h4 style={{ marginTop: 'var(--space-4)' }}>3. Conditional Rendering (Panel)</h4>
-            <pre style={{ background: 'transparent' }}>
+            <pre>
               <code>{`// Inside AccordionPanel
       const { openIndex } = useContext(AccordionContext);
 
