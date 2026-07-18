@@ -1,4 +1,6 @@
-CLAUDE.md
-history.md
-scripts/
-.ossignore
+# .ossignore — paths excluded when publishing to the OSS repo.
+#
+# The OSS repo is a FULL MIRROR of this repo's tracked tree, so nothing is
+# stripped. Add one path per line here to start excluding files again.
+# (git archive already excludes untracked/gitignored files like dist/,
+#  node_modules/, bun.lock, stats.html.)

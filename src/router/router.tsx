@@ -27,26 +27,38 @@ interface RouterProviderProps {
     children: ReactNode
 }
 
+// Hash-based routing. The app is a static SPA served from a project sub-path
+// on GitHub Pages (rajeshpillai.github.io/react-katas/), where the server has
+// no SPA fallback and no knowledge of client routes. Keeping the whole route
+// (path + query) in the URL fragment means deep links and refreshes always
+// resolve to the same index.html while `currentPath` stays a clean, base-free
+// "/lessons/x?tier=y" that getLessonByPath and the tier logic already expect.
+function readHashPath(): string {
+    // location.hash is like "#/lessons/x?tier=y"; strip the leading '#'.
+    // Empty hash (bare "/" visit) resolves to the home route.
+    return window.location.hash.slice(1) || '/'
+}
+
 // Router provider component
 export function RouterProvider({ children }: RouterProviderProps) {
-    const [currentPath, setCurrentPath] = useState(
-        () => window.location.pathname + window.location.search
-    )
+    const [currentPath, setCurrentPath] = useState(readHashPath)
     const [params] = useState<RouteParams>({})
 
     useEffect(() => {
-        // Listen for browser back/forward navigation
-        const handlePopState = () => {
-            setCurrentPath(window.location.pathname + window.location.search)
+        // hashchange covers both navigate() and browser back/forward.
+        const handleHashChange = () => {
+            setCurrentPath(readHashPath())
         }
 
-        window.addEventListener('popstate', handlePopState)
-        return () => window.removeEventListener('popstate', handlePopState)
+        window.addEventListener('hashchange', handleHashChange)
+        return () => window.removeEventListener('hashchange', handleHashChange)
     }, [])
 
     const navigate = (path: string) => {
-        // Update browser history
-        window.history.pushState({}, '', path)
+        // Assigning the hash pushes a history entry and fires hashchange, which
+        // updates currentPath. Set it directly too so the UI reacts synchronously
+        // (and no-ops safely when navigating to the current path).
+        window.location.hash = path
         setCurrentPath(path)
         window.scrollTo(0, 0)
     }
@@ -81,7 +93,7 @@ export function Link({ to, children, className = '', activeClassName = '', ...pr
     const finalClassName = `${className} ${isActive ? activeClassName : ''}`.trim()
 
     return (
-        <a href={to} onClick={handleClick} className={finalClassName} {...props}>
+        <a href={`#${to}`} onClick={handleClick} className={finalClassName} {...props}>
             {children}
         </a>
     )

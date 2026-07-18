@@ -4,7 +4,12 @@ import path from 'path'
 import { visualizer } from 'rollup-plugin-visualizer'
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ command }) => ({
+    // Production builds are deployed to GitHub Pages under the repo sub-path
+    // (rajeshpillai.github.io/react-katas/), so assets must resolve against
+    // '/react-katas/'. Dev server stays at root. Client routing is hash-based
+    // (see router.tsx), so this only affects static asset URLs, not routes.
+    base: command === 'build' ? '/react-katas/' : '/',
     plugins: [
         react({
             // Enable React 19 features
@@ -59,4 +64,4 @@ export default defineConfig({
             },
         },
     },
-})
+}))

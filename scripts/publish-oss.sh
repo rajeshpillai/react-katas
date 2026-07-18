@@ -2,7 +2,12 @@
 set -euo pipefail
 
 #
-# publish-oss.sh — Publish a cleaned copy to the OSS repo.
+# publish-oss.sh — Mirror this repo's tracked tree to the public OSS repo.
+#
+# Pushes a full byte-for-byte snapshot of HEAD (minus untracked/gitignored
+# files, and minus anything listed in .ossignore — currently nothing) to the
+# OSS remote's main branch. The OSS repo also hosts the built site on its
+# gh-pages branch; see scripts/gh-deploy.sh.
 #
 # Usage:
 #   ./scripts/publish-oss.sh                   # dry-run (default)
@@ -64,41 +69,14 @@ while IFS= read -r line; do
     fi
 done < "$OSSIGNORE_FILE"
 
-# --- Patch package.json -------------------------------------------------------
-
-info "Patching package.json"
-
-node -e "
-const fs = require('fs');
-const pkg = JSON.parse(fs.readFileSync('$WORK_DIR/package.json', 'utf8'));
-
-// Remove private flag so it can be forked/cloned freely
-delete pkg.private;
-
-// Keep only client-relevant scripts
-pkg.scripts = {
-    dev: 'vite',
-    build: 'tsc && vite build',
-    preview: 'vite preview',
-    test: 'vitest',
-    lint: 'eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0'
-};
-
-fs.writeFileSync('$WORK_DIR/package.json', JSON.stringify(pkg, null, 2) + '\n');
-"
-
 # --- Summary ------------------------------------------------------------------
+#
+# The OSS repo is a full byte-for-byte mirror of this repo's tracked tree —
+# package.json (and everything else) is passed through unmodified. To exclude
+# files again, list them in .ossignore.
 
 info "OSS tree contents:"
 (cd "$WORK_DIR" && find . -maxdepth 2 -not -path '*/node_modules/*' -not -path './.git/*' | sort)
-
-echo ""
-info "package.json scripts:"
-node -e "const p=JSON.parse(require('fs').readFileSync('$WORK_DIR/package.json','utf8')); console.log(JSON.stringify(p.scripts,null,2));"
-
-echo ""
-info "package.json dependencies:"
-node -e "const p=JSON.parse(require('fs').readFileSync('$WORK_DIR/package.json','utf8')); console.log('dependencies:', JSON.stringify(Object.keys(p.dependencies||{}),null,2)); console.log('devDependencies:', JSON.stringify(Object.keys(p.devDependencies||{}),null,2));"
 
 # --- Push to OSS remote -------------------------------------------------------
 
