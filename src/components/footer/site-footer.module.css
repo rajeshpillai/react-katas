@@ -1,0 +1,42 @@
+.footer {
+    /* Pin to the bottom of the .appShell flex column even on short pages
+       (e.g. the home screen, which doesn't have the flex:1 .app grid). */
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-6);
+    padding: var(--space-4) var(--space-6);
+    background: var(--bg-elevated);
+    border-top: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.credit,
+.copyright {
+    margin: 0;
+}
+
+.copyright {
+    color: var(--text-tertiary);
+    font-size: var(--font-size-xs);
+}
+
+.link {
+    color: var(--color-primary-500);
+    text-decoration: none;
+    font-weight: var(--font-weight-medium);
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+    .footer {
+        justify-content: flex-start;
+        padding: var(--space-4);
+    }
+}

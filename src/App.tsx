@@ -12,6 +12,7 @@ import { InterviewSidebar } from '@components/interview/interview-sidebar'
 import { InterviewLanding } from '@components/interview/interview-landing'
 import { TierPage } from '@components/interview/tier-page'
 import { SiteHeader } from '@components/header/site-header'
+import { SiteFooter } from '@components/footer/site-footer'
 import styles from './App.module.css'
 import { useProgress } from '@hooks/use-progress'
 import '@hooks/use-theme' // Initializes theme from localStorage on load
@@ -79,6 +80,18 @@ class LessonErrorBoundary extends Component<
         }
         return this.props.children
     }
+}
+
+// Page chrome shared by every route: header on top, footer pinned to the
+// bottom of the shell, route content in between.
+function Shell({ children }: { children: ReactNode }) {
+    return (
+        <div className={styles.appShell}>
+            <SiteHeader />
+            {children}
+            <SiteFooter />
+        </div>
+    )
 }
 
 function useSidebarCollapse() {
@@ -178,10 +191,9 @@ function AppContent() {
     // Interview Role Play landing
     if (pathOnly === '/interview') {
         return (
-            <div className={styles.appShell}>
-                <SiteHeader />
+            <Shell>
                 <InterviewLanding />
-            </div>
+            </Shell>
         )
     }
 
@@ -191,8 +203,7 @@ function AppContent() {
     if (interviewTierId) {
         const tier = getTier(interviewTierId)!
         return (
-            <div className={styles.appShell}>
-                <SiteHeader />
+            <Shell>
                 <div className={appClass}>
                     <aside className={styles.sidebar}>
                         <InterviewSidebar
@@ -206,17 +217,16 @@ function AppContent() {
                         <TierPage tier={tier} />
                     </main>
                 </div>
-            </div>
+            </Shell>
         )
     }
 
     // Home page (no sidebar)
     if (!currentLesson || pathOnly === '/') {
         return (
-            <div className={styles.appShell}>
-                <SiteHeader />
+            <Shell>
                 <HomePage />
-            </div>
+            </Shell>
         )
     }
 
@@ -236,8 +246,7 @@ function AppContent() {
     const appendTier = (path: string) => activeTier ? `${path}?tier=${activeTier.id}` : path
 
     return (
-        <div className={styles.appShell}>
-            <SiteHeader />
+        <Shell>
             <div className={appClass}>
             <aside className={styles.sidebar}>
                 {activeTier ? (
@@ -381,7 +390,7 @@ function AppContent() {
                 </div>
             </main>
             </div>
-        </div>
+        </Shell>
     )
 }
 
