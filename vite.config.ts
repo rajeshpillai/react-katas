@@ -6,7 +6,7 @@ import { visualizer } from 'rollup-plugin-visualizer'
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => ({
     // Production builds are deployed to GitHub Pages under the repo sub-path
-    // (rajeshpillai.github.io/react-katas/), so assets must resolve against
+    // (algorisys-oss.github.io/react-katas/), so assets must resolve against
     // '/react-katas/'. Dev server stays at root. Client routing is hash-based
     // (see router.tsx), so this only affects static asset URLs, not routes.
     base: command === 'build' ? '/react-katas/' : '/',
@@ -42,24 +42,23 @@ export default defineConfig(({ command }) => ({
         sourcemap: true,
         rollupOptions: {
             output: {
-                // Split CodeMirror (used by both playground and read-only source
-                // viewer) from sucrase + the language packs only the playground
-                // needs, so clicking "Source Code" doesn't force-download the
-                // ~200KB transpiler the user never invokes.
-                manualChunks: {
-                    'react-vendor': ['react', 'react-dom'],
-                    'codemirror': [
-                        'codemirror',
-                        '@codemirror/state',
-                        '@codemirror/view',
-                        '@codemirror/lang-javascript',
-                        '@codemirror/theme-one-dark',
-                    ],
-                    'playground-runtime': [
-                        'sucrase',
-                        '@codemirror/lang-css',
-                        '@codemirror/commands',
-                    ],
+                // Split sucrase (the ~200KB transpiler only the playground
+                // invokes) from CodeMirror, which both the playground and the
+                // read-only source viewer need — so clicking "Source Code"
+                // doesn't force-download the transpiler.
+                //
+                // The whole CodeMirror family (@codemirror/*, @lezer/*, and its
+                // small runtime deps) MUST stay in one chunk. Splitting any part
+                // of it out creates a circular import between the two chunks —
+                // the `codemirror` package imports @codemirror/commands, which
+                // imports @codemirror/state — and circular ESM chunk imports
+                // crash at runtime with "Cannot access 'X' before
+                // initialization" (a TDZ error) when the lesson chunk loads.
+                manualChunks(id) {
+                    if (!id.includes('node_modules')) return
+                    if (/node_modules\/(react|react-dom|scheduler)\//.test(id)) return 'react-vendor'
+                    if (/node_modules\/(sucrase|ts-interface-checker|lines-and-columns|pirates)\//.test(id)) return 'playground-runtime'
+                    if (/node_modules\/(codemirror|@codemirror|@lezer|style-mod|w3c-keyname|crelt)\//.test(id)) return 'codemirror'
                 },
             },
         },
