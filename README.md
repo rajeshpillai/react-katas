@@ -2,6 +2,8 @@
 
 > **Master React 19 from fundamentals to architecture-level interview prep — through 46 hands-on katas, all built from scratch with no UI libraries.**
 
+**▶ Live site: <https://algorisys-oss.github.io/react-katas/>**
+
 An interactive React 19 + TypeScript tutorial platform that teaches component design and composition from first principles. Every kata is a working interactive demo plus a focused lesson; advanced tiers add framing for system-design and senior-engineering interview questions.
 
 ## What's in the box
